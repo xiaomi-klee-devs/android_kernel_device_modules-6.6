@@ -19,3 +19,5 @@ ifeq ($(CONFIG_GCOV_KERNEL),y)
 GCOV_PROFILE := y
 endif
 
+# LED Triggers
+obj-$(CONFIG_LEDS_TRIGGERS)		+= trigger/
