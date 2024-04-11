@@ -358,7 +358,6 @@ mgk_64_device_modules = [
     "drivers/misc/mediatek/monitor_hang/monitor_hang.ko",
     "drivers/misc/mediatek/mtk-interconnect/mtk-icc-core.ko",
     "drivers/misc/mediatek/mtprintk/mtk_printk_ctrl.ko",
-    "drivers/misc/mediatek/mtprof/bootprof.ko",
     "drivers/misc/mediatek/nfc/p73-spi/p73.ko",
     "drivers/misc/mediatek/nfc/nxp-i2c/nxp_i2c.ko",
     "drivers/misc/mediatek/pbm/mtk_pbm.ko",
@@ -781,7 +780,6 @@ mgk_64_platform_device_modules = {
 
 mgk_64_device_eng_modules = [
     "drivers/misc/mediatek/cpufreq_v1/cpuhvfs.ko",
-    "drivers/misc/mediatek/mtprof/irq_monitor.ko",
     "drivers/misc/mediatek/selinux_warning/mtk_selinux_aee_warning.ko",
 ]
 
@@ -791,7 +789,6 @@ mgk_64_platform_device_eng_modules = {
 
 mgk_64_device_userdebug_modules = [
     "drivers/misc/mediatek/cpufreq_v1/cpuhvfs.ko",
-    "drivers/misc/mediatek/mtprof/irq_monitor.ko",
     "drivers/misc/mediatek/selinux_warning/mtk_selinux_aee_warning.ko",
 ]
 
@@ -899,10 +896,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
@@ -928,16 +921,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/tee/teei/515/isee.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-dbg-v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-cpu-dbg-v6899.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
         mgk_64_device_modules.append("drivers/memory/mediatek/emi_legacy/emi_legacy_v2/emi.ko")
         mgk_64_device_modules.append("drivers/memory/mediatek/emi_legacy/emi_legacy_v2/emi-mpu.ko")
         mgk_64_device_modules.append("drivers/memory/mediatek/emi_legacy/emi_legacy_v2/emi-mpu-test.ko")
@@ -951,18 +934,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/misc/mediatek/lpm_legacy/modules/debug/k6877/mtk-lpm-dbg-mt6877-legacy.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/lpm_legacy/mtk-lpm-legacy.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/lpm_legacy/modules/debug/v1/mtk-lpm-dbg-common-v1-legacy.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/iommu/iommu_gz.ko")
         mgk_64_device_modules.remove("drivers/tee/gud/610/TlcTui/t-base-tui.ko")
         mgk_64_device_modules.remove("drivers/gpu/mediatek/gpufreq/v2/mtk_gpufreq_wrapper.ko")
@@ -978,8 +949,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mm-fake-engine.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mtk-mminfra-imax.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/pmsr/v3/pmsr_v3.ko")
-        if "drivers/misc/mediatek/slbc/mmsram.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mmsram.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mtk_slbc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_trace.ko")
@@ -987,75 +956,11 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/ssc/debug/v2/mtk-ssc-dbg-v2.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/ssc/mtk-ssc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mdpm/mtk_mdpm.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/mdpm_v1/mtk_mdpm_v1.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/tinysys_scmi/tinysys-scmi.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-log.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/bridge/mtk_mbraink_bridge.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/mtk_mbraink.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/modules/v6989/mtk_mbraink_v6989.ko")
@@ -1215,18 +1120,6 @@ def get_overlay_modules_list():
         mgk_64_common_eng_modules.remove("drivers/firmware/arm_ffa/ffa-module.ko")
         mgk_64_common_userdebug_modules.remove("drivers/firmware/arm_ffa/ffa-module.ko")
         mgk_64_common_user_modules.remove("drivers/firmware/arm_ffa/ffa-module.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/iommu/iommu_gz.ko")
         mgk_64_device_modules.append("drivers/clk/mediatek/clk-mt6781.ko")
         mgk_64_device_modules.append("drivers/clk/mediatek/clkdbg-mt6781.ko")
@@ -1236,10 +1129,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
@@ -1394,10 +1283,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_dpc_v1.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_vdisp_v1.ko")
-        if "drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko")
-        if "drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_vdisp_v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_vdisp_v2.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/sspm/v2/sspm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/sspm/v3/sspm_v3.ko")
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/lpm/modules/debug/mt6899/mtk-lpm-dbg-mt6899.ko")
@@ -1405,76 +1290,10 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/lpm/modules/debug/mt6991/mtk-lpm-dbg-mt6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/pmsr/v3/pmsr_v3.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-dbg-v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-cpu-dbg-v6899.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/imgsensor/src/isp6s/imgsensor_isp6s.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/imgsensor/src/isp6s_lag/imgsensor_isp6s_lag.ko")
@@ -1499,8 +1318,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/ssc/debug/v1/mtk-ssc-dbg-v1.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/ssc/debug/v2/mtk-ssc-dbg-v2.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/ssc/mtk-ssc.ko")
-        if "drivers/misc/mediatek/slbc/mmsram.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mmsram.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mtk_slbc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_trace.ko")
@@ -1538,23 +1355,7 @@ def get_overlay_modules_list():
 
         mgk_64_device_modules.append("drivers/misc/mediatek/qos/mtk_qos_legacy.ko")
 
-        if "drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
-        if "drivers/gpu/drm/panel/mediatek-drm-gateic.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
-        if "drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
 
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
 
         #mgk_64_device_modules.remove("drivers/media/platform/mtk-aie/mtk_aie.ko")
         #mgk_64_device_modules.remove("drivers/media/platform/mtk-isp/mtk-aov/mtk_aov.ko")
@@ -1564,10 +1365,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu-hook-v1.ko")
@@ -1588,10 +1385,6 @@ def get_overlay_modules_list():
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/audio_ipi/audio_ipi.ko")
 
-        if "drivers/misc/mediatek/cameraisp/src/isp_6s/camera_isp.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/cameraisp/src/isp_6s/camera_isp.ko")
-        if "drivers/misc/mediatek/cameraisp/src/isp_6s/cam_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/cameraisp/src/isp_6s/cam_qos.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/src/isp_4/camera_isp_4_t.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/fdvt/camera_fdvt_isp40.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/dpe/camera_dpe_isp40.ko")
@@ -1621,8 +1414,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/cam_cal/src/custom/camera_eeprom.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cam_cal/src/isp4_t/camera_eeprom_isp4_t.ko")
 
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/iommu/iommu_gz.ko")
 
         mgk_64_device_modules.append("drivers/misc/mediatek/leakage_table_v2/mediatek_static_power.ko")
@@ -1698,56 +1489,8 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/misc/mediatek/sspm/v1/sspm_v1.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-dbg-v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-cpu-dbg-v6899.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
@@ -1954,37 +1697,9 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/lpm/mtk-lpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mdpm/mtk_mdpm.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/mdpm_v1/mtk_mdpm_v1.ko")
-        if "drivers/misc/mediatek/slbc/mmsram.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mmsram.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mtk_slbc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_trace.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-log.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
 
         mgk_64_platform_device_modules.pop("drivers/gpu/mediatek/gpufreq/v2/mtk_gpufreq_mt6886.ko")
@@ -2102,26 +1817,12 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/lpm/modules/debug/mt6985/mtk-lpm-dbg-mt6985.ko")
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/lpm/modules/debug/mt6989/mtk-lpm-dbg-mt6989.ko")
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/lpm/modules/debug/mt6991/mtk-lpm-dbg-mt6991.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/iommu_secure.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/trusted_mem/trusted_mem.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/iommu/iommu_gz.ko")
         mgk_64_device_modules.remove("drivers/dma-buf/heaps/mtk_sec_heap.ko")
         mgk_64_device_modules.remove("drivers/tee/gud/610/TlcTui/t-base-tui.ko")
 
-        if "drivers/misc/mediatek/slbc/mmsram.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mmsram.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mtk_slbc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_trace.ko")
@@ -2159,10 +1860,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/ise_lpm/ise_lpm.ko")
@@ -2175,14 +1872,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/bridge/mtk_mbraink_bridge.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/mtk_mbraink.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-log.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu-hook-v1.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mtk-mminfra-debug.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mm-fake-engine.ko")
@@ -2260,76 +1949,10 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/misc/mediatek/cam_cal/src/isp3_m/camera_eeprom_isp3_m.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-dbg-v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-cpu-dbg-v6899.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/pmsr/v3/pmsr_v3.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/cm_mgr/mtk_cm_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/cm_mgr/mtk_cm_mgr.ko")
@@ -2351,10 +1974,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/tee/teei/515/isee.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/conn_md/conn_md_drv.ko")
 
-        if "drivers/misc/mediatek/cameraisp/src/isp_6s/camera_isp.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/cameraisp/src/isp_6s/camera_isp.ko")
-        if "drivers/misc/mediatek/cameraisp/src/isp_6s/cam_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/cameraisp/src/isp_6s/cam_qos.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/src/isp_3/camera_isp_3_m.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/src/isp_3/cam_qos_3.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/fdvt/camera_fdvt_isp35.ko")
@@ -2431,28 +2050,14 @@ def get_overlay_modules_list():
         mgk_64_common_user_modules.remove("drivers/perf/arm_dsu_pmu.ko")
 
     if "mt6768_overlay_ref.config" in DEFCONFIG_OVERLAYS:
-        if "drivers/misc/mediatek/typec/mux/fusb304.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/fusb304.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/mux_switch.ko")
-        if "drivers/misc/mediatek/typec/mux/ps5169.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ps5169.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ps5170.ko")
-        if "drivers/misc/mediatek/typec/mux/ptn36241g.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ptn36241g.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/usb_dp_selector.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/pd_dbg_info.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/rt_pd_manager.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_class.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpci_late_sync.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6360.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6360.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6370.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6370.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6375.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_rt1711h.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_rt1711h.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko")
 
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pd_adapter.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pd_charging.ko")
@@ -2551,8 +2156,6 @@ def get_overlay_modules_list():
 
         mgk_64_device_modules.remove("drivers/devfreq/mtk-dvfsrc-devfreq.ko")
         mgk_64_device_modules.remove("drivers/interconnect/mediatek/mtk-emi.ko")
-        if "drivers/interconnect/mediatek/mtk-emibus-icc.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/interconnect/mediatek/mtk-emibus-icc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/dvfsrc/mtk-dvfsrc-helper.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mmdvfs/mtk-mmdvfs-debug.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mmdvfs/mtk-mmdvfs-ftrace.ko")
@@ -2563,18 +2166,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/soc/mediatek/mtk-mmdvfs.ko")
         mgk_64_device_modules.remove("drivers/soc/mediatek/mtk-mmdvfs-v3.ko")
 
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/iommu/iommu_gz.ko")
 
         mgk_64_kleaf_modules.remove("//vendor/mediatek/kernel_modules/gpu:gpu")
@@ -2623,8 +2214,6 @@ def get_overlay_modules_list():
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/pmsr/v3/pmsr_v3.ko")
 
-        if "drivers/misc/mediatek/slbc/mmsram.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mmsram.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mtk_slbc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_trace.ko")
@@ -2641,81 +2230,11 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/ssc/mtk-ssc.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/imgsensor/src/isp6s/imgsensor_isp6s.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/imgsensor/src/isp5_syl/imgsensor_isp5_syl.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/cam_cal/src/custom/camera_eeprom.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cam_cal/src/isp5_syl/camera_eeprom_isp5_syl.ko")
-        if "drivers/misc/mediatek/cameraisp/src/isp_6s/camera_isp.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/cameraisp/src/isp_6s/camera_isp.ko")
-        if "drivers/misc/mediatek/cameraisp/src/isp_6s/cam_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/cameraisp/src/isp_6s/cam_qos.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/src/isp_50/camera_isp50.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/dip/isp_50/camera_dip_isp50.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/dpe/camera_dpe_isp50.ko")
@@ -2727,10 +2246,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
@@ -2975,12 +2490,6 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/gpu/drm/mediatek/mml/mtk-mml-mt6989.ko")
         mgk_64_platform_device_modules.pop("drivers/gpu/drm/mediatek/mml/mtk-mml-mt6991.ko", None)
 
-        if "drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
-        if "drivers/gpu/drm/panel/mediatek-drm-gateic.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
-        if "drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
 
         mgk_64_device_modules.remove("drivers/gpu/mediatek/gpueb/mtk_gpueb.ko")
         mgk_64_device_modules.remove("drivers/gpu/mediatek/gpueb/mtk_ghpm.ko")
@@ -2988,24 +2497,10 @@ def get_overlay_modules_list():
 
         mgk_64_device_modules.remove("drivers/gpu/mediatek/gpufreq/v2/mtk_gpufreq_wrapper.ko")
 
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
 
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
@@ -3017,30 +2512,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mtk-mminfra-imax.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
-        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-hfp.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-hfp.ko")
-        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz.ko")
-        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-threshold.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-threshold.ko")
-        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz-hfp.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz-hfp.ko")
-        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz.ko")
-        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-60hz.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-60hz.ko")
-        if "drivers/gpu/drm/panel/panel-nt37801-cmd-120hz.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-120hz.ko")
-        if "drivers/gpu/drm/panel/panel-nt37801-cmd-fhd.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-fhd.ko")
-        if "drivers/gpu/drm/panel/panel-nt37801-cmd-ltpo.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-ltpo.ko")
-        if "drivers/gpu/drm/panel/panel-nt37801-cmd-fhd-plus.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-fhd-plus.ko")
-        if "drivers/gpu/drm/panel/panel-nt37801-cmd-spr.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-spr.ko")
-        if "drivers/gpu/drm/panel/panel-boe-ts127qfmll1dkp0.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-boe-ts127qfmll1dkp0.ko")
 
         mgk_64_platform_device_modules.pop("drivers/gpu/mediatek/gpufreq/v2/mtk_gpufreq_mt6886.ko")
         mgk_64_platform_device_modules.pop("drivers/gpu/mediatek/gpufreq/v2/mtk_gpufreq_mt6897.ko")
@@ -3087,83 +2558,17 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/pmsr/v3/pmsr_v3.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-dbg-v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-cpu-dbg-v6899.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
 
-        if "drivers/misc/mediatek/trusty/ise-trusty.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-log.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
-        if "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/tinysys_scmi/tinysys-scmi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/trusted_mem/tmem_ffa.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/trusted_mem/ffa_v11.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/ppm_v3/mtk_ppm_v3.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/cm_mgr/mtk_cm_ipi.ko")
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
 
         mgk_64_device_modules.append("drivers/misc/mediatek/cm_mgr_legacy_v1/mtk_cm_mgr.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/ise_lpm/ise_lpm.ko")
@@ -3200,16 +2605,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/modules/v6991/mtk_mbraink_v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/modules/v6899/mtk_mbraink_v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/bridge/mtk_mbraink_bridge.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
         mgk_64_platform_device_modules.pop("drivers/gpu/mediatek/gpu_pdma/mtk_gpu_pdma_mt6991.ko")
 
         mgk_64_device_modules.remove("drivers/mailbox/mtk-mbox-mailbox.ko")
@@ -3259,8 +2654,6 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/slbc/slbc_mt6985.ko")
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/slbc/slbc_mt6989.ko")
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/slbc/slbc_mt6991.ko", None)
-        if "drivers/misc/mediatek/slbc/mmsram.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mmsram.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mtk_slbc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_trace.ko")
@@ -3290,18 +2683,8 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/gpu/mediatek/gpu_pdma/mtk_gpu_pdma_mt6991.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
-        if "drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
-        if "drivers/gpu/drm/panel/mediatek-drm-gateic.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
-        if "drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_dpc_v1.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_vdisp_v1.ko")
-        if "drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko")
-        if "drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_vdisp_v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_vdisp_v2.ko")
 
         mgk_64_platform_device_modules.pop("drivers/gpu/drm/mediatek/mml/mtk-mml-mt6878.ko")
         mgk_64_platform_device_modules.pop("drivers/gpu/drm/mediatek/mml/mtk-mml-mt6886.ko")
@@ -3328,18 +2711,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/misc/mediatek/cm_mgr_legacy_v0/mtk_cm_mgr_v0.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/pmic_protect/mt63xx-oc-debug.ko")
 
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/vcp/rv/vcp.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/vcp/rv/vcp_status.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/iommu/iommu_gz.ko")
@@ -3363,10 +2734,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
@@ -3424,50 +2791,8 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/ssc/mtk-ssc.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-dbg-v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-cpu-dbg-v6899.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
 
@@ -3485,30 +2810,6 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/lpm/modules/debug/mt6989/mtk-lpm-dbg-mt6989.ko")
         mgk_64_platform_device_modules.pop("drivers/misc/mediatek/lpm/modules/debug/mt6991/mtk-lpm-dbg-mt6991.ko")
 
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/imgsensor/src/isp6s/imgsensor_isp6s.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/imgsensor/src/isp4_c/imgsensor_isp4_c.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/cam_cal/src/custom/camera_eeprom.ko")
@@ -3584,10 +2885,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/misc/mediatek/sensor/1.0/accelerometer/accelhub/accelhub.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/sensor/1.0/hwmon/hwmon.ko")
 
-        if "drivers/misc/mediatek/cameraisp/src/isp_6s/camera_isp.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/cameraisp/src/isp_6s/camera_isp.ko")
-        if "drivers/misc/mediatek/cameraisp/src/isp_6s/cam_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/cameraisp/src/isp_6s/cam_qos.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/src/isp_4/camera_isp_4_c.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/src/isp_4/cam_qos_4.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cameraisp/fdvt/camera_fdvt_isp40.ko")
@@ -3644,23 +2941,9 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/tee/gud/600/MobiCoreDriver/mcDrvModule-ffa.ko")
 
         mgk_64_device_modules.append("drivers/tee/gud/600/TlcTui/t-base-tui.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/iommu/iommu_gz.ko")
         mgk_64_device_modules.append("drivers/soc/mediatek/devmpu/devmpu.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/pkvm_tmem/pkvm_tmem.ko")
-        if "drivers/misc/mediatek/slbc/mmsram.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mmsram.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mtk_slbc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_trace.ko")
@@ -3706,10 +2989,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
@@ -3771,77 +3050,11 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/modules/v6991/mtk_mbraink_v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/modules/v6899/mtk_mbraink_v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/pmsr/v3/pmsr_v3.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-dbg-v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-cpu-dbg-v6899.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/tinysys_scmi/tinysys-scmi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/cm_mgr/mtk_cm_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/cm_mgr/mtk_cm_mgr.ko")
@@ -3872,10 +3085,6 @@ def get_overlay_modules_list():
 
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_dpc_v1.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_vdisp_v1.ko")
-        if "drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko")
-        if "drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_vdisp_v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_vdisp_v2.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/performance/mtk_perf_ioctl_magt.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/performance/pelt_hint/mtk_pelt_hint.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/cpufreq_v2/src/CPU_DVFS.ko")
@@ -3986,18 +3195,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/regulator/mt6362-regulator.ko")
         mgk_64_device_modules.append("drivers/leds/leds-mt6362.ko")
         mgk_64_device_modules.append("drivers/mfd/mt6362-core.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-pmu.ko")
-        if "drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-mpam-mon.ko")
-        if "drivers/misc/mediatek/iommu/smmu_secure.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/smmu_secure.ko")
-        if "drivers/misc/mediatek/iommu/mtk_smmu_qos.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/iommu/mtk_smmu_qos.ko")
 
         mgk_64_device_modules.append("drivers/misc/mediatek/sensor/2.0/mtk_nanohub/nanohub.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/sensor/2.0/sensorhub/sensorhub.ko")
@@ -4051,82 +3248,12 @@ def get_overlay_modules_list():
 
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_dpc_v1.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_vdisp_v1.ko")
-        if "drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko")
-        if "drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_vdisp_v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_vdisp_v2.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-dbg-common-v1.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v1/mtk-swpm-isp-wrapper.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-core-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-cpu-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6886/mtk-swpm-mem-dbg-v6886.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-core-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-cpu-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-mem-dbg-v6897.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-dbg-v6899.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6899/mtk-swpm-cpu-dbg-v6899.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-smap-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-core-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-cpu-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6983/mtk-swpm-mem-dbg-v6983.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-smap-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-core-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-cpu-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6985/mtk-swpm-mem-dbg-v6985.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-cpu-dbg-v6991.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6897/mtk-swpm-audio-dbg-v6897.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-audio-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-core-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-cpu-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-disp-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-audio-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-mml-dbg-v6991.ko")
-        if "drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-isp-dbg-v6991.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/imgsensor/src/isp6s/imgsensor_isp6s.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/imgsensor/src/isp6s_mou/imgsensor_isp6s_mou.ko")
@@ -4158,16 +3285,10 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-fake-eng.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu.ko")
-        if "drivers/memory/mediatek/emi-mpu-test.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test.ko")
-        if "drivers/memory/mediatek/emi-mpu-test-v2.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/memory/mediatek/emi-mpu-test-v2.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/emi-slb.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu-hook-v1.ko")
-        if "drivers/misc/mediatek/slbc/mmsram.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mmsram.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/mtk_slbc.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_ipi.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/slbc/slbc_trace.ko")
@@ -4277,28 +3398,14 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/sensor/1.0/magnetometer/mag_common.ko")
 
     if "tb8768p1_64_bsp_overlay.config" in DEFCONFIG_OVERLAYS:
-        if "drivers/misc/mediatek/typec/mux/fusb304.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/fusb304.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/mux_switch.ko")
-        if "drivers/misc/mediatek/typec/mux/ps5169.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ps5169.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ps5170.ko")
-        if "drivers/misc/mediatek/typec/mux/ptn36241g.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ptn36241g.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/usb_dp_selector.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/pd_dbg_info.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/rt_pd_manager.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_class.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpci_late_sync.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6360.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6360.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6370.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6370.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6375.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_rt1711h.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_rt1711h.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko")
 
         mgk_64_device_modules.append("drivers/power/supply/bq25601.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mt6375-charger.ko")
@@ -4408,28 +3515,14 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/sensor/1.0/magnetometer/mag_common.ko")
 
     if "mt8766_64_overlay.config" in DEFCONFIG_OVERLAYS:
-        if "drivers/misc/mediatek/typec/mux/fusb304.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/fusb304.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/mux_switch.ko")
-        if "drivers/misc/mediatek/typec/mux/ps5169.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ps5169.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ps5170.ko")
-        if "drivers/misc/mediatek/typec/mux/ptn36241g.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/ptn36241g.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/mux/usb_dp_selector.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/pd_dbg_info.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/rt_pd_manager.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_class.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpci_late_sync.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6360.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6360.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6370.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6370.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6375.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_rt1711h.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_rt1711h.ko")
-        if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko" in mgk_64_device_modules:
-            mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko")
 
         mgk_64_device_modules.append("drivers/power/supply/bq25601.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mt6375-charger.ko")
