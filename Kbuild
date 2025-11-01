@@ -122,4 +122,6 @@ obj-y += drivers/input/misc/
 
 obj-y += mm/
 
+obj-y += drivers/input/fingerprint/
+
 endif
