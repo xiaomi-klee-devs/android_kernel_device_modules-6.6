@@ -8,6 +8,10 @@
  *	Yongmyung Lee <ymhungry.lee@samsung.com>
  *	Jieon Seol <jieon.seol@samsung.com>
  *
+ * Co-authors:
+ *	kylieeXD <khayloaftck@gmail.com>
+ *	Ido <dev.xyzuniverse@gmail.com>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2

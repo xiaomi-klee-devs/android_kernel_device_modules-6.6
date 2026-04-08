@@ -3,13 +3,17 @@
  * Copyright (C) 2023 MediaTek Inc.
  * Authors:
  *	Po-Wen Kao <powen.kao@mediatek.com>
+ *
+ * Co-authors:
+ *	kylieeXD <khayloaftck@gmail.com>
+ *	Ido <dev.xyzuniverse@gmail.com>
  */
 #include <asm-generic/errno-base.h>
 #include <asm/unaligned.h>
 #include <linux/delay.h>
 #include <linux/soc/mediatek/mtk_ise_lpm.h>
 #include <linux/soc/mediatek/mtk-ise-mbox.h>
-#include <ufs/ufshcd.h>
+#include "mi_ufs/include/mi_ufshcd.h"
 #include <ufshcd-priv.h>
 
 #include "ufs-mediatek-dbg.h"

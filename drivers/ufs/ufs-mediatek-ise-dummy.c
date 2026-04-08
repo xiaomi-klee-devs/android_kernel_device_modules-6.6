@@ -3,6 +3,10 @@
  * Copyright (C) 2023 MediaTek Inc.
  * Authors:
  *	Po-Wen Kao <powen.kao@mediatek.com>
+ *
+ * Co-authors:
+ *	kylieeXD <khayloaftck@gmail.com>
+ *	Ido <dev.xyzuniverse@gmail.com>
  */
 #include "ufs-mediatek-ise.h"
 

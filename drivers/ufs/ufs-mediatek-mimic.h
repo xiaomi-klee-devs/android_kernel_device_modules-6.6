@@ -6,7 +6,7 @@
 #define _UFS_MEDIATEK_MIMIC_
 
 #include <linux/types.h>
-#include <ufs/ufshcd.h>
+#include "mi_ufs/include/mi_ufshcd.h"
 
 /* UIC layer error flags */
 enum {

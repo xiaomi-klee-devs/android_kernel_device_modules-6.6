@@ -3,6 +3,10 @@
  * Copyright (C) 2024 MediaTek Inc.
  * Authors:
  *	Po-Wen Kao <powen.kao@mediatek.com>
+ *
+ * Co-authors:
+ *	kylieeXD <khayloaftck@gmail.com>
+ *	Ido <dev.xyzuniverse@gmail.com>
  */
 
 #include <asm-generic/errno-base.h>
