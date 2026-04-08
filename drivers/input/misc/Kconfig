@@ -16,7 +16,4 @@ if INPUT_MISC
 source "$(KCONFIG_EXT_PREFIX)drivers/input/misc/aw_haptic/Kconfig"
 source "$(KCONFIG_EXT_PREFIX)drivers/input/misc/si_haptic/Kconfig"
 source "$(KCONFIG_EXT_PREFIX)drivers/input/misc/aac_haptic/Kconfig"
-source "$(KCONFIG_EXT_PREFIX)drivers/input/misc/cs40l26_haptic/Kconfig"
-source "$(KCONFIG_EXT_PREFIX)drivers/input/misc/aw8693x_haptic/Kconfig"
-source "$(KCONFIG_EXT_PREFIX)drivers/input/misc/fs3002_haptic/Kconfig"
 endif

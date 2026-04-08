@@ -118,9 +118,7 @@ obj-y += ../$(DEVICE_MODULES_REL_DIR)/drivers/pci/controller/
 
 obj-y += ../$(DEVICE_MODULES_REL_DIR)/drivers/media/virtio/
 
-obj-y += ../$(DEVICE_MODULES_REL_DIR)/drivers/mihw/
 
-obj-y += ../$(DEVICE_MODULES_REL_DIR)/drivers/firmware/cirrus/
 
 obj-y += ../$(DEVICE_MODULES_REL_DIR)/mm/
 

@@ -1,3 +1,0 @@
-config SND_SOC_VIRTUAL_HAPTIC
-	    tristate "virtual Haptic CODEC"
-    help
