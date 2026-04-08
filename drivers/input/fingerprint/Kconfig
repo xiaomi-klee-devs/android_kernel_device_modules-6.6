@@ -5,6 +5,5 @@ config SILEAD_FP
 	help
 	  This supports Silead Fingerprint drivers.
 
-source "$(KCONFIG_EXT_PREFIX)drivers/input/fingerprint/silead/Kconfig"
 
 endmenu

@@ -11,7 +11,6 @@
 # GNU General Public License for more details.
 #
 ifeq ($(CONFIG_MTK_CM_MGR_LEGACY_MT8788), m)
-obj-y += cm_mgr_plat_k8788/
 else
 ccflags-y += \
 	-I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/cm_mgr_legacy_v1/ \
