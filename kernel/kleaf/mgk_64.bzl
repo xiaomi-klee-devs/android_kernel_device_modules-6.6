@@ -356,29 +356,12 @@ mgk_64_device_modules = [
     "drivers/misc/mediatek/ise_lpm/ise_lpm.ko",
     "drivers/misc/mediatek/jpeg/jpeg-driver.ko",
     "drivers/misc/mediatek/ktchbst/ktchbst.ko",
-    "drivers/misc/mediatek/lens/ois/bu63169/bu63169.ko",
-    "drivers/misc/mediatek/lens/vcm/proprietary/main2/main2af.ko",
-    "drivers/misc/mediatek/lens/vcm/proprietary/main3/main3af.ko",
-    "drivers/misc/mediatek/lens/vcm/proprietary/main/mainaf.ko",
-    "drivers/misc/mediatek/lens/vcm/proprietary/sub2/sub2af.ko",
-    "drivers/misc/mediatek/lens/vcm/proprietary/sub/subaf.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/ak7375c/ak7375c.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/ak7377a/ak7377a.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/bu64253gwz/bu64253gwz.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/dw9718/dw9718.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/dw9800v/dw9800v.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/dw9800w/dw9800w.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/gt9764/gt9764.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/gt9772a/gt9772a.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/gt9772b/gt9772b.ko",
-    "drivers/misc/mediatek/lens/vcm/v4l2/lc898229/lc898229.ko",
     "drivers/misc/mediatek/lens/vcm/v4l2/main_vcm/main_vcm.ko",
     "drivers/misc/mediatek/lens/vcm/v4l2/main2_vcm/main2_vcm.ko",
     "drivers/misc/mediatek/lens/vcm/v4l2/main3_vcm/main3_vcm.ko",
     "drivers/misc/mediatek/lens/vcm/v4l2/main4_vcm/main4_vcm.ko",
     "drivers/misc/mediatek/lens/ois/dw9781c/dw9781c.ko",
     "drivers/misc/mediatek/lens/ois/dw9781d/dw9781d.ko",
-    "drivers/misc/mediatek/lens/tof/stmvl53l4.ko",
     "drivers/misc/mediatek/lens/vcm/v4l2/media/camera_af_media.ko",
     "drivers/misc/mediatek/lens/vcm/v4l2/sub_vcm/sub_vcm.ko",
     "drivers/misc/mediatek/log_store/log_store.ko",
@@ -535,10 +518,6 @@ mgk_64_device_modules = [
     "drivers/misc/mediatek/trusted_mem/ffa_v11.ko",
     "drivers/misc/mediatek/trusted_mem/tmem_ffa.ko",
     "drivers/misc/mediatek/trusted_mem/trusted_mem.ko",
-    "drivers/misc/mediatek/trusty/ise-trusty.ko",
-    "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko",
-    "drivers/misc/mediatek/trusty/ise-trusty-log.ko",
-    "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko",
     "drivers/misc/mediatek/typec/mux/fusb304.ko",
     "drivers/misc/mediatek/typec/mux/mux_switch.ko",
     "drivers/misc/mediatek/typec/mux/ps5169.ko",
@@ -586,10 +565,6 @@ mgk_64_device_modules = [
     "drivers/mmc/host/mtk-mmc.ko",
     "drivers/mmc/host/mtk-sd.ko",
     "drivers/mmc/host/mtk-mmc-wp.ko",
-    "drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.ko",
-    "drivers/net/ethernet/stmicro/stmmac/mtk_sgmii_pwr.ko",
-    "drivers/net/ethernet/stmicro/stmmac/stmmac-platform.ko",
-    "drivers/net/ethernet/stmicro/stmmac/stmmac.ko",
     "drivers/net/phy/mxl-gpy.ko",
     "drivers/net/phy/realtek.ko",
     "drivers/nvmem/nvmem-mt6338-efuse.ko",
@@ -1253,10 +1228,14 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-log.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/bridge/mtk_mbraink_bridge.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/mtk_mbraink.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/modules/v6989/mtk_mbraink_v6989.ko")
@@ -2106,10 +2085,14 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6991/mtk-swpm-disp-dbg-v6991.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-log.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
         mgk_64_device_modules.remove("sound/soc/codecs/mt6681-accdet.ko")
         mgk_64_device_modules.remove("sound/soc/codecs/snd-soc-mt6359.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
@@ -2293,10 +2276,14 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/bridge/mtk_mbraink_bridge.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mbraink/mtk_mbraink.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/slc-parity.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-log.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
         mgk_64_device_modules.remove("drivers/memory/mediatek/smpu-hook-v1.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mtk-mminfra-debug.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mm-fake-engine.ko")
@@ -3173,10 +3160,14 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mem-dbg-v6989.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/modules/debug/v6989/mtk-swpm-mml-dbg-v6989.ko")
 
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
-        mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-ipc.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-ipc.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-log.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-log.ko")
+        if "drivers/misc/mediatek/trusty/ise-trusty-virtio.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/misc/mediatek/trusty/ise-trusty-virtio.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/swpm/mtk-swpm-perf-arm-pmu.ko")
