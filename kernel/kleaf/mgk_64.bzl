@@ -173,83 +173,18 @@ mgk_64_device_modules = [
     "drivers/gpu/drm/mediatek/mediatek_v2/mtk_panel_ext.ko",
     "drivers/gpu/drm/mediatek/mediatek_v2/mtk_sync.ko",
     "drivers/gpu/drm/mediatek/mml/mtk-mml.ko",
-    "drivers/gpu/drm/panel/bridge-serdes-max96789.ko",
     "drivers/gpu/drm/panel/k6985v1_64_alpha/panel-nt37705-alpha-cmd.ko",
     "drivers/gpu/drm/panel/k6989v1_64_alpha/panel-ili7838e-alpha-cmd.ko",
     "drivers/gpu/drm/panel/k6989v1_64_alpha/panel-ili7838e-dv2-alpha-cmd.ko",
     "drivers/gpu/drm/panel/k6989v1_64_alpha/panel-ili7838e-dv2-spr-cmd.ko",
-    "drivers/gpu/drm/panel/panel-ili7838e-dv3-alpha-cmd.ko",
-    "drivers/gpu/drm/panel/panel-rm692h5-cmd.ko",
     "drivers/gpu/drm/panel/k6991v1_64_alpha/panel-rm692h5-alpha-cmd-spr.ko",
     "drivers/gpu/drm/panel/k6985v1_64/td2204-wqhd-amb678zy01-s6e3hc3-cmd.ko",
-    "drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko",
-    "drivers/gpu/drm/panel/mediatek-drm-gateic.ko",
-    "drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko",
-    "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672c-cphy-vdo.ko",
-    "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-cphy-vdo.ko",
-    "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-hfp.ko",
-    "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz.ko",
-    "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-threshold.ko",
-    "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz-hfp.ko",
-    "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz.ko",
-    "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-60hz.ko",
-    "drivers/gpu/drm/panel/panel-alpha-nt37706-vdo-120hz.ko",
-    "drivers/gpu/drm/panel/panel-boe-jd9365da-vdo.ko",
-    "drivers/gpu/drm/panel/panel-hx-nt37701-dphy-cmd.ko",
-    "drivers/gpu/drm/panel/panel-hx-nt37701-dphy-cmd-120hz.ko",
-    "drivers/gpu/drm/panel/panel-jd9635da-gq31093gq.ko",
-    "drivers/gpu/drm/panel/panel-nt35695b-auo-cmd.ko",
-    "drivers/gpu/drm/panel/panel-nt35695b-auo-vdo.ko",
-    "drivers/gpu/drm/panel/panel-nt36672-auo-vdo-laneswap.ko",
-    "drivers/gpu/drm/panel/panel-nt37801-cmd-120hz.ko",
-    "drivers/gpu/drm/panel/panel-nt37801-cmd-fhd.ko",
-    "drivers/gpu/drm/panel/panel-nt37801-cmd-ltpo.ko",
-    "drivers/gpu/drm/panel/panel-nt37801-cmd-spr.ko",
-    "drivers/gpu/drm/panel/panel-nt37801-cmd-fhd-plus.ko",
-    "drivers/gpu/drm/panel/panel-samsung-ana6705-cmd.ko",
-    "drivers/gpu/drm/panel/panel-samsung-ana6705-cmd-fhdp.ko",
-    "drivers/gpu/drm/panel/panel-samsung-op-cmd.ko",
-    "drivers/gpu/drm/panel/panel-samsung-op-cmd-msync2.ko",
-    "drivers/gpu/drm/panel/panel-samsung-s68fc01-vdo-aod.ko",
-    "drivers/gpu/drm/panel/panel-serdes-max96789.ko",
-    "drivers/gpu/drm/panel/panel-sc-nt36672c-vdo-120hz.ko",
-    "drivers/gpu/drm/panel/panel-tianma-nt36672c-vdo-144hz.ko",
-    "drivers/gpu/drm/panel/panel-tianma-nt36672e-vdo-120hz-hfp.ko",
-    "drivers/gpu/drm/panel/panel-tianma-nt36672e-vdo-120hz-vfp.ko",
-    "drivers/gpu/drm/panel/panel-tianma-r66451-cmd-120hz.ko",
-    "drivers/gpu/drm/panel/panel-tianma-r66451-cmd-120hz-wa.ko",
-    "drivers/gpu/drm/panel/panel-tianma-r66451-cmd-120hz-no-mipi-switch.ko",
-    "drivers/gpu/drm/panel/panel-tianma-tl1270100.ko",
-    "drivers/gpu/drm/panel/panel-truly-ili9882n-rt4801-vdo-90hz.ko",
-    "drivers/gpu/drm/panel/panel-truly-ft8756-vdo.ko",
-    "drivers/gpu/drm/panel/panel-nt36672a-rt4801-vdo.ko",
-    "drivers/gpu/drm/panel/panel-truly-nt35595-cmd.ko",
-    "drivers/gpu/drm/panel/panel-truly-td4330-cmd.ko",
-    "drivers/gpu/drm/panel/panel-truly-td4330-vdo.ko",
-    "drivers/gpu/drm/panel/panel-himax-hx83121a-vdo.ko",
-    "drivers/gpu/drm/panel/panel-boe-ts127qfmll1dkp0.ko",
-    "drivers/gpu/drm/panel/panel-hx83112b-auo-cmd-60hz-rt5081.ko",
-    "drivers/gpu/drm/panel/panel-hx83112b-auo-vdo-60hz-rt5081.ko",
-    "drivers/gpu/drm/panel/panel-td4320-fhdp-dsi-vdo-auo-rt5081.ko",
-    "drivers/gpu/drm/panel/panel-sc-nt36672c-vdo-90hz-6382.ko",
-    "drivers/gpu/drm/panel/panel-aw37501-i2c.ko",
-    "drivers/gpu/drm/panel/panel-nt36672c-fhdp-dsi-vdo-dsc-txd-boe.ko",
-    "drivers/gpu/drm/panel/panel-nt35521_hd_dsi_vdo_truly_rt5081.ko",
-    "drivers/gpu/drm/panel/panel-nt35695_fhd_dsi_vdo_auo_rt5081_hdp.ko",
-    "drivers/gpu/drm/panel/ocp2138_i2c.ko",
-    "drivers/gpu/drm/panel/panel-boe-tv106c9mll0.ko",
-    "drivers/gpu/drm/panel/panel-nt37707-c2v-arp.ko",
-    "drivers/gpu/drm/panel/panel-tianma-nt36672e-vdo-120hz-vfp-6382.ko",
     "drivers/gpu/drm/panel/k6991v1_64_alpha/panel-nt37707-boe-fhdplus-cmd.ko",
     "drivers/gpu/drm/panel/k6991v1_64_alpha/panel-rm692k0-visionox-fhdplus-cmd.ko",
-    "drivers/gpu/drm/panel/panel-tianma-nt36672c-cphy-vdo-90hz-rt4801.ko",
     "drivers/gpu/drm/panel/k6991v1_64_alpha/panel-nt37707-boe-fhdplus-cmd-ltps.ko",
     "drivers/gpu/drm/panel/k6991v1_64_alpha/panel-rm692k0-vsn-fhdplus-cmd-ltps.ko",
     "drivers/gpu/drm/panel/k6991v1_64_alpha/panel-nt37707-boe-fhdplus-cmd-ltpo.ko",
     "drivers/gpu/drm/panel/k6991v1_64_alpha/panel-rm692j0-tm-fhdplus-cmd-ltpo.ko",
-    "drivers/gpu/drm/panel/nt50358a_i2c.ko",
-    "drivers/gpu/drm/panel/panel-boe-tv080wxmlls.ko",
-    "drivers/gpu/drm/panel/panel-nt51021h-wuxga-vdo-boe.ko",
     "drivers/gpu/drm/panel/k6991v1_64_alpha/panel-nt37706a-boe-fhdplus-vdo.ko",
     "drivers/gpu/mediatek/ged/ged.ko",
     "drivers/gpu/mediatek/gpu_bm/mtk_gpu_qos.ko",
@@ -1769,9 +1704,12 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/misc/mediatek/qos/mtk_qos_legacy.ko")
 
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/mediatek_v2/mtk_aod_scp.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
+        if "drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
+        if "drivers/gpu/drm/panel/mediatek-drm-gateic.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
+        if "drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
 
         mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/arm_smmu_v3.ko")
         mgk_64_device_modules.remove("drivers/iommu/arm/arm-smmu-v3/mtk-smmuv3-lmu.ko")
@@ -3095,9 +3033,12 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/gpu/drm/mediatek/mml/mtk-mml-mt6989.ko")
         mgk_64_platform_device_modules.pop("drivers/gpu/drm/mediatek/mml/mtk-mml-mt6991.ko")
 
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
+        if "drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
+        if "drivers/gpu/drm/panel/mediatek-drm-gateic.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
+        if "drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
 
         mgk_64_device_modules.remove("drivers/gpu/mediatek/gpueb/mtk_gpueb.ko")
         mgk_64_device_modules.remove("drivers/gpu/mediatek/gpueb/mtk_ghpm.ko")
@@ -3128,18 +3069,30 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mtk-mminfra-imax.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-hfp.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-threshold.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz-hfp.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-60hz.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-120hz.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-fhd.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-ltpo.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-fhd-plus.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-spr.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-boe-ts127qfmll1dkp0.ko")
+        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-hfp.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-hfp.ko")
+        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz.ko")
+        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-threshold.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-120hz-threshold.ko")
+        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz-hfp.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz-hfp.ko")
+        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-144hz.ko")
+        if "drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-60hz.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-alpha-jdi-nt36672e-vdo-60hz.ko")
+        if "drivers/gpu/drm/panel/panel-nt37801-cmd-120hz.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-120hz.ko")
+        if "drivers/gpu/drm/panel/panel-nt37801-cmd-fhd.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-fhd.ko")
+        if "drivers/gpu/drm/panel/panel-nt37801-cmd-ltpo.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-ltpo.ko")
+        if "drivers/gpu/drm/panel/panel-nt37801-cmd-fhd-plus.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-fhd-plus.ko")
+        if "drivers/gpu/drm/panel/panel-nt37801-cmd-spr.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-nt37801-cmd-spr.ko")
+        if "drivers/gpu/drm/panel/panel-boe-ts127qfmll1dkp0.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/panel-boe-ts127qfmll1dkp0.ko")
 
         mgk_64_platform_device_modules.pop("drivers/gpu/mediatek/gpufreq/v2/mtk_gpufreq_mt6886.ko")
         mgk_64_platform_device_modules.pop("drivers/gpu/mediatek/gpufreq/v2/mtk_gpufreq_mt6897.ko")
@@ -3357,9 +3310,12 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/gpu/mediatek/gpu_pdma/mtk_gpu_pdma_mt6991.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
-        mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
+        if "drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-cust-panel-sample.ko")
+        if "drivers/gpu/drm/panel/mediatek-drm-gateic.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-gateic.ko")
+        if "drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko" in mgk_64_device_modules:
+            mgk_64_device_modules.remove("drivers/gpu/drm/panel/mediatek-drm-panel-drv.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_dpc_v1.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v1/mtk_vdisp_v1.ko")
         mgk_64_device_modules.remove("drivers/gpu/drm/mediatek/dpc/dpc_v2/mtk_dpc_v2.ko")
