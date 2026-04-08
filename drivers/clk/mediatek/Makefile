@@ -176,15 +176,6 @@ obj-$(CONFIG_COMMON_CLK_MT6989_VLP) += clk-mt6989-vlp.o
 obj-$(CONFIG_COMMON_CLK_MT6989_VCODEC) += clk-mt6989-vcodec.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/clk-mt6991.c),)
-obj-$(CONFIG_COMMON_CLK_MT6991) += clk-mt6991.o
-obj-$(CONFIG_COMMON_CLK_MT6991_ADSP) += clk-mt6991-adsp.o
-obj-$(CONFIG_COMMON_CLK_MT6991_BUS) += clk-mt6991-bus.o
-obj-$(CONFIG_COMMON_CLK_MT6991_CAM) += clk-mt6991-cam.o
-obj-$(CONFIG_COMMON_CLK_MT6991_IMG) += clk-mt6991-img.o
-obj-$(CONFIG_COMMON_CLK_MT6991_MMSYS) += clk-mt6991-mmsys.o
-obj-$(CONFIG_COMMON_CLK_MT6991_PERI) += clk-mt6991-peri.o
-obj-$(CONFIG_COMMON_CLK_MT6991_MDPSYS) += clk-mt6991-mdpsys.o
-obj-$(CONFIG_COMMON_CLK_MT6991_VCODEC) += clk-mt6991-vcodec.o
 obj-$(CONFIG_COMMON_CLK_MT6991_IVI) += clk-mt6991-ivi.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/clk-mt6899.c),)
@@ -426,16 +417,8 @@ endif
 endif
 ifneq ($(wildcard $(srctree)/$(src)/clk-mt6991.c),)
 ifneq ($(strip $(CONFIG_MTK_TINYSYS_VCP_SUPPORT)),)
-obj-$(CONFIG_COMMON_CLK_MT6991) += clk-chk-mt6991.o
-clk-chk-mt6991-$(CONFIG_COMMON_CLK_MT6991) += clkchk-mt6991.o
-obj-$(CONFIG_COMMON_CLK_MT6991) += clk-fmeter-mt6991.o
-obj-$(CONFIG_COMMON_CLK_MT6991) += pd-chk-mt6991.o
-pd-chk-mt6991-$(CONFIG_COMMON_CLK_MT6991) += mtk-pd-chk-mt6991.o
 endif
-obj-$(CONFIG_COMMON_CLK_MT6991) += clk-fmeter-mt6991.o
 ifeq ($(CONFIG_DEBUG_FS), y)
-obj-$(CONFIG_COMMON_CLK_MT6991) += clk-dbg-mt6991.o
-clk-dbg-mt6991-$(CONFIG_COMMON_CLK_MT6991) += clkdbg-mt6991.o
 endif
 endif
 ifneq ($(wildcard $(srctree)/$(src)/clk-mt6899.c),)
