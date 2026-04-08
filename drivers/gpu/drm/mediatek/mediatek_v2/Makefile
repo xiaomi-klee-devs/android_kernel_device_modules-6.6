@@ -178,7 +178,6 @@ obj-$(CONFIG_DEVICE_MODULES_DRM_MEDIATEK) += mtk_panel_ext.o
 obj-$(CONFIG_DEVICE_MODULES_DRM_MEDIATEK) += mtk_disp_notify.o
 
 ifneq ($(CONFIG_MTK_TINYSYS_SCP_CM4_SUPPORT), y)
-obj-$(CONFIG_DEVICE_MODULES_DRM_MEDIATEK) += mtk_aod_scp.o
 endif
 
 ifneq ($(filter y m, $(CONFIG_MTK_TRUSTED_MEMORY_SUBSYSTEM)),)
