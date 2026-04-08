@@ -54,24 +54,12 @@ mtk-cmdq-drv-ext-y := mtk-cmdq-mailbox-ext.o mtk-cmdq-helper-ext.o cmdq-util.o
 
 
 ifeq ($(CONFIG_MTK_CMDQ_MBOX_EXT), y)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT_MT6768) += cmdq-platform-mt6768.o
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT_MT6761) += cmdq-platform-mt6761.o
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT_MT6765) += cmdq-platform-mt6765.o
 else
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6833.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6833.o
-endif
 ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6873.c),)
 obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6873.o
 endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6853.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6853.o
-endif
 ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6885.c),)
 obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6885.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6893.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6893.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6983.c),)
 obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6983.o
@@ -99,24 +87,6 @@ obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6989.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6878.c),)
 obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6878.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6768.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6768.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6761.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6761.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6991.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6991.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6877.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6877.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6765.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6765.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6781.c),)
-obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6781.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/cmdq-platform-mt6899.c),)
 obj-$(CONFIG_MTK_CMDQ_MBOX_EXT) += cmdq-platform-mt6899.o
