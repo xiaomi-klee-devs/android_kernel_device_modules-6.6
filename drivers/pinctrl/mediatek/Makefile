@@ -31,12 +31,6 @@ endif
 
 # SoC Drivers
 obj-$(CONFIG_DEVICE_MODULES_PINCTRL_MT6779)	+= pinctrl-mt6779.o
-ifneq ($(wildcard $(srctree)/$(src)/pinctrl-mt6363.c),)
-obj-$(CONFIG_PINCTRL_MT6363)	+= pinctrl-mt6363.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/pinctrl-mt6373.c),)
-obj-$(CONFIG_PINCTRL_MT6373)	+= pinctrl-mt6373.o
-endif
 ifneq ($(wildcard $(srctree)/$(src)/pinctrl-mt6853.c),)
 obj-$(CONFIG_PINCTRL_MT6853)	+= pinctrl-mt6853.o
 endif
@@ -87,9 +81,6 @@ obj-$(CONFIG_PINCTRL_MT6877)	+= pinctrl-mt6877.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/pinctrl-mt6989.c),)
 obj-$(CONFIG_PINCTRL_MT6989)	+= pinctrl-mt6989.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/pinctrl-mt6991.c),)
-obj-$(CONFIG_PINCTRL_MT6991)	+= pinctrl-mt6991.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/pinctrl-mt8188.c),)
 obj-$(CONFIG_DEVICE_MODULES_PINCTRL_MT8188)	+= pinctrl-mt8188.o
