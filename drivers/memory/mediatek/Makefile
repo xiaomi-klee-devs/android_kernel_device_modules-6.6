@@ -11,7 +11,6 @@ else
 obj-$(CONFIG_MTK_EMI) += emi.o
 emi-objs := emi-cen.o emi-isu.o emi-dbg.o
 obj-$(CONFIG_MTK_EMI) += emi-mpu.o
-obj-$(CONFIG_MTK_EMI) += emi-fake-eng.o
 obj-$(CONFIG_MTK_EMI) += smpu.o
 obj-$(CONFIG_MTK_EMI) += emi-slb.o
 obj-$(CONFIG_MTK_EMI) += slc-parity.o
