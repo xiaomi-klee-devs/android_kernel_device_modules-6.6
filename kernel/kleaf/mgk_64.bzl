@@ -528,41 +528,20 @@ mgk_64_device_modules = [
     "drivers/power/supply/charger_class.ko",
     "drivers/power/supply/k6985v1_64_alpha/bq2579x.ko",
     "drivers/power/supply/k6985v1_64_alpha/bq28z610.ko",
-    "drivers/power/supply/mt6357_battery.ko",
-    "drivers/power/supply/mt6358_battery.ko",
-    "drivers/power/supply/mt6359p_battery.ko",
-    "drivers/power/supply/mt6360_charger.ko",
-    "drivers/power/supply/mt6360_pmu_chg.ko",
-    "drivers/power/supply/mt6370-charger.ko",
-    "drivers/power/supply/sc8960x_charger.ko",
     "drivers/power/supply/mt6375-battery.ko",
     "drivers/power/supply/mtk_battery_manager.ko",
     "drivers/power/supply/mt6375-charger.ko",
-    "drivers/power/supply/mt6379-chg.ko",
-    "drivers/power/supply/mt6379-battery.ko",
-    "drivers/power/supply/ufcs/ufcs_class.ko",
-    "drivers/power/supply/ufcs/ufcs_mt6379.ko",
-    "drivers/power/supply/mtk_ufcs_adapter.ko",
-    "drivers/power/supply/mtk_2p_charger.ko",
     "drivers/power/supply/mtk_charger_algorithm_class.ko",
     "drivers/power/supply/mtk_charger_framework.ko",
     "drivers/power/supply/mtk_chg_type_det.ko",
-    "drivers/power/supply/mtk_hvbpc.ko",
     "drivers/power/supply/mtk_pd_adapter.ko",
     "drivers/power/supply/mtk_pd_charging.ko",
     "drivers/power/supply/mtk_pep.ko",
     "drivers/power/supply/mtk_pep20.ko",
     "drivers/power/supply/mtk_pep40.ko",
     "drivers/power/supply/mtk_pep45.ko",
-    "drivers/power/supply/mtk_pep50.ko",
-    "drivers/power/supply/mtk_pep50p.ko",
-    "drivers/power/supply/rt9490-charger.ko",
-    "drivers/power/supply/rt9758-charger.ko",
-    "drivers/power/supply/rt9759.ko",
     "drivers/power/supply/bq28z610.ko",
-    "drivers/power/supply/sc858x_charger.ko",
     "drivers/power/supply/hl7603.ko",
-    "drivers/power/supply/bq25985_charger.ko",
     "drivers/power/supply/pd_single_cp_manager.ko",
     "drivers/power/mca/mca_event.ko",
     "drivers/power/mca/mca_log.ko",
@@ -571,29 +550,14 @@ mgk_64_device_modules = [
     "drivers/pwm/pwm-mtk-disp.ko",
     "drivers/regulator/mt6315-regulator.ko",
     "drivers/regulator/mt6316-regulator.ko",
-    "drivers/regulator/mt6359p-regulator.ko",
-    "drivers/regulator/mt6360-regulator.ko",
     "drivers/regulator/mt6363-regulator.ko",
     "drivers/regulator/mt6368-regulator.ko",
-    "drivers/regulator/mt6369-regulator.ko",
-    "drivers/regulator/mt6373-regulator.ko",
-    "drivers/regulator/mt6379-regulator.ko",
-    "drivers/regulator/mt6370-regulator.ko",
     "drivers/regulator/mt6681-regulator.ko",
     "drivers/regulator/mtk-dvfsrc-regulator.ko",
-    "drivers/regulator/mtk-extbuck-debug.ko",
-    "drivers/regulator/mtk-vmm-isp71-regulator.ko",
     "drivers/regulator/rt4803.ko",
     "drivers/regulator/rt5133-regulator.ko",
-    "drivers/regulator/wl2866d.ko",
-    "drivers/regulator/wl2866d2.ko",
-    "drivers/regulator/sgm38120.ko",
     "drivers/regulator/sgm38121.ko",
     "drivers/regulator/dio8015.ko",
-    "drivers/regulator/wl28681c.ko",
-    "drivers/regulator/wl2868c.ko",
-    "drivers/regulator/aw37004-regulator.ko",
-    "drivers/regulator/et5907mv.ko",
     "drivers/regulator/rt6160-regulator.ko",
     "drivers/reset/reset-ti-syscon.ko",
     "drivers/rpmsg/mtk_rpmsg_mbox.ko",
@@ -1913,8 +1877,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/misc/mediatek/vow/ver02/mtk-vow.ko")
 
         mgk_64_device_modules.remove("drivers/power/supply/mt6375-charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9490-charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9758-charger.ko")
         mgk_64_device_modules.append("drivers/power/supply/bq2589x_charger.ko")
 
         mgk_64_device_modules.append("drivers/regulator/mt6358-regulator.ko")
@@ -2612,27 +2574,18 @@ def get_overlay_modules_list():
         if "drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko" in mgk_64_device_modules:
             mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko")
 
-        mgk_64_device_modules.remove("drivers/power/supply/mt6360_charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mt6360_pmu_chg.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pd_adapter.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pd_charging.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_chg_type_det.ko")
 
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_hvbpc.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep20.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep40.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep45.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_pep50.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_pep50p.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9759.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_2p_charger.ko")
 
         mgk_64_device_modules.append("drivers/power/supply/sgm41516d.ko")
         mgk_64_device_modules.append("drivers/power/supply/mtk_chg_det.ko")
 
-        mgk_64_device_modules.remove("drivers/power/supply/ufcs/ufcs_class.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/ufcs/ufcs_mt6379.ko")
         mgk_64_device_modules.append("sound/soc/mediatek/mt6768/mt6768-mt6358-ref.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/flashlight/flashlights-ocp81375.ko")
 
@@ -3400,7 +3353,6 @@ def get_overlay_modules_list():
 
         mgk_64_device_modules.remove("drivers/mailbox/mtk-mbox-mailbox.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/pgboost/pgboost.ko")
-        mgk_64_device_modules.remove("drivers/regulator/mt6370-regulator.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/lpm_legacy/modules/platform/v1/mtk-lpm-plat-v1-legacy.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/lpm_legacy/modules/debug/k6893/mtk-lpm-dbg-mt6893-legacy.ko")
         mgk_64_device_modules.append("drivers/misc/mediatek/lpm_legacy/mtk-lpm-legacy.ko")
@@ -3938,7 +3890,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.remove("drivers/thermal/mediatek/wifi_cooling.ko")
         mgk_64_device_modules.remove("drivers/thermal/mediatek/cpu_isolate_cooling.ko")
 
-        mgk_64_device_modules.remove("drivers/regulator/mt6370-regulator.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mtk-mminfra-debug.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/mminfra/mm-fake-engine.ko")
@@ -4212,7 +4163,6 @@ def get_overlay_modules_list():
         mgk_64_device_modules.append("drivers/soc/mediatek/devmpu/devmpu.ko")
 
         mgk_64_device_modules.remove("drivers/misc/mediatek/gate_ic/rt4831a_drv.ko")
-        mgk_64_device_modules.remove("drivers/regulator/mt6370-regulator.ko")
 
         mgk_64_device_modules.append("drivers/misc/mediatek/iommu/iommu_gz.ko")
         mgk_64_device_modules.remove("drivers/misc/mediatek/pkvm_tmem/pkvm_tmem.ko")
@@ -4508,24 +4458,15 @@ def get_overlay_modules_list():
             mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko")
 
         mgk_64_device_modules.append("drivers/power/supply/bq25601.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mt6360_charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mt6360_pmu_chg.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mt6375-charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/ufcs/ufcs_class.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/ufcs/ufcs_mt6379.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_2p_charger.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_chg_type_det.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pd_adapter.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pd_charging.ko")
 
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_hvbpc.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep20.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep40.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep45.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_pep50.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_pep50p.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9759.ko")
         mgk_64_platform_device_modules.pop("drivers/power/supply/rt9465.ko")
         mgk_64_platform_device_modules.pop("drivers/clk/mediatek/clk-bringup.ko")
         mgk_64_platform_device_modules.pop("drivers/clk/mediatek/clk-mt6897.ko")
@@ -4612,9 +4553,6 @@ def get_overlay_modules_list():
         mgk_64_platform_device_modules.pop("drivers/clk/mediatek/clk-fmeter-mt6899.ko")
         mgk_64_platform_device_modules.pop("drivers/clk/mediatek/pd-chk-mt6899.ko")
         mgk_64_platform_device_modules.pop("drivers/clk/mediatek/clk-dbg-mt6899.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9490-charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9758-charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mt6370-charger.ko")
         mgk_64_device_modules.append("sound/soc/mediatek/aw87519/aw87519_left_audio.ko")
         mgk_64_device_modules.append("sound/soc/mediatek/aw87519/aw87519_right_audio.ko")
         mgk_64_device_modules.remove("sound/soc/codecs/snd-soc-rt5509.ko")
@@ -4651,27 +4589,15 @@ def get_overlay_modules_list():
             mgk_64_device_modules.remove("drivers/misc/mediatek/typec/tcpc/tcpc_mt6379.ko")
 
         mgk_64_device_modules.append("drivers/power/supply/bq25601.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mt6360_charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mt6360_pmu_chg.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mt6375-charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/ufcs/ufcs_class.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/ufcs/ufcs_mt6379.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_2p_charger.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_chg_type_det.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pd_adapter.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pd_charging.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_hvbpc.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep20.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep40.ko")
         mgk_64_device_modules.remove("drivers/power/supply/mtk_pep45.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_pep50.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mtk_pep50p.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9759.ko")
         mgk_64_platform_device_modules.pop("drivers/power/supply/rt9465.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9490-charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/rt9758-charger.ko")
-        mgk_64_device_modules.remove("drivers/power/supply/mt6370-charger.ko")
         mgk_64_device_modules.append("sound/soc/mediatek/aw87519/aw87519_left_audio.ko")
         mgk_64_device_modules.append("sound/soc/mediatek/aw87519/aw87519_right_audio.ko")
         mgk_64_device_modules.remove("sound/soc/codecs/snd-soc-rt5509.ko")
