@@ -27,11 +27,4 @@ else ifneq ($(filter y m, $(CONFIG_VIDLE_ENABLE)),)
 ccflags-y += -DDISP_VIDLE_ENABLE
 endif
 
-obj-$(CONFIG_MTK_DPC) := mtk_dpc_v2.o
 
-mtk_dpc_v2-objs += mtk_dpc_driver.o
-mtk_dpc_v2-objs += mtk_dpc_mmp.o
-
-obj-$(CONFIG_MTK_DPC) += mtk_vdisp_v2.o
-mtk_vdisp_v2-objs += mtk_vdisp.o
-mtk_vdisp_v2-objs += mtk_vdisp_avs.o

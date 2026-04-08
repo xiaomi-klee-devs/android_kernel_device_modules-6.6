@@ -78,18 +78,11 @@ endif # !CONFIG_MTK_GMO_RAM_OPTIMIZE
 # MDP driver module
 #==========================================================================
 
-obj-$(CONFIG_MTK_MDP) += cmdq_helper_inf.o
 obj-$(CONFIG_MTK_MDP_DUMMY) += mdp_drv_dummy.o
 ifeq ($(CONFIG_MTK_MDP), y)
-obj-$(CONFIG_MTK_MDP_MT6768) += mdp_drv_mt6768.o
-obj-$(CONFIG_MTK_MDP_MT6761) += mdp_drv_mt6761.o
-obj-$(CONFIG_MTK_MDP_MT6765) += mdp_drv_mt6765.o
 else
 ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6886.c),)
 obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6886.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6893.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6893.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6897.c),)
 obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6897.o
@@ -102,30 +95,6 @@ obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6985.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6989.c),)
 obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6989.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6991.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6991.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6768.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6768.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6877.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6877.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6761.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6761.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6765.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6765.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6781.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6781.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6853.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6853.o
-endif
-ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6833.c),)
-obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6833.o
 endif
 ifneq ($(wildcard $(srctree)/$(src)/mdp_mt6771.c),)
 obj-$(CONFIG_MTK_MDP) += mdp_drv_mt6771.o
@@ -161,19 +130,6 @@ mdp_drv_mt6886-objs := mdp_mt6886.o\
 	mdp_fence.o \
 	mdp_dpc.o
 
-mdp_drv_mt6893-objs := mdp_mt6893.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
 mdp_drv_mt6897-objs := mdp_mt6897.o\
 	mdp_driver.o \
@@ -231,117 +187,13 @@ mdp_drv_mt6989-objs := mdp_mt6989.o\
 	mdp_fence.o \
 	mdp_dpc.o
 
-mdp_drv_mt6991-objs := mdp_mt6991.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
-mdp_drv_mt6768-objs := mdp_mt6768.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
-mdp_drv_mt6877-objs := mdp_mt6877.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
-mdp_drv_mt6761-objs := mdp_mt6761.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
-mdp_drv_mt6765-objs := mdp_mt6765.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
-mdp_drv_mt6781-objs := mdp_mt6781.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
-mdp_drv_mt6853-objs := mdp_mt6853.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
-mdp_drv_mt6833-objs := mdp_mt6833.o\
-	mdp_driver.o \
-	mdp_ioctl_ex.o \
-	mdp_common.o \
-	cmdq_record.o \
-	cmdq_virtual.o \
-	cmdq_device.o \
-	mdp_event_common.o \
-	cmdq_subsys_common.o \
-	cmdq_helper_ext.o \
-	cmdq_mmp.o \
-	mdp_fence.o \
-	mdp_dpc.o
 
 #obj-y += cmdq_prof.o
 #obj-y += cmdq_test.o
