@@ -627,6 +627,7 @@ static int lcm_enable(struct drm_panel *panel)
 }
 
 #if defined(CONFIG_MTK_PANEL_EXT)
+#ifdef ENABLE_30HZ
 static struct mtk_panel_params ext_params_30hz = {
 	.lcm_index = 1,
 	.pll_clk = DATA_RATE / 2,
@@ -762,6 +763,7 @@ static struct mtk_panel_params ext_params_30hz = {
 	.vdo_per_frame_lp_enable = 1,
 	//.prefetch_time = PREFETCH_TIME,
 };
+#endif
 
 static struct mtk_panel_params ext_params_60hz = {
 	.lcm_index = 1,
@@ -1217,9 +1219,13 @@ static int mtk_panel_ext_param_get(struct drm_panel *panel,
 
 	dst_fps = m_dst ? drm_mode_vrefresh(m_dst) : -EINVAL;
 
+#ifdef ENABLE_30HZ
 	if (dst_fps == 30)
 		*ext_param = &ext_params_30hz;
 	else if (dst_fps == 60)
+#else
+	if (dst_fps == 60)
+#endif
 		*ext_param = &ext_params_60hz;
 	else if (dst_fps == 90)
 		*ext_param = &ext_params_90hz;
@@ -1253,10 +1259,14 @@ static int mtk_panel_ext_param_set(struct drm_panel *panel,
 
 	dst_fps = m_dst ? drm_mode_vrefresh(m_dst) : -EINVAL;
 
+#ifdef ENABLE_30HZ
 	if (dst_fps == 30) {
 		ext->params = &ext_params_30hz;
 		ctx->dynamic_fps = 30;
 	} else if (dst_fps == 60) {
+#else
+	if (dst_fps == 60) {
+#endif
 		ext->params = &ext_params_60hz;
 		ctx->dynamic_fps = 60;
 	} else if (dst_fps == 90) {
@@ -1527,16 +1537,20 @@ static int panel_set_doze_brightness(struct drm_panel *panel, int doze_brightnes
 
 	if (DOZE_BRIGHTNESS_LBM  == doze_brightness || DOZE_BRIGHTNESS_HBM  == doze_brightness) {
 		if (DOZE_BRIGHTNESS_LBM  == doze_brightness){
+#ifdef ENABLE_30HZ
 			ext_params_30hz.dyn_fps.dfps_cmd_table[0].para_list[1] = 0x00;
 			ext_params_30hz.dyn_fps.dfps_cmd_table[0].para_list[2] = 0x38;
 			ext_params_30hz.dyn_fps.dfps_cmd_table[0].para_list[5] = 0x05;
 			ext_params_30hz.dyn_fps.dfps_cmd_table[0].para_list[6] = 0x55;
+#endif
 			ret = mi_disp_panel_ddic_send_cmd(lcm_aod_low_mode, ARRAY_SIZE(lcm_aod_low_mode), format);
 		} else if (DOZE_BRIGHTNESS_HBM == doze_brightness){
+#ifdef ENABLE_30HZ
 			ext_params_30hz.dyn_fps.dfps_cmd_table[0].para_list[1] = 0x03;
 			ext_params_30hz.dyn_fps.dfps_cmd_table[0].para_list[2] = 0x28;
 			ext_params_30hz.dyn_fps.dfps_cmd_table[0].para_list[5] = 0x3F;
 			ext_params_30hz.dyn_fps.dfps_cmd_table[0].para_list[6] = 0xFF;
+#endif
 			ret = mi_disp_panel_ddic_send_cmd(lcm_aod_high_mode, ARRAY_SIZE(lcm_aod_high_mode), format);
 		}
 		atomic_set(&doze_enable, 1);
@@ -2408,8 +2422,12 @@ struct panel_desc {
 
 static int lcm_get_modes(struct drm_panel *panel, struct drm_connector *connector)
 {
-	struct drm_display_mode *mode_30, *mode_60, *mode_90, *mode_120;
+#ifdef ENABLE_30HZ
+	struct drm_display_mode *mode_30;
+#endif
+	struct drm_display_mode *mode_60, *mode_90, *mode_120;
 
+#ifdef ENABLE_30HZ
 	mode_30 = drm_mode_duplicate(connector->dev, &mode_30hz);
 	if (!mode_30) {
 		dev_err(connector->dev->dev, "failed to add mode %ux%ux@%u\n",
@@ -2420,6 +2438,7 @@ static int lcm_get_modes(struct drm_panel *panel, struct drm_connector *connecto
 	drm_mode_set_name(mode_30);
 	mode_30->type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
 	drm_mode_probed_add(connector, mode_30);
+#endif
 
 	mode_60 = drm_mode_duplicate(connector->dev, &mode_60hz);
 	if (!mode_60) {
@@ -2560,8 +2579,10 @@ static int lcm_probe(struct mipi_dsi_device *dsi)
 	ext_params_60hz.err_flag_irq_gpio = of_get_named_gpio(
 		dev->of_node, "mi,esd-err-irq-gpio",0);
 	ext_params_60hz.err_flag_irq_flags = 0x2002;
+#ifdef ENABLE_30HZ
 	ext_params_30hz.err_flag_irq_gpio = ext_params_60hz.err_flag_irq_gpio;
 	ext_params_30hz.err_flag_irq_flags = ext_params_60hz.err_flag_irq_flags;
+#endif
 	ext_params_90hz.err_flag_irq_gpio = ext_params_60hz.err_flag_irq_gpio;
 	ext_params_90hz.err_flag_irq_flags = ext_params_60hz.err_flag_irq_flags;
 	ext_params_120hz.err_flag_irq_gpio = ext_params_60hz.err_flag_irq_gpio;
