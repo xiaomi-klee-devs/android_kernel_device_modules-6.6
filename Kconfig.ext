@@ -138,8 +138,6 @@ source "$(KCONFIG_EXT_PREFIX)/drivers/video/backlight/Kconfig"
 
 source "$(KCONFIG_EXT_PREFIX)mm/Kconfig"
 
-source "$(KCONFIG_EXT_PREFIX)drivers/input/fingerprint/Kconfig"
-
 config FACTORY_BUILD
 	bool "distiguish factory version from dev version"
 	default n
