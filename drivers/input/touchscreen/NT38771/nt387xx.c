@@ -2708,6 +2708,7 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 	static struct task_struct *touch_task = NULL;
 	struct sched_param par = { .sched_priority = MAX_RT_PRIO - 1 };
 	uint8_t *fw_debug_info;
+	bool thp_frame_reused = false;
 #if NVT_DRIVER_INSERT_FRAME
 	uint32_t driver_input_x = 0;
 	uint32_t driver_input_y = 0;
@@ -2745,32 +2746,39 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 #endif /* NVT_PM_WAIT_BUS_RESUME_COMPLETE */
 #if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
 	ret = nvt_report_thp_frame();
-	if (ret < 0 && ret != -EAGAIN && ret != -EBADMSG)
+	if (ret < 0 && ret != -EAGAIN && ret != -EBADMSG && ret != -ENODEV)
 		NVT_ERR("raw frame read failed.(%d)\n", ret);
 	if (ret == -EAGAIN || !bTouchIsAwake)
 		goto XFER_ERROR;
+	if (!ts->fw_debug_info_switch &&
+	    (ret == 0 || ret == -EBADMSG || ret == -ENODEV)) {
+		memcpy(point_data, ts->thp_frame_buf, POINT_DATA_LEN + 1);
+		thp_frame_reused = true;
+	}
 #endif
 /*P16 code for BUGP16-8418 by xiongdejun at 2025/7/15 start*/
-	if (ts->fw_debug_info_switch) {
-		ret = CTP_SPI_READ(ts->client, point_data, POINT_DATA_FW_DEBUG_INFO_LEN + 1);
-		fw_debug_info = point_data + 1 + FW_DEBUG_INFO_OFFSET;
-		nvt_fw_debug_info_print(fw_debug_info, FW_DEBUG_INFO_LEN);
-		// ToDo: memcpy(fw_debug_info_buf, fw_debug_info, FW_DEBUG_INFO_LEN);
-	} else {
+	if (!thp_frame_reused) {
+		if (ts->fw_debug_info_switch) {
+			ret = CTP_SPI_READ(ts->client, point_data, POINT_DATA_FW_DEBUG_INFO_LEN + 1);
+			fw_debug_info = point_data + 1 + FW_DEBUG_INFO_OFFSET;
+			nvt_fw_debug_info_print(fw_debug_info, FW_DEBUG_INFO_LEN);
+			// ToDo: memcpy(fw_debug_info_buf, fw_debug_info, FW_DEBUG_INFO_LEN);
+		} else {
 #if NVT_SUPER_RESOLUTION
-	ret = CTP_SPI_READ(ts->client, point_data, POINT_DATA_LEN + 1);
-#else /* #if NVT_SUPER_RESOLUTION */
-	if (ts->pen_support)
-		ret = CTP_SPI_READ(ts->client, point_data, POINT_DATA_LEN + PEN_DATA_LEN + 1);
-	else
 		ret = CTP_SPI_READ(ts->client, point_data, POINT_DATA_LEN + 1);
+#else /* #if NVT_SUPER_RESOLUTION */
+		if (ts->pen_support)
+			ret = CTP_SPI_READ(ts->client, point_data, POINT_DATA_LEN + PEN_DATA_LEN + 1);
+		else
+			ret = CTP_SPI_READ(ts->client, point_data, POINT_DATA_LEN + 1);
 #endif /* #if NVT_SUPER_RESOLUTION */
-        }
-/*P16 code for BUGP16-8418 by xiongdejun at 2025/7/15 end*/
-	if (ret < 0) {
-		NVT_ERR("CTP_SPI_READ failed.(%d)\n", ret);
-		goto XFER_ERROR;
+		}
+		if (ret < 0) {
+			NVT_ERR("CTP_SPI_READ failed.(%d)\n", ret);
+			goto XFER_ERROR;
+		}
 	}
+/*P16 code for BUGP16-8418 by xiongdejun at 2025/7/15 end*/
 /*
 	//--- dump SPI buf ---
 	for (i = 0; i < 10; i++) {
