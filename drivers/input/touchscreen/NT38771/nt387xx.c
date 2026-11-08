@@ -3978,12 +3978,12 @@ int tp_compare_ic(void)
 		ts->lockdown[0], ts->lockdown[1], ts->lcd_id_value1, tm ? "TM" : "CSOT");
 
 	if (tm) {
-		BOOT_UPDATE_FIRMWARE_NAME = "novatek_nt38771_p10u_fw_tm.bin";
-		MP_UPDATE_FIRMWARE_NAME = "novatek_nt38771_p10u_mp_tm.bin";
+		BOOT_UPDATE_FIRMWARE_NAME = "novatek_nt38771_p10_fw_tm.bin";
+		MP_UPDATE_FIRMWARE_NAME = "novatek_nt38771_p10_mp_tm.bin";
 		NVT_LOG("TP is Tianma");
 	} else {
-		BOOT_UPDATE_FIRMWARE_NAME = "novatek_nt38771_p10u_fw_csot.bin";
-		MP_UPDATE_FIRMWARE_NAME = "novatek_nt38771_p10u_mp_csot.bin";
+		BOOT_UPDATE_FIRMWARE_NAME = "novatek_nt38771_p10_fw_csot.bin";
+		MP_UPDATE_FIRMWARE_NAME = "novatek_nt38771_p10_mp_csot.bin";
 		NVT_LOG("TP is CSOT");
 	}
 	return 0;
