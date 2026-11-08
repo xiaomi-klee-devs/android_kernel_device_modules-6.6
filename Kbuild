@@ -5,6 +5,7 @@ ifneq ($(CONFIG_DEVICE_MODULES_ALLOW_BUILTIN),y)
 LINUXINCLUDE := $(DEVCIE_MODULES_INCLUDE) $(LINUXINCLUDE)
 
 subdir-ccflags-y += -Werror \
+		-Wno-macro-redefined \
 		-I$(srctree)/$(src)/include \
 		-I$(srctree)/$(src)/include/uapi \
 
