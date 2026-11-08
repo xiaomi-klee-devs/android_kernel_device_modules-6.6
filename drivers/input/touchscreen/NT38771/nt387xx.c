@@ -2747,7 +2747,8 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 	ret = nvt_report_thp_frame();
 	if (ret < 0 && ret != -EAGAIN && ret != -EBADMSG)
 		NVT_ERR("raw frame read failed.(%d)\n", ret);
-	goto XFER_ERROR;
+	if (ret == -EAGAIN || !bTouchIsAwake)
+		goto XFER_ERROR;
 #endif
 /*P16 code for BUGP16-8418 by xiongdejun at 2025/7/15 start*/
 	if (ts->fw_debug_info_switch) {
