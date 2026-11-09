@@ -66,6 +66,7 @@ extern int get_lockdown_info_for_nvt(unsigned char *lockdown_info);
 #define NVT_THP_DATA_LEN 0x1EFE
 #define NVT_THP_HEADER_LEN 0x101
 #define NVT_THP_FRAME_BUF_LEN 0x2000
+#define NVT_THP_FRAME_LEN 0x1438
 char hex_str[3];
 /*P16 code for HQFEAT-94426 by liuyupei at 2025/5/6 end*/
 #if NVT_TOUCH_ESD_PROTECT
@@ -2561,7 +2562,7 @@ static bool nvt_thp_frame_is_valid(const u8 *data)
 	u16 expected_crc = get_unaligned_le16(data + 0x105) ^ 0xFFFF;
 	u32 inverted_len = get_unaligned_le32(data + 0x111);
 
-	return ((data_len == 0x509 || data_len == 0x1FB) &&
+	return ((data_len == 0x509 || data_len == 0x1D5) &&
 		data_crc == expected_crc && inverted_len == ~data_len) ||
 		get_unaligned_le16(data + 0x101) == 0xFFFF;
 }
@@ -2658,7 +2659,7 @@ static int nvt_report_thp_frame(void)
 	frame->frame_count = ts->thp_frame_count++;
 	frame->frame_type = ts->fod_finger; /* Stock frame header carries FOD state. */
 	frame->status = 0;
-	memcpy(frame->tp_raw, ts->thp_frame_buf + 0x101, data_len);
+	memcpy(frame->tp_raw, ts->thp_frame_buf + 0x101, NVT_THP_FRAME_LEN);
 	notify_raw_data_update_common(0);
 
 	return 0;
@@ -3554,6 +3555,7 @@ static int nvt_set_thp_cur_value(int mode, int *values)
 
 	if (!ts || !values)
 		return -ENODEV;
+	NVT_LOG("mode:%d value:%d\n", mode, values[0]);
 	if (mode == Touch_Fod_Setting) {
 		if (values[0] >= 0)
 			ts->fod_setting = values[0];
@@ -3614,6 +3616,12 @@ static int nvt_set_thp_cur_value(int mode, int *values)
 		ret = nvt_xm_htc_set_fod_attn_status(value ? 4 : 5);
 		mutex_unlock(&ts->lock);
 		return ret;
+	}
+	if (mode == THP_HAL_INIT_READY) {
+		if (values[0] < 0)
+			return -EOPNOTSUPP;
+		NVT_LOG("hal init ready\n");
+		return 0;
 	}
 	if (mode != THP_LOCK_SCAN_MODE)
 		return -EOPNOTSUPP;
@@ -4465,6 +4473,11 @@ static int32_t nvt_ts_probe(struct spi_device *client)
 #endif
 	bTouchIsAwake = 1;
 	WRITE_ONCE(ts->display_suspend_ready, false);
+
+	if (nvt_lockdown_info_read() < 0)
+		NVT_ERR("read lockdown info failed, continue with zeros\n");
+	else
+		NVT_LOG("READ LOCKDOWN!!!\n");
 
 #if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
 	ret = nvt_register_touch_panel_common(&client->dev);
