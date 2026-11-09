@@ -786,7 +786,7 @@ int32_t nvt_update_firmware(char *firmware_name, uint8_t skip_update_ilm)
 			(long) ktime_us_delta(end, start));
 
 #if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
-	if (ts->touch_raw_enabled && !ts->thp_poll_info_attempted) {
+	if (!ts->thp_poll_info_attempted) {
 		ret = nvt_get_xm_htc_poll_info();
 		if (ret)
 			NVT_ERR("nvt_get_xm_htc_poll_info failed. (%d)\n", ret);

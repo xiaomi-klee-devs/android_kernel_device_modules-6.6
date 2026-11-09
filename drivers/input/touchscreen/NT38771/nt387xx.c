@@ -3859,10 +3859,10 @@ static int nvt_register_touch_panel_common(struct device *dev)
 {
 	hardware_param_t hardware_param = { 0 };
 
-	hardware_param.x_resolution = 1280;
-	hardware_param.y_resolution = 2772;
-	hardware_param.rx_num = 18;
-	hardware_param.tx_num = 39;
+	hardware_param.x_resolution = 1268;
+	hardware_param.y_resolution = 2756;
+	hardware_param.rx_num = 17;
+	hardware_param.tx_num = 37;
 	hardware_param.super_resolution_factor = 100;
 	hardware_param.frame_data_page_size = 2;
 	hardware_param.frame_data_buf_size = 10;
@@ -3872,11 +3872,16 @@ static int nvt_register_touch_panel_common(struct device *dev)
 	memcpy(hardware_param.lockdown_info, ts->lockdown,
 	       sizeof(hardware_param.lockdown_info));
 	strscpy(hardware_param.config_file_name,
-		ts->lcd_id_value1 == 0 ? "p10u_nova_tm_thp_config.ini" :
-					      "p10u_nova_csot_thp_config.ini",
+		ts->lcd_id_value1 == 0 ? "p10_nova_tm_thp_config.ini" :
+					      "p10_nova_csot_thp_config.ini",
 		sizeof(hardware_param.config_file_name));
-	strscpy(hardware_param.driver_version, "nvt_version_2025.04.27-001",
+	strscpy(hardware_param.driver_version, "nvt_version_2025.12.18-001",
 		sizeof(hardware_param.driver_version));
+
+	NVT_LOG("hardware_param: %ux%u rx=%u tx=%u cfg=%s ver=%s\n",
+		hardware_param.x_resolution, hardware_param.y_resolution,
+		hardware_param.rx_num, hardware_param.tx_num,
+		hardware_param.config_file_name, hardware_param.driver_version);
 
 	return register_touch_panel_common(dev, 0, &hardware_param,
 				   &nvt_hardware_operation);

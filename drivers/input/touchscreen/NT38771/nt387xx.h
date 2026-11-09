@@ -110,10 +110,10 @@
 #endif /* #if NVT_SUPER_RESOLUTION */
 /*P16 code for BUGP16-6610 by P-liaoxianguo at 2025/6/24 end*/
 //---Touch info.---
-#define TOUCH_MAX_WIDTH 1280
-#define TOUCH_MAX_HEIGHT 2772
-#define PEN_MAX_WIDTH 1280
-#define PEN_MAX_HEIGHT 2772
+#define TOUCH_MAX_WIDTH 1268
+#define TOUCH_MAX_HEIGHT 2756
+#define PEN_MAX_WIDTH 1268
+#define PEN_MAX_HEIGHT 2756
 #define TOUCH_MAX_FINGER_NUM 10
 #define TOUCH_FORCE_NUM 1000
 //---for Pen---
