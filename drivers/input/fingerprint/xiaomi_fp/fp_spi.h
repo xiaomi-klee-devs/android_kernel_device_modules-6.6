@@ -7,7 +7,7 @@
 #define FP_SPI_H
 /**********************MTK SPI**********************/
 #ifndef FP_USE_SPI
-#define FP_USE_SPI "spi1"
+#define FP_USE_SPI "spi2"
 #define FP_USE_SPI_LENGTH 4
 #endif
 

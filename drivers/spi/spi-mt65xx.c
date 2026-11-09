@@ -2108,6 +2108,8 @@ EXPORT_SYMBOL(mt_spi_enable_master_clk);
 
 void spi_disable_fingerprint_clk(void)
 {
+	if (!fingerprint_ms)
+		return;
 	clk_disable_unprepare(fingerprint_ms->spi_clk);
 }
 EXPORT_SYMBOL(spi_disable_fingerprint_clk);
@@ -2115,6 +2117,9 @@ EXPORT_SYMBOL(spi_disable_fingerprint_clk);
 void spi_enable_fingerprint_clk(void)
 {
 	int ret;
+
+	if (!fingerprint_ms)
+		return;
 	ret = clk_prepare_enable(fingerprint_ms->spi_clk);
 }
 EXPORT_SYMBOL(spi_enable_fingerprint_clk);
