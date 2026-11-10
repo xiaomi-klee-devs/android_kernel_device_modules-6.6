@@ -2709,7 +2709,6 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 	static struct task_struct *touch_task = NULL;
 	struct sched_param par = { .sched_priority = MAX_RT_PRIO - 1 };
 	uint8_t *fw_debug_info;
-	bool thp_frame_reused = false;
 #if NVT_DRIVER_INSERT_FRAME
 	uint32_t driver_input_x = 0;
 	uint32_t driver_input_y = 0;
@@ -2751,14 +2750,10 @@ static irqreturn_t nvt_ts_work_func(int irq, void *data)
 		NVT_ERR("raw frame read failed.(%d)\n", ret);
 	if (ret == -EAGAIN || !bTouchIsAwake)
 		goto XFER_ERROR;
-	if (!ts->fw_debug_info_switch &&
-	    (ret == 0 || ret == -EBADMSG || ret == -ENODEV)) {
-		memcpy(point_data, ts->thp_frame_buf, POINT_DATA_LEN + 1);
-		thp_frame_reused = true;
-	}
+	goto XFER_ERROR;
 #endif
 /*P16 code for BUGP16-8418 by xiongdejun at 2025/7/15 start*/
-	if (!thp_frame_reused) {
+	{
 		if (ts->fw_debug_info_switch) {
 			ret = CTP_SPI_READ(ts->client, point_data, POINT_DATA_FW_DEBUG_INFO_LEN + 1);
 			fw_debug_info = point_data + 1 + FW_DEBUG_INFO_OFFSET;
