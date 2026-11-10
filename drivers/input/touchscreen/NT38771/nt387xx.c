@@ -5155,7 +5155,6 @@ static int32_t nvt_ts_resume(struct device *dev)
 {
 	int32_t ret;
 	bool display_esd_recovery = false;
-	bool reload_firmware = true;
 	bool hold_wakeup = false;
 
 	if (bTouchIsAwake) {
@@ -5195,37 +5194,39 @@ static int32_t nvt_ts_resume(struct device *dev)
 #endif
 
 	if (ts->fod_finger && !display_esd_recovery) {
-		ret = nvt_check_fw_reset_state(RESET_STATE_REK);
-		if (!ret) {
-			nvt_get_fw_info();
-			reload_firmware = false;
-		}
-	}
-
-	if (reload_firmware) {
 		if (nvt_update_firmware(BOOT_UPDATE_FIRMWARE_NAME, true)) {
-			NVT_ERR("download firmware failed, ignore check fw state\n");
-		} else {
-			nvt_check_fw_reset_state(RESET_STATE_REK);
-	#if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
-			nvt_fod_attn_status_recovery();
-	#endif
-		}
-	}
-
-	ret = nvt_set_gesture_switch(0x00);
-	if (ret) {
-		nvt_read_fw_history_all();
-		ret = nvt_update_firmware(BOOT_UPDATE_FIRMWARE_NAME, true);
-		if (ret) {
-			NVT_ERR("gesture-clear recovery firmware update failed: %d\n", ret);
+			NVT_ERR("FOD resume firmware update failed\n");
 		} else {
 			nvt_check_fw_reset_state(RESET_STATE_REK);
 #if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
 			nvt_fod_attn_status_recovery();
 #endif
-			/* Stock's final write has no further readback/reload loop. */
 			nvt_set_extend_custom_cmd(0x1e, 0);
+		}
+	} else {
+		if (nvt_update_firmware(BOOT_UPDATE_FIRMWARE_NAME, true)) {
+			NVT_ERR("download firmware failed, ignore check fw state\n");
+		} else {
+			nvt_check_fw_reset_state(RESET_STATE_REK);
+#if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
+			nvt_fod_attn_status_recovery();
+#endif
+		}
+
+		ret = nvt_set_gesture_switch(0x00);
+		if (ret) {
+			nvt_read_fw_history_all();
+			ret = nvt_update_firmware(BOOT_UPDATE_FIRMWARE_NAME, true);
+			if (ret) {
+				NVT_ERR("gesture-clear recovery firmware update failed: %d\n", ret);
+			} else {
+				nvt_check_fw_reset_state(RESET_STATE_REK);
+#if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
+				nvt_fod_attn_status_recovery();
+#endif
+				/* Stock's final write has no further readback/reload loop. */
+				nvt_set_extend_custom_cmd(0x1e, 0);
+			}
 		}
 	}
 #if WAKEUP_GESTURE
