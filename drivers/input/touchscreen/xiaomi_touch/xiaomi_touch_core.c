@@ -223,8 +223,7 @@ static void xiaomi_touch_apply_pm(struct xiaomi_touch_panel_data *panel)
 		/* Query here too: a supply event may still be queued behind resume. */
 		xiaomi_touch_charge_notify(panel, xiaomi_touch_get_charging_status());
 	} else {
-		if (panel->pm_async_suspend &&
-		    panel->hardware_operation.display_suspend_ready)
+		if (panel->hardware_operation.display_suspend_ready)
 			panel->hardware_operation.display_suspend_ready();
 		xiaomi_touch_set_suspend_state(XIAOMI_TOUCH_SUSPEND);
 	}
@@ -285,9 +284,6 @@ static int xiaomi_drm_panel_notifier_callback(struct notifier_block *nb,
 		xiaomi_touch_request_pm(panel, false, false);
 	else if (event == MI_DISP_DPMS_EVENT && blank == MI_DISP_DPMS_ON)
 		xiaomi_touch_request_pm(panel, true, false);
-	else if (event == MI_DISP_DPMS_EARLY_EVENT && blank == MI_DISP_DPMS_POWERDOWN &&
-		 panel->hardware_operation.display_suspend_ready)
-		panel->hardware_operation.display_suspend_ready();
 out:
 	mutex_unlock(&touch_callback_lock);
 	return NOTIFY_OK;
