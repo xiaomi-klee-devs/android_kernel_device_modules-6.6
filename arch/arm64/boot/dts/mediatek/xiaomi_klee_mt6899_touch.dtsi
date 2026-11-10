@@ -9,6 +9,7 @@
 		compatible = "xiaomi-touch";
 		status = "ok";
 		touch,name = "xiaomi-touch";
+		mi_tp,report-rate-array = <1 0 0 0 0>;
 		panel = <&klee_36_02_0a_dsc_vdo
 								&klee_42_02_0b_dsc_vdo>;
 	};

@@ -3420,6 +3420,9 @@ static int nvt_thp_ic_set_mode(common_data_t *data)
 	case SET_SCAN_FREQ_HOPPING_EN:
 		command = 0x08;
 		break;
+	case SET_REPORT_RATE:
+		command = 0x0A;
+		break;
 	case SET_CHARGING_STATUS_EN:
 		command = 0x10;
 		break;
@@ -3566,7 +3569,7 @@ static int nvt_set_thp_cur_value(int mode, int *values)
 			ts->touch_raw_enabled = !!values[0];
 		return 0;
 	}
-	if (mode == THP_HAL_REPORT_RATE) {
+	if (mode == Touch_Report_Rate || mode == THP_HAL_REPORT_RATE) {
 		if (values[0] < 0)
 			return 0;
 		ts->report_rate = (s16)values[0];

@@ -726,6 +726,7 @@ static void xiaomi_touch_set_mode(struct xiaomi_touch_panel_data *panel,
 	case Touch_Nonui_Mode:
 	case Touch_Debug_Level:
 	case Touch_Power_Status:
+	case Touch_Report_Rate:
 		panel->touch_mode[mode][GET_CUR_VALUE] = values[0];
 		break;
 	}
@@ -750,6 +751,7 @@ static void xiaomi_touch_set_mode(struct xiaomi_touch_panel_data *panel,
 		break;
 	case Touch_Fod_Setting:
 	case Touch_Fingerprint_Auth_State:
+	case Touch_Report_Rate:
 		if (panel->hardware_operation.set_cur_value)
 			panel->hardware_operation.set_cur_value(mode, values);
 		break;
