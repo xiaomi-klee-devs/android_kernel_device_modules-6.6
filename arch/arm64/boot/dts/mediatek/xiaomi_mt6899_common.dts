@@ -4009,6 +4009,13 @@ sw_info,frame_id,custom,pipeline_stage,RPID,UID";
 		iommus = <&apu_iommu1 M4U_PORT_L42_APU_CODE>;
 	};
 
+	mtdoops_pmsg@6EC00000 {
+		compatible = "xiaomi,mtdoops_pmsg";
+		reg = <0 0x6ec00000 0 0x410000>;
+		console-size = <0x200000>;
+		pmsg-size = <0x200000>;
+	};
+
 	camisp-l13-1 {
 		compatible = "mediatek,camisp-larb";
 		mediatek,larb-id = <13>;
