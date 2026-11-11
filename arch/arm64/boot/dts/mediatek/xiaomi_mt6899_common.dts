@@ -15450,7 +15450,6 @@ sw_info,frame_id,custom,pipeline_stage,RPID,UID";
 				interrupts = <GIC_SPI 698 IRQ_TYPE_LEVEL_HIGH 0>;
 				clocks = <&clk26m>;
 				clock-names = "sys_ck";
-				mediatek,usb-offload = <&usb_offload>;
 				status = "okay";
 			};
 		};
