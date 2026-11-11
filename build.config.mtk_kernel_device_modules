@@ -14,10 +14,13 @@ DEFCONFIG_OVERLAYS="klee.config"
 
 MAKE_GOALS="$MAKE_GOALS
 modules
+dtbs
 "
 
 # These paths need to be relative to KERNEL_DIR.
 FILES="
+${DEVICE_MODULES_REL_DIR}/arch/arm64/boot/dts/mediatek/klee.dtb
+${DEVICE_MODULES_REL_DIR}/arch/arm64/boot/dts/mediatek/xiaomi_mt6899_common.dtb
 "
 
 EXT_MODULES+="
