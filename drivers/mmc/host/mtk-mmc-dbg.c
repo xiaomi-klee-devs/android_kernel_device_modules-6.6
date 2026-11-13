@@ -1185,8 +1185,8 @@ int mmc_debug_init_procfs(void)
 	kuid_t uid;
 	kgid_t gid;
 
-	uid = make_kuid(&init_user_ns, 0);
-	gid = make_kgid(&init_user_ns, 1001);
+	uid = KUIDT_INIT(0);
+	gid = KGIDT_INIT(1001);
 
 	/* Create "mmc_debug" node */
 	prEntry = proc_create("mmc_debug", PROC_PERM, NULL,

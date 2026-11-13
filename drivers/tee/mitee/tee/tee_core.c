@@ -237,7 +237,7 @@ int tee_session_calc_client_uuid(uuid_t *uuid, u32 connection_method,
 
 	case TEE_IOCTL_LOGIN_GROUP:
 		memcpy(&ns_grp, connection_data, sizeof(gid_t));
-		grp = make_kgid(current_user_ns(), ns_grp);
+		grp = KGIDT_INIT(ns_grp);
 		if (!gid_valid(grp) || !in_egroup_p(grp)) {
 			rc = -EPERM;
 			goto out_free_name;

@@ -2325,8 +2325,8 @@ static int dma_buf_init_procfs(void)
 	// END Performance_PerformanceEnhance
 
 	/* set group of proc file rss_pid to system */
-	uid = make_kuid(&init_user_ns, 0);
-	gid = make_kgid(&init_user_ns, 1000);
+	uid = KUIDT_INIT(0);
+	gid = KGIDT_INIT(1000);
 	proc_set_user(dma_heaps_stat_pid, uid, gid);
 
 	return ret;
