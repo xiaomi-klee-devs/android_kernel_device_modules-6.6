@@ -1800,7 +1800,9 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id, uint8_t *data)
 	}
 
 	if (keycode > 0) {
-		if (keycode == KEY_GOTO)
+		if (keycode == KEY_WAKEUP)
+			notify_gesture_double_tap();
+		else if (keycode == KEY_GOTO)
 			notify_gesture_single_tap();
 		input_report_key(ts->input_dev, keycode, 1);
 		input_sync(ts->input_dev);

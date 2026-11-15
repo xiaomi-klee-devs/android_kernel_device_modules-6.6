@@ -1916,6 +1916,7 @@ static struct xiaomi_touch xiaomi_touch_dev = {
 #ifdef	TOUCH_FOD_SUPPORT
 	.fod_press_status_mutex = __MUTEX_INITIALIZER(xiaomi_touch_dev.fod_press_status_mutex),
 #endif
+	.gesture_double_tap_mutex = __MUTEX_INITIALIZER(xiaomi_touch_dev.gesture_double_tap_mutex),
 	.gesture_single_tap_mutex = __MUTEX_INITIALIZER(xiaomi_touch_dev.gesture_single_tap_mutex),
 	.abnormal_event_mutex = __MUTEX_INITIALIZER(xiaomi_touch_dev.abnormal_event_mutex),
 };
@@ -3313,6 +3314,20 @@ int update_fod_press_status(int value)
 }
 EXPORT_SYMBOL_GPL(update_fod_press_status);
 #endif
+int notify_gesture_double_tap(void)
+{
+	mutex_lock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+	if (!touch_pdata) {
+		mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+		return -ENODEV;
+	}
+	sysfs_notify(&xiaomi_touch_dev.dev->kobj, NULL,
+		     "gesture_double_tap_state");
+	mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(notify_gesture_double_tap);
+
 int notify_gesture_single_tap(void)
 {
 	mutex_lock(&xiaomi_touch_dev.gesture_single_tap_mutex);
@@ -3357,6 +3372,41 @@ static ssize_t gesture_single_tap_enabled_store(struct device *dev,
 
 	mode_arr[0] = input;
 	xiaomi_touch_set_mode(&touch_panel_data[0], 0, Touch_Aod_Enable,
+			      mode_arr);
+	mutex_unlock(&touch_callback_lock);
+	return count;
+}
+static ssize_t gesture_double_tap_value_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n", 1);
+}
+static ssize_t gesture_double_tap_enabled_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+			driver_get_touch_mode_common(0, Touch_Doubletap_Mode));
+}
+static ssize_t gesture_double_tap_enabled_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	unsigned int input;
+	int mode_arr[CMD_DATA_BUF_SIZE] = { 0 };
+
+	if (sscanf(buf, "%u", &input) != 1 || input > 1)
+		return -EINVAL;
+
+	mutex_lock(&touch_callback_lock);
+	if (!touch_pdata || !touch_panel_data[0].registered) {
+		mutex_unlock(&touch_callback_lock);
+		return -ENODEV;
+	}
+	if (driver_get_touch_mode_common(0, Touch_Doubletap_Mode) != input)
+		sysfs_notify(&xiaomi_touch_dev.dev->kobj, NULL,
+			     "gesture_double_tap_enabled");
+
+	mode_arr[0] = input;
+	xiaomi_touch_set_mode(&touch_panel_data[0], 0, Touch_Doubletap_Mode,
 			      mode_arr);
 	mutex_unlock(&touch_callback_lock);
 	return count;
@@ -3706,6 +3756,9 @@ static DEVICE_ATTR(update_rawdata, (0664), update_rawdata_show,
 #ifdef	TOUCH_FOD_SUPPORT
 static DEVICE_ATTR(fod_press_status, (S_IRUGO | S_IWUSR | S_IWGRP), fod_press_status_show, NULL);
 #endif
+static DEVICE_ATTR(gesture_double_tap_enabled, (S_IRUGO | S_IWUSR | S_IWGRP),
+		gesture_double_tap_enabled_show, gesture_double_tap_enabled_store);
+static DEVICE_ATTR(gesture_double_tap_state, (S_IRUGO | S_IWUSR | S_IWGRP), gesture_double_tap_value_show, NULL);
 static DEVICE_ATTR(gesture_single_tap_enabled, (S_IRUGO | S_IWUSR | S_IWGRP),
 		gesture_single_tap_enabled_show, gesture_single_tap_enabled_store);
 static DEVICE_ATTR(gesture_single_tap_state, (S_IRUGO | S_IWUSR | S_IWGRP), gesture_single_tap_value_show, NULL);
@@ -3762,6 +3815,8 @@ static struct attribute *touch_attr_group[] = {
 #ifdef	TOUCH_FOD_SUPPORT
 	&dev_attr_fod_press_status.attr,
 #endif
+	&dev_attr_gesture_double_tap_enabled.attr,
+	&dev_attr_gesture_double_tap_state.attr,
 	&dev_attr_gesture_single_tap_enabled.attr,
 	&dev_attr_gesture_single_tap_state.attr,
 	&dev_attr_touch_active_status.attr,
@@ -3963,10 +4018,12 @@ static void xiaomi_touch_publish_pdata(struct xiaomi_touch_pdata *pdata)
 	mutex_lock(&xiaomi_touch_dev.palm_mutex);
 	mutex_lock(&xiaomi_touch_dev.prox_mutex);
 	mutex_lock(&xiaomi_touch_dev.fod_press_status_mutex);
+	mutex_lock(&xiaomi_touch_dev.gesture_double_tap_mutex);
 	mutex_lock(&xiaomi_touch_dev.gesture_single_tap_mutex);
 	touch_pdata = pdata;
 	xiaomi_touch_device = pdata ? &xiaomi_touch_dev : NULL;
 	mutex_unlock(&xiaomi_touch_dev.gesture_single_tap_mutex);
+	mutex_unlock(&xiaomi_touch_dev.gesture_double_tap_mutex);
 	mutex_unlock(&xiaomi_touch_dev.fod_press_status_mutex);
 	mutex_unlock(&xiaomi_touch_dev.prox_mutex);
 	mutex_unlock(&xiaomi_touch_dev.palm_mutex);

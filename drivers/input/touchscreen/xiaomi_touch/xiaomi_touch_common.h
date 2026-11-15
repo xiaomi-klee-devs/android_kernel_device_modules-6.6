@@ -182,6 +182,7 @@ struct xiaomi_touch {
 	struct mutex mutex;
 	struct mutex palm_mutex;
 	struct mutex prox_mutex;
+	struct mutex gesture_double_tap_mutex;
 	struct mutex gesture_single_tap_mutex;
 	struct mutex fod_press_status_mutex;
 	struct mutex abnormal_event_mutex;
@@ -352,6 +353,7 @@ extern void add_input_event_timeline_before_event_time_common(int stage,
 int xiaomi_touch_set_suspend_state(int state);
 struct drm_panel *xiaomi_touch_check_panel(void);
 void add_common_data_to_buf(s8 touch_id, enum common_data_cmd cmd, enum common_data_mode mode, int length, int *data);
+extern int notify_gesture_double_tap(void);
 extern int notify_gesture_single_tap(void);
 #ifdef	TOUCH_FOD_SUPPORT
 extern int update_fod_press_status(int value);
