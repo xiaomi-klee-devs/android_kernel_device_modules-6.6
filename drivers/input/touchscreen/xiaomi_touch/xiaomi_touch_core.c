@@ -3331,6 +3331,36 @@ static ssize_t gesture_single_tap_value_show(struct device *dev,
 {
 	return snprintf(buf, PAGE_SIZE, "%d\n", 1);
 }
+static ssize_t gesture_single_tap_enabled_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%d\n",
+			driver_get_touch_mode_common(0, Touch_Aod_Enable));
+}
+static ssize_t gesture_single_tap_enabled_store(struct device *dev,
+		struct device_attribute *attr, const char *buf, size_t count)
+{
+	unsigned int input;
+	int mode_arr[CMD_DATA_BUF_SIZE] = { 0 };
+
+	if (sscanf(buf, "%u", &input) != 1 || input > 1)
+		return -EINVAL;
+
+	mutex_lock(&touch_callback_lock);
+	if (!touch_pdata || !touch_panel_data[0].registered) {
+		mutex_unlock(&touch_callback_lock);
+		return -ENODEV;
+	}
+	if (driver_get_touch_mode_common(0, Touch_Aod_Enable) != input)
+		sysfs_notify(&xiaomi_touch_dev.dev->kobj, NULL,
+			     "gesture_single_tap_enabled");
+
+	mode_arr[0] = input;
+	xiaomi_touch_set_mode(&touch_panel_data[0], 0, Touch_Aod_Enable,
+			      mode_arr);
+	mutex_unlock(&touch_callback_lock);
+	return count;
+}
 #ifdef	TOUCH_FOD_SUPPORT
 static ssize_t fod_press_status_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
@@ -3676,6 +3706,8 @@ static DEVICE_ATTR(update_rawdata, (0664), update_rawdata_show,
 #ifdef	TOUCH_FOD_SUPPORT
 static DEVICE_ATTR(fod_press_status, (S_IRUGO | S_IWUSR | S_IWGRP), fod_press_status_show, NULL);
 #endif
+static DEVICE_ATTR(gesture_single_tap_enabled, (S_IRUGO | S_IWUSR | S_IWGRP),
+		gesture_single_tap_enabled_show, gesture_single_tap_enabled_store);
 static DEVICE_ATTR(gesture_single_tap_state, (S_IRUGO | S_IWUSR | S_IWGRP), gesture_single_tap_value_show, NULL);
 static DEVICE_ATTR(touch_active_status, (S_IRUGO | S_IWUSR | S_IWGRP), touch_active_status_show, NULL);
 static DEVICE_ATTR(touch_irq_no, (S_IRUGO | S_IWUSR | S_IWGRP), touch_irq_no_show, NULL);
@@ -3730,6 +3762,7 @@ static struct attribute *touch_attr_group[] = {
 #ifdef	TOUCH_FOD_SUPPORT
 	&dev_attr_fod_press_status.attr,
 #endif
+	&dev_attr_gesture_single_tap_enabled.attr,
 	&dev_attr_gesture_single_tap_state.attr,
 	&dev_attr_touch_active_status.attr,
 	&dev_attr_touch_irq_no.attr,
