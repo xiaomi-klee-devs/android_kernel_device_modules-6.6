@@ -34,6 +34,10 @@ case "${OUT_DIR}" in
   *) OUT_DIR="${ROOT_DIR}/${OUT_DIR}" ;;
 esac
 OUT_DIR=$(readlink -f "${OUT_DIR}")
+if [ -z ${COMMON_OUT_DIR} ]
+then
+  COMMON_OUT_DIR=${ROOT_DIR}
+fi
 
 if [ "x${DEBUG}" == "x1" ]
 then
