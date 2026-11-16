@@ -2196,6 +2196,7 @@ void nvt_read_fw_history_all(void) {
 static int nvt_enable_gesture_mode(int value)
 {
 	int32_t ret = 0;
+	int32_t gesture_ret;
 	int32_t pinctrl_ret;
 	uint8_t doubletap_enable = 0;
 	uint8_t singletap_enable = 0;
@@ -2208,9 +2209,13 @@ static int nvt_enable_gesture_mode(int value)
 	}
 
 	// set gesture enable/disable
-	ret = nvt_set_gesture_switch((uint8_t)(ts->gesture_command & 0xFF));
-	if (ret < 0)
+	gesture_ret = nvt_set_gesture_switch((uint8_t)(ts->gesture_command & 0xFF));
+	if (gesture_ret < 0) {
+		NVT_ERR("set gesture switch before gesture mode failed: %d\n",
+			gesture_ret);
 		nvt_read_fw_history_all();
+		return gesture_ret;
+	}
 
 	if (value) {
 		if (ts->pen_support) {
@@ -2229,6 +2234,15 @@ static int nvt_enable_gesture_mode(int value)
 		ret = CTP_SPI_WRITE(ts->client, buf, 2);
 		if (ret < 0) {
 			NVT_ERR("set cmd failed!\n");
+			return ret;
+		}
+		/* The firmware can lose the switch while entering gesture mode. */
+		gesture_ret = nvt_set_gesture_switch(
+			(uint8_t)(ts->gesture_command & 0xFF));
+		if (gesture_ret < 0) {
+			NVT_ERR("restore gesture switch after gesture mode failed: %d\n",
+				gesture_ret);
+			return gesture_ret;
 		}
 		doubletap_enable = ts->gesture_command & 0x01;
 		singletap_enable = ts->gesture_command & 0x02;
