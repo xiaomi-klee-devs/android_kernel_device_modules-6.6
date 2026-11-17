@@ -3307,8 +3307,33 @@ static void nvt_set_gesture_mode(int value){
 		return ;
 	}
 	if(ts->ic_state <= NVT_STATE_RESUME_IN && ts->ic_state != NVT_STATE_INIT){
+		int ret = 0;
+
 		ts->gesture_command_delay = value;
 		NVT_LOG("nvt_gesture_command_delay = %d\n",ts->gesture_command_delay);
+		/* Apply late gesture updates while the IC is still in gesture mode. */
+		mutex_lock(&ts->lock);
+		if (!bTouchIsAwake &&
+		    (ts->ic_state == NVT_STATE_SUSPEND_IN ||
+		     ts->ic_state == NVT_STATE_SUSPEND_OUT)) {
+			pm_stay_awake(&ts->client->dev);
+			ts->gesture_command = value;
+			nvt_send_gesture_flag(value);
+			ret = nvt_set_gesture_switch((uint8_t)(value & 0xFF));
+			pm_relax(&ts->client->dev);
+			if (ret < 0)
+				NVT_ERR("apply gesture switch while suspended failed: %d\n",
+					ret);
+			else
+				NVT_LOG("nvt_gesture_command applied while suspended = %d\n",
+					value);
+		} else if (ts->ic_state == NVT_STATE_RESUME_OUT ||
+			   ts->ic_state == NVT_STATE_INIT) {
+			ts->gesture_command = value;
+			NVT_LOG("nvt_gesture_command = %d\n",ts->gesture_command);
+			nvt_send_gesture_flag(ts->gesture_command);
+		}
+		mutex_unlock(&ts->lock);
 /*P16 code for BUGP16-4840 by xiongdejun at 2025/6/3 start*/
 	}else if(ts->ic_state == NVT_STATE_RESUME_OUT || ts->ic_state == NVT_STATE_INIT){
 /*P16 code for BUGP16-4840 by xiongdejun at 2025/6/3 end*/
