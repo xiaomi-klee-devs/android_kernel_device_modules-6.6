@@ -129,7 +129,8 @@ static int auth_ca_name(void)
 	const char *white_list[] = {
 		"/vendor/bin",
 		"/odm/bin",
-		"/apex/com.google.android.widevine/bin/hw"
+		"/apex/com.google.android.widevine/bin/hw",
+		"/apex/com.google.android.widevine.lazy/bin/hw"
 	};
 	int index = 0;
 
