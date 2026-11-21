@@ -1146,6 +1146,13 @@ out:
 	return ret;
 }
 
+/*
+ * A host command is normally acknowledged within a few hundred microseconds.
+ * A mailbox stuck at 0xBF will not clear no matter how long we wait, so keep
+ * the poll short: worst case ~20 ms instead of ~100 ms per call.
+ */
+#define NVT_EXTEND_CMD_POLL_MAX	40
+
 int32_t nvt_set_extend_custom_cmd(uint8_t command, uint16_t value)
 {
 	uint8_t buf[6] = { 0 };
@@ -1162,7 +1169,7 @@ int32_t nvt_set_extend_custom_cmd(uint8_t command, uint16_t value)
 	if (ret < 0)
 		return ret;
 
-	for (i = 0; i < 200; i++) {
+	for (i = 0; i < NVT_EXTEND_CMD_POLL_MAX; i++) {
 		if (status != 0xBF) {
 			buf[0] = EVENT_MAP_HOST_CMD;
 			buf[1] = 0xBF;
@@ -1188,7 +1195,8 @@ int32_t nvt_set_extend_custom_cmd(uint8_t command, uint16_t value)
 
 	NVT_ERR("send extend cmd 0x%02X failed, status=0x%02X\n",
 		command, status);
-	nvt_read_fw_history_all();
+	if (status != 0xBF)
+		nvt_read_fw_history_all();
 	return -1;
 }
 
@@ -1210,7 +1218,7 @@ int32_t nvt_get_extend_custom_cmd(uint8_t command, uint16_t *value)
 	if (ret < 0)
 		return ret;
 
-	for (i = 0; i < 200; i++) {
+	for (i = 0; i < NVT_EXTEND_CMD_POLL_MAX; i++) {
 		if (status != 0xBF) {
 			buf[0] = EVENT_MAP_HOST_CMD;
 			buf[1] = 0xBF;
@@ -1237,7 +1245,8 @@ int32_t nvt_get_extend_custom_cmd(uint8_t command, uint16_t *value)
 
 	NVT_ERR("get extend cmd 0x%02X failed, status=0x%02X\n",
 		command, status);
-	nvt_read_fw_history_all();
+	if (status != 0xBF)
+		nvt_read_fw_history_all();
 	return -1;
 }
 
@@ -3307,33 +3316,24 @@ static void nvt_set_gesture_mode(int value){
 		return ;
 	}
 	if(ts->ic_state <= NVT_STATE_RESUME_IN && ts->ic_state != NVT_STATE_INIT){
-		int ret = 0;
-
 		ts->gesture_command_delay = value;
 		NVT_LOG("nvt_gesture_command_delay = %d\n",ts->gesture_command_delay);
-		/* Apply late gesture updates while the IC is still in gesture mode. */
+		/*
+		 * Do not program the IC here.  While suspended it sits in
+		 * gesture mode and does not reliably service host command
+		 * 0x1E: every attempt spins for ~100 ms in
+		 * nvt_set_extend_custom_cmd() (plus a firmware-history dump)
+		 * while ts->lock is held.  nvt_ts_resume() needs that same
+		 * lock, so the display power transition is delayed by ~700 ms.
+		 * The switch is reprogrammed by nvt_enable_gesture_mode() on
+		 * the next suspend, so only record the request and the panel
+		 * gesture flag here.
+		 */
 		mutex_lock(&ts->lock);
-		if (!bTouchIsAwake &&
-		    (ts->ic_state == NVT_STATE_SUSPEND_IN ||
-		     ts->ic_state == NVT_STATE_SUSPEND_OUT)) {
-			pm_stay_awake(&ts->client->dev);
-			ts->gesture_command = value;
-			nvt_send_gesture_flag(value);
-			ret = nvt_set_gesture_switch((uint8_t)(value & 0xFF));
-			pm_relax(&ts->client->dev);
-			if (ret < 0)
-				NVT_ERR("apply gesture switch while suspended failed: %d\n",
-					ret);
-			else
-				NVT_LOG("nvt_gesture_command applied while suspended = %d\n",
-					value);
-		} else if (ts->ic_state == NVT_STATE_RESUME_OUT ||
-			   ts->ic_state == NVT_STATE_INIT) {
-			ts->gesture_command = value;
-			NVT_LOG("nvt_gesture_command = %d\n",ts->gesture_command);
-			nvt_send_gesture_flag(ts->gesture_command);
-		}
+		ts->gesture_command = value;
+		nvt_send_gesture_flag(value);
 		mutex_unlock(&ts->lock);
+		NVT_LOG("nvt_gesture_command deferred = %d\n", value);
 /*P16 code for BUGP16-4840 by xiongdejun at 2025/6/3 start*/
 	}else if(ts->ic_state == NVT_STATE_RESUME_OUT || ts->ic_state == NVT_STATE_INIT){
 /*P16 code for BUGP16-4840 by xiongdejun at 2025/6/3 end*/
@@ -3347,20 +3347,19 @@ static void nvt_ic_switch_mode(void)
 {
 	int nonui = driver_get_touch_mode_common(0, Touch_Nonui_Mode);
 	int gesture = 0;
-	int ret;
 
 	if (!ts)
 		return;
 	/* nonui_status is the last IC request, not the public mode authority. */
 	if (!bTouchIsAwake && ts->gesture_command && ts->nonui_status != nonui) {
+		/*
+		 * Same constraint as the gesture switch below: host commands
+		 * are unreliable while the IC is in gesture mode and the write
+		 * would block nvt_ts_resume() through ts->lock.  nvt_ts_suspend()
+		 * replays this request, so just remember it.
+		 */
 		ts->nonui_status = nonui;
-		mutex_lock(&ts->lock);
-		pm_stay_awake(&ts->client->dev);
-		ret = nvt_set_extend_custom_cmd(0x25, nonui);
-		pm_relax(&ts->client->dev);
-		mutex_unlock(&ts->lock);
-		if (ret < 0)
-			NVT_ERR("set nonui mode failed: %d\n", ret);
+		NVT_LOG("nonui mode %d deferred while suspended\n", nonui);
 	}
 	if (driver_get_touch_mode_common(0, Touch_Doubletap_Mode) > 0)
 		gesture |= GESTURE_DOUBLE_TAP;
