@@ -5067,6 +5067,10 @@ static int32_t nvt_ts_suspend(struct device *dev)
 			NVT_ERR("replay nonui mode failed: %d\n", ret);
 	}
 	ts->ic_state = NVT_STATE_SUSPEND_IN;
+#if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
+	/* Refresh gesture bits left stale by the last wake gesture. */
+	nvt_ic_switch_mode();
+#endif
 /*P16 code for BUGP16-5788 by xiongdejun at 2025/6/18 start*/
 	if ((ts->gesture_command & GESTURE_FOD_PRESS) == 0 && ts->fod_setting == 5) {
 		ts->gesture_command |= GESTURE_FOD_PRESS;
