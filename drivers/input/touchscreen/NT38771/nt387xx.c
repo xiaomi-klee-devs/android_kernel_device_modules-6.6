@@ -3331,6 +3331,8 @@ static void nvt_set_gesture_mode(int value){
 		 */
 		mutex_lock(&ts->lock);
 		ts->gesture_command = value;
+		if (!bTouchIsAwake)
+			ts->gesture_command_screen_off = value;
 		nvt_send_gesture_flag(value);
 		mutex_unlock(&ts->lock);
 		NVT_LOG("nvt_gesture_command deferred = %d\n", value);
@@ -3338,6 +3340,8 @@ static void nvt_set_gesture_mode(int value){
 	}else if(ts->ic_state == NVT_STATE_RESUME_OUT || ts->ic_state == NVT_STATE_INIT){
 /*P16 code for BUGP16-4840 by xiongdejun at 2025/6/3 end*/
 		ts->gesture_command = value;
+		if (!value)
+			ts->gesture_command_screen_off = 0;
 		NVT_LOG("nvt_gesture_command = %d\n",ts->gesture_command);
 		nvt_send_gesture_flag(ts->gesture_command);
 	}
@@ -5070,6 +5074,12 @@ static int32_t nvt_ts_suspend(struct device *dev)
 #if IS_ENABLED(CONFIG_TOUCHSCREEN_XIAOMI_TOUCHFEATURE_COMMON)
 	/* Refresh gesture bits left stale by the last wake gesture. */
 	nvt_ic_switch_mode();
+	if (ts->gesture_command > 0 && ts->gesture_command_screen_off > 0 &&
+	    (ts->gesture_command | ts->gesture_command_screen_off) !=
+		    ts->gesture_command) {
+		ts->gesture_command |= ts->gesture_command_screen_off;
+		NVT_LOG("restore screen-off gesture 0x%02x\n", ts->gesture_command);
+	}
 #endif
 /*P16 code for BUGP16-5788 by xiongdejun at 2025/6/18 start*/
 	if ((ts->gesture_command & GESTURE_FOD_PRESS) == 0 && ts->fod_setting == 5) {

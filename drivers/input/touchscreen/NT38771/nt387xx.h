@@ -349,6 +349,7 @@ struct nvt_ts_data {
 /*P16 code for BUGP16-2768 by xiongdejun at 2025/5/26 start*/
 	int ic_state;
 	int gesture_command_delay;
+	int gesture_command_screen_off;
 /*P16 code for BUGP16-2768 by xiongdejun at 2025/5/26 end*/
 /* P16 code for HQFEAT-94432 by p-liaoxianguo at 2025/4/29 end */
 /*P16 code for HQFEAT-94432 by liaoxianguo at 2025/3/27 start*/
