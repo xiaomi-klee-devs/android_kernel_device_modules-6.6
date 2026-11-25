@@ -3333,7 +3333,8 @@ static void nvt_set_gesture_mode(int value){
 		ts->gesture_command = value;
 		if (!bTouchIsAwake)
 			ts->gesture_command_screen_off = value;
-		nvt_send_gesture_flag(value);
+		else
+			nvt_send_gesture_flag(value);
 		mutex_unlock(&ts->lock);
 		NVT_LOG("nvt_gesture_command deferred = %d\n", value);
 /*P16 code for BUGP16-4840 by xiongdejun at 2025/6/3 start*/
