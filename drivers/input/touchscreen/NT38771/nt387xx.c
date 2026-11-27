@@ -2253,6 +2253,7 @@ static int nvt_enable_gesture_mode(int value)
 				gesture_ret);
 			return gesture_ret;
 		}
+		ts->deep_sleep = false;
 		doubletap_enable = ts->gesture_command & 0x01;
 		singletap_enable = ts->gesture_command & 0x02;
 		fod_enable = ts->gesture_command & 0x04;
@@ -2271,6 +2272,7 @@ static int nvt_enable_gesture_mode(int value)
 		if (pinctrl_ret)
 			return dev_err_probe(&ts->client->dev, pinctrl_ret,
 					     "failed to select pmx_ts_suspend\n");
+		ts->deep_sleep = true;
 		NVT_LOG("Enter deep sleep mode\n");
 	}
 
@@ -3331,7 +3333,14 @@ static void nvt_set_gesture_mode(int value){
 		ts->gesture_command = value;
 		if (!bTouchIsAwake) {
 			ts->gesture_command_screen_off = value;
-			if (ts->ic_state <= NVT_STATE_SUSPEND_OUT) {
+			/*
+			 * Host command 0x1E is only serviced by the gesture-mode
+			 * firmware.  After a suspend without gestures the IC is in
+			 * deep sleep with its SPI pins parked, so keep the request
+			 * for the next suspend instead of failing here.
+			 */
+			if (!ts->deep_sleep &&
+			    ts->ic_state <= NVT_STATE_SUSPEND_OUT) {
 				pm_stay_awake(&ts->client->dev);
 				nvt_set_gesture_switch((uint8_t)(value & 0xFF));
 				pm_relax(&ts->client->dev);
@@ -5241,7 +5250,7 @@ static int32_t nvt_ts_resume(struct device *dev)
 
 	NVT_LOG("start\n");
 
-	if (!ts->gesture_command) {
+	if (ts->deep_sleep || !ts->gesture_command) {
 		ret = pinctrl_select_state(ts->pinctrl, ts->pinctrl_active);
 		if (ret) {
 			mutex_unlock(&ts->lock);
@@ -5250,6 +5259,7 @@ static int32_t nvt_ts_resume(struct device *dev)
 			return dev_err_probe(&ts->client->dev, ret,
 					     "failed to select pmx_ts_active\n");
 		}
+		ts->deep_sleep = false;
 	}
 
 	// please make sure display reset(RESX) sequence and mipi dsi cmds sent before this
@@ -5294,7 +5304,7 @@ static int32_t nvt_ts_resume(struct device *dev)
 		}
 	}
 #if WAKEUP_GESTURE
-	if (ts->gesture_command == 0) {
+	if (ts->gesture_command == 0 || !ts->irq_enabled) {
 		nvt_irq_enable(true);
 	}
 #else
