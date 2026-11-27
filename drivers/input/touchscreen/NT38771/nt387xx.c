@@ -3319,24 +3319,28 @@ static void nvt_set_gesture_mode(int value){
 		ts->gesture_command_delay = value;
 		NVT_LOG("nvt_gesture_command_delay = %d\n",ts->gesture_command_delay);
 		/*
-		 * Do not program the IC here.  While suspended it sits in
-		 * gesture mode and does not reliably service host command
-		 * 0x1E: every attempt spins for ~100 ms in
-		 * nvt_set_extend_custom_cmd() (plus a firmware-history dump)
-		 * while ts->lock is held.  nvt_ts_resume() needs that same
-		 * lock, so the display power transition is delayed by ~700 ms.
-		 * The switch is reprogrammed by nvt_enable_gesture_mode() on
-		 * the next suspend, so only record the request and the panel
-		 * gesture flag here.
+		 * The HAL enables the screen-off gesture set right after the
+		 * display blanks.  Recording the request without programming
+		 * the IC leaves it in the state armed by nvt_ts_suspend()
+		 * (often FOD-only) for the whole screen-off session, which
+		 * kills single/double tap wake.  Host command 0x1E is
+		 * serviced in gesture mode, and the bounded poll keeps the
+		 * ts->lock hold time at a few milliseconds.
 		 */
 		mutex_lock(&ts->lock);
 		ts->gesture_command = value;
-		if (!bTouchIsAwake)
+		if (!bTouchIsAwake) {
 			ts->gesture_command_screen_off = value;
-		else
+			if (ts->ic_state <= NVT_STATE_SUSPEND_OUT) {
+				pm_stay_awake(&ts->client->dev);
+				nvt_set_gesture_switch((uint8_t)(value & 0xFF));
+				pm_relax(&ts->client->dev);
+			}
+		} else {
 			nvt_send_gesture_flag(value);
+		}
 		mutex_unlock(&ts->lock);
-		NVT_LOG("nvt_gesture_command deferred = %d\n", value);
+		NVT_LOG("nvt_gesture_command applied = %d\n", value);
 /*P16 code for BUGP16-4840 by xiongdejun at 2025/6/3 start*/
 	}else if(ts->ic_state == NVT_STATE_RESUME_OUT || ts->ic_state == NVT_STATE_INIT){
 /*P16 code for BUGP16-4840 by xiongdejun at 2025/6/3 end*/
