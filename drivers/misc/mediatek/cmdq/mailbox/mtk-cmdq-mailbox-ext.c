@@ -264,8 +264,6 @@ int cmdq_res_debug;
 EXPORT_SYMBOL(cmdq_res_debug);
 module_param(cmdq_res_debug, int, 0644);
 
-static u32 cmdq_mmp_thread_exec;
-
 spinlock_t	g_lock_req_swmode;
 
 struct cmdq_hw_trace_bit {
@@ -303,7 +301,6 @@ struct cmdq_mmp_event {
 	mmp_event cmdq_irq;
 	mmp_event loop_irq;
 	mmp_event thread_en;
-	mmp_event thread_exec[32];
 	mmp_event thread_suspend;
 	mmp_event submit;
 	mmp_event wait;
@@ -728,9 +725,6 @@ static void cmdq_init(struct cmdq *cmdq)
 static inline void cmdq_mmp_init(void)
 {
 #if IS_ENABLED(CONFIG_CMDQ_MMPROFILE_SUPPORT)
-	u32 bit;
-	unsigned long thread_exec = cmdq_mmp_thread_exec;
-
 	mmprofile_enable(1);
 	if (cmdq_mmp.cmdq) {
 		mmprofile_start(1);
@@ -748,18 +742,7 @@ static inline void cmdq_mmp_init(void)
 	cmdq_mmp.submit = mmprofile_register_event(cmdq_mmp.cmdq, "submit");
 	cmdq_mmp.pkt_size = mmprofile_register_event(cmdq_mmp.cmdq, "pkt_size");
 	cmdq_mmp.wait = mmprofile_register_event(cmdq_mmp.cmdq, "wait");
-
-	for_each_set_bit(bit, &thread_exec,
-		min_t(u32, 32, (u32)ARRAY_SIZE(cmdq_mmp.thread_exec))) {
-		char name[10];
-		u32 len;
-
-		len = snprintf(name, sizeof(name), "thread%u", bit);
-		if (!len || len >= sizeof(name))
-			name[sizeof(name) - 1] = 0;
-		cmdq_mmp.thread_exec[bit] = mmprofile_register_event(cmdq_mmp.thread_en, name);
-	}
-
+	cmdq_mmp.warning = mmprofile_register_event(cmdq_mmp.cmdq, "warning");
 	mmprofile_enable_event_recursive(cmdq_mmp.cmdq, 1);
 	mmprofile_start(1);
 #endif
@@ -1094,20 +1077,12 @@ static void cmdq_thread_err_reset(struct cmdq *cmdq, struct cmdq_thread *thread,
 #if IS_ENABLED(CONFIG_CMDQ_MMPROFILE_SUPPORT)
 	mmprofile_log_ex(cmdq_mmp.thread_en, MMPROFILE_FLAG_PULSE,
 		MMP_THD(thread, cmdq), CMDQ_THR_ENABLED);
-	if (thread->mmp_exec) {
-		mmprofile_log_ex(cmdq_mmp.thread_exec[thread->idx], MMPROFILE_FLAG_START,
-			MMP_THD(thread, cmdq), CMDQ_THR_ENABLED);
-	}
 #endif
 }
 
 static void cmdq_thread_disable(struct cmdq *cmdq, struct cmdq_thread *thread)
 {
 #if IS_ENABLED(CONFIG_CMDQ_MMPROFILE_SUPPORT)
-	if (thread->mmp_exec) {
-		mmprofile_log_ex(cmdq_mmp.thread_exec[thread->idx], MMPROFILE_FLAG_END,
-			MMP_THD(thread, cmdq), CMDQ_THR_ENABLED);
-	}
 	mmprofile_log_ex(cmdq_mmp.thread_en, MMPROFILE_FLAG_PULSE,
 		MMP_THD(thread, cmdq), CMDQ_THR_DISABLED);
 #endif
@@ -1510,11 +1485,6 @@ static void cmdq_task_exec(struct cmdq_pkt *pkt, struct cmdq_thread *thread)
 #if IS_ENABLED(CONFIG_CMDQ_MMPROFILE_SUPPORT)
 		mmprofile_log_ex(cmdq_mmp.thread_en, MMPROFILE_FLAG_PULSE,
 			MMP_THD(thread, cmdq), CMDQ_THR_ENABLED);
-		if (thread->mmp_exec) {
-			mmprofile_log_ex(cmdq_mmp.thread_exec[thread->idx], MMPROFILE_FLAG_START,
-				MMP_THD(thread, cmdq), CMDQ_THR_ENABLED);
-		}
-
 #endif
 
 		pkt_end_pa = cmdq_task_get_end_pa(pkt);
@@ -3699,7 +3669,6 @@ static int cmdq_probe(struct platform_device *pdev)
 	of_property_read_u32(dev->of_node, "cmdq-res-debug", &cmdq_res_debug);
 	of_property_read_u32(dev->of_node, "cmdq-control-address-limit",
 		&gce_control_address_limit);
-	of_property_read_u32(dev->of_node, "cmdq-mmp-thread-exec", &cmdq_mmp_thread_exec);
 
 	cmdq_msg("dump_buf_size %d error irq %d tfa_read_dbg:%d proc_debug_off:%d print_debug:%d cmdq_res_wa_chk:%d",
 		cmdq_dump_buf_size,
@@ -3798,6 +3767,7 @@ static int cmdq_probe(struct platform_device *pdev)
 			cmdq_thread_handle_timeout_work);
 	}
 
+
 	err = mbox_controller_register(&cmdq->mbox);
 	if (err < 0) {
 		cmdq_err("failed to register mailbox:%d", err);
@@ -3819,11 +3789,6 @@ static int cmdq_probe(struct platform_device *pdev)
 	spin_lock_init(&cmdq->irq_idx_lock);
 
 	cmdq_mmp_init();
-
-	for (i = 0; i < ARRAY_SIZE(cmdq->thread); i++) {
-		if (i < ARRAY_SIZE(cmdq_mmp.thread_exec) && cmdq_mmp.thread_exec[i])
-			cmdq->thread[i].mmp_exec = true;
-	}
 
 	if (cmdq->gce_vm && hw_trace_vm) {
 		cmdq->irq_vm6 = platform_get_irq(pdev, 1);
