@@ -2824,8 +2824,7 @@
 			clock-names = "MT_CG_VENC0";
 			operating-points-v2 = <&opp_table_venc>;
 			mmdvfs-dvfsrc-vcore-supply = <&dvfsrc_vcore>;
-			venc-core-count = <1>;
-			port-arg-num = <3>;
+			port_arg_num = <3>;
 			port-def = <0 M4U_PORT_L7_VENC_RCPU 0>,
 				<0 M4U_PORT_L7_VENC_REC 0>,
 				<0 M4U_PORT_L7_VENC_BSDMA 0>,
@@ -2838,7 +2837,7 @@
 				<0 M4U_PORT_L7_JPGENC_Y_RDMA 0>,
 				<0 M4U_PORT_L7_JPGENC_C_RDMA 0>,
 				<0 M4U_PORT_L7_JPGENC_Q_TABLE 0>,
-				<0 M4U_PORT_L7_JPGENC_BSDMA 0>;
+				<0 M4U_PORT_L7_JPGENC_BSDMA>;
 			interconnects =
 					<&mmqos MASTER_LARB_PORT(M4U_PORT_L7_VENC_RCPU)
 						&mmqos SLAVE_COMMON(0)>,

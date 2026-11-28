@@ -19,18 +19,18 @@ bootargs_ext = "rcu_nocbs=0-7";
 };
 
 &ise_mbox {
-	mediatek,real-drv = <1>;
+	mediatek,real-drv = <0>;
 };
 
 &ise_lpm {
-	ise-wakelock = <1>;
-	ise-lpm-freerun = <1>;
+	ise-wakelock = <0>;
+	ise-lpm-freerun = <0>;
 	ise-lpm-deinit-bypass = <0>;
 	power-domains = <&scpsys MT6991_POWER_DOMAIN_SSR>;
 };
 
 &ise_trusty {
-	mediatek,real-drv = <1>;
+	mediatek,real-drv = <0>;
 };
 
 &pio {
