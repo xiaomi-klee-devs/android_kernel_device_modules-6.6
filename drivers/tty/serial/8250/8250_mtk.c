@@ -1970,6 +1970,10 @@ static void mtk8250_shutdown(struct uart_port *port)
 #ifdef CONFIG_SERIAL_8250_DMA
 	struct uart_8250_port *up = up_to_u8250p(port);
 	struct mtk8250_data *data = port->private_data;
+	if (!data || !up) {
+		pr_info("[%s] data or up is null\n", __func__);
+		return;
+	}
 
 	if (up->dma)
 		data->rx_status = DMA_RX_SHUTDOWN;
