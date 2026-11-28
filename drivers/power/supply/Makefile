@@ -65,3 +65,4 @@ obj-$(CONFIG_EXTERNAL_LOADSWITCH) += sc7601.o
 obj-$(CONFIG_FUELGAUGE_STRATEGY) += fuelgauge_class.o
 obj-$(CONFIG_FUELGAUGE_STRATEGY) += fuelgauge_strategy.o
 obj-$(CONFIG_MTK_UT_TEST)    += mtk_ut_test.o
+subdir-ccflags-y += -Wno-undef
