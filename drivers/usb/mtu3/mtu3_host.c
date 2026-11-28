@@ -232,7 +232,6 @@ int ssusb_host_enable(struct ssusb_mtk *ssusb)
 	void __iomem *ibase = ssusb->ippc_base;
 	int num_u3p = ssusb->u3_ports;
 	int num_u2p = ssusb->u2_ports;
-	enum usb_device_speed max_speed = ssusb->u3d->max_speed_host;
 	int u3_ports_disabled;
 	u32 check_clk;
 	u32 value;
@@ -240,7 +239,7 @@ int ssusb_host_enable(struct ssusb_mtk *ssusb)
 	int ret;
 
 	/* if dp 4-lane, set u3_ports = 0 */
-	if (get_dp_switch_status(ssusb) || max_speed < USB_SPEED_SUPER)
+	if (get_dp_switch_status(ssusb))
 		num_u3p = 0;
 
 	/* power on host ip */
@@ -257,11 +256,6 @@ int ssusb_host_enable(struct ssusb_mtk *ssusb)
 		value = mtu3_readl(ibase, SSUSB_U3_CTRL(i));
 		value &= ~(SSUSB_U3_PORT_PDN | SSUSB_U3_PORT_DIS);
 		value |= SSUSB_U3_PORT_HOST_SEL;
-		/* update host speed setting */
-		if (max_speed == USB_SPEED_SUPER_PLUS)
-			value |= SSUSB_U3_PORT_SSP_SPEED;
-		else
-			value &= ~SSUSB_U3_PORT_SSP_SPEED;
 		mtu3_writel(ibase, SSUSB_U3_CTRL(i), value);
 	}
 
@@ -480,6 +474,9 @@ static void ssusb_host_cleanup(struct ssusb_mtk *ssusb)
 {
 	if (ssusb->is_host)
 		ssusb_set_vbus(&ssusb->otg_switch, 0);
+
+	/* wait for USB bus idle */
+	ssusb_wait_power_state(ssusb, MTU3_STATE_POWER_OFF);	
 
 	ssusb_host_disable(ssusb);
 }

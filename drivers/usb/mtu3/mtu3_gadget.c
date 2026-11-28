@@ -917,7 +917,10 @@ static void mtu3_state_reset(struct mtu3 *mtu)
 	mtu->delayed_status = false;
 	mtu->test_mode = false;
 	mtu->u2_lpm_reject = MTU3_U2_LPM_DEFAULT;
+#if defined(CONFIG_PDTEST_MODE)
+	mtu->usb_pd = false;
 	mtu->gadget_suspend = false;
+#endif
 }
 
 static void init_hw_ep(struct mtu3 *mtu, struct mtu3_ep *mep,
@@ -1009,7 +1012,9 @@ void mtu3_gadget_cleanup(struct mtu3 *mtu)
 void mtu3_gadget_resume(struct mtu3 *mtu)
 {
 	dev_info(mtu->dev, "gadget RESUME\n");
+#if defined(CONFIG_PDTEST_MODE)
 	mtu->gadget_suspend = false;
+#endif
 	if (mtu->async_callbacks && mtu->gadget_driver &&
 			mtu->gadget_driver->resume) {
 		spin_unlock(&mtu->lock);
@@ -1022,7 +1027,9 @@ void mtu3_gadget_resume(struct mtu3 *mtu)
 void mtu3_gadget_suspend(struct mtu3 *mtu)
 {
 	dev_info(mtu->dev, "gadget SUSPEND\n");
+#if defined(CONFIG_PDTEST_MODE)
 	mtu->gadget_suspend = true;
+#endif
 	if (mtu->async_callbacks && mtu->gadget_driver &&
 			mtu->gadget_driver->suspend) {
 		spin_unlock(&mtu->lock);

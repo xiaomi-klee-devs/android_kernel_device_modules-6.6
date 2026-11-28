@@ -377,6 +377,16 @@ struct ssusb_mtk {
 	/* clkgate */
 	struct regmap *clkgate;
 	u32 clkgate_oft;
+	/* usb bus related address */
+	struct regmap *usb_mbist;
+	struct regmap *bus_protect;
+	u32 bus_protect_set_oft;
+	u32 bus_protect_clr_oft;
+	u32 bus_protect_en_oft;
+	u32 bus_protect_sta_oft;
+	u32 bus_protect_mask;
+	/* usb bus state */
+	bool usb_bus_busy;
 	/* usb power domain */
 	struct device *genpd_u2;
 	struct device *genpd_u3;
@@ -516,7 +526,10 @@ struct mtu3 {
 	const char *typec_name;
 	const char *typec_port_name;
 	struct typec_port *typec_port;
+#if defined(CONFIG_PDTEST_MODE)
+	bool usb_pd;
 	bool gadget_suspend;
+#endif
 };
 
 /* struct ssusb_offload */
@@ -585,6 +598,7 @@ int ssusb_clks_enable(struct ssusb_mtk *ssusb);
 void ssusb_clks_disable(struct ssusb_mtk *ssusb);
 void ssusb_ip_sw_reset(struct ssusb_mtk *ssusb);
 void ssusb_set_power_state(struct ssusb_mtk *ssusb, enum mtu3_power_state);
+int ssusb_wait_power_state(struct ssusb_mtk *ssusb, enum mtu3_power_state);
 void ssusb_set_ux_exit_lfps(struct ssusb_mtk *ssusb);
 void ssusb_set_polling_scdlfps_time(struct ssusb_mtk *ssusb);
 void ssusb_set_txdeemph(struct ssusb_mtk *ssusb);

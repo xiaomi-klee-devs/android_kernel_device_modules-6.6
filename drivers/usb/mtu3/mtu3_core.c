@@ -81,9 +81,14 @@ static void mtu3_vbus_draw_work(struct work_struct *data)
 	int ret;
 
 	if (mtu->is_active) {
-		if (!mtu->gadget_suspend && mtu->g.state == USB_STATE_CONFIGURED)
+#if defined(CONFIG_PDTEST_MODE)
+		if (mtu->usb_pd && !mtu->gadget_suspend &&
+				mtu->g.state == USB_STATE_CONFIGURED)
 			val.intval = UNLIMIT_CURRENT_MASK; /* unlimited */
 		else if (mtu->vbus_draw < USB_SELF_POWER_VBUS_MAX_DRAW)
+#else
+		if (mtu->vbus_draw < USB_SELF_POWER_VBUS_MAX_DRAW)
+#endif
 			val.intval = 0; /* 0 mA*/
 		else if (mtu->vbus_draw == USB_SELF_POWER_VBUS_MAX_DRAW)
 			val.intval = 100; /* 100 mA*/
@@ -283,6 +288,8 @@ void mtu3_device_disable(struct mtu3 *mtu)
 {
 	void __iomem *ibase = mtu->ippc_base;
 
+	ssusb_wait_power_state(mtu->ssusb, MTU3_STATE_POWER_OFF);
+
 	if (mtu->u3_capable)
 		mtu3_setbits(ibase, SSUSB_U3_CTRL(0),
 			(SSUSB_U3_PORT_DIS | SSUSB_U3_PORT_PDN));
@@ -427,8 +434,7 @@ void mtu3_set_speed(struct mtu3 *mtu, enum usb_device_speed speed)
 		return;
 	}
 
-	if (!mtu->ssusb->is_host)
-		mtu->speed = speed;
+	mtu->speed = speed;
 	dev_info(mtu->dev, "set speed: %s\n", usb_speed_string(speed));
 }
 
