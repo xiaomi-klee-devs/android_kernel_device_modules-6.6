@@ -104,6 +104,8 @@ static void cpu_pt_low_battery_cb(enum LOW_BATTERY_LEVEL_TAG level, void *data)
 	struct cpu_pt_policy *pt_policy;
 	int cpu;
 	s32 freq_limit;
+	u32 limit_val[3] = {0};
+	int i = 0;
 
 	if (level > cpu_pt_info[LBAT_POWER_THROTTLING].max_lv)
 		return;
@@ -116,8 +118,16 @@ static void cpu_pt_low_battery_cb(enum LOW_BATTERY_LEVEL_TAG level, void *data)
 			freq_qos_update_request(&pt_policy->qos_req, freq_limit);
 			cpu = pt_policy->cpu;
 			trace_low_battery_throttling_cpu_freq(cpu, freq_limit);
+			if (i < (sizeof(limit_val)/sizeof(u32))) {
+				limit_val[i] = freq_limit;
+				i++;
+			}
 		}
 	}
+
+	pr_info("[PT][LV] throttle level=%d, cpub_limit_freq=%d cpum_limit_freq=%d cpul_limit_freq=%d\n",
+		level, limit_val[0], limit_val[1], limit_val[2]);
+
 }
 #endif
 
@@ -135,6 +145,9 @@ static void cpu_pt_over_current_cb(enum BATTERY_OC_LEVEL_TAG level, void *data)
 {
 	struct cpu_pt_policy *pt_policy;
 	s32 freq_limit;
+	u32 limit_val[3] = {0};
+	int i = 0;
+
 	if (level > cpu_pt_info[OC_POWER_THROTTLING].max_lv)
 		return;
 	list_for_each_entry(pt_policy, &pt_policy_list, cpu_pt_list) {
@@ -144,8 +157,14 @@ static void cpu_pt_over_current_cb(enum BATTERY_OC_LEVEL_TAG level, void *data)
 			else
 				freq_limit = FREQ_QOS_MAX_DEFAULT_VALUE;
 			freq_qos_update_request(&pt_policy->qos_req, freq_limit);
+			if (i < (sizeof(limit_val)/sizeof(u32))) {
+				limit_val[i] = freq_limit;
+				i++;
+			}
 		}
 	}
+	pr_info("[PT][OC] throttle level=%d, cpub_limit_freq=%d cpum_limit_freq=%d cpul_limit_freq=%d\n",
+		level, limit_val[0], limit_val[1], limit_val[2]);
 }
 #endif
 #if IS_ENABLED(CONFIG_MTK_BATTERY_PERCENT_THROTTLING)
@@ -155,6 +174,7 @@ static void cpu_pt_battery_percent_cb(enum BATTERY_PERCENT_LEVEL_TAG level)
 	struct cpu_pt_priv *pt_info_p = &cpu_pt_info[SOC_POWER_THROTTLING];
 	s32 freq_limit;
 	int idx = 0, i = 0, active;
+	u32 limit_val[3] = {0};
 
 	if (level > cpu_pt_info[SOC_POWER_THROTTLING].max_lv)
 		return;
@@ -166,9 +186,17 @@ static void cpu_pt_battery_percent_cb(enum BATTERY_PERCENT_LEVEL_TAG level)
 			else
 				freq_limit = FREQ_QOS_MAX_DEFAULT_VALUE;
 			freq_qos_update_request(&pt_policy->qos_req, freq_limit);
+			if (i < (sizeof(limit_val)/sizeof(u32))) {
+				limit_val[i] = freq_limit;
+				i++;
+			}
 		}
 	}
 
+	pr_info("[PT][BP] throttle level=%d, cpub_limit_freq=%d cpum_limit_freq=%d cpul_limit_freq=%d\n",
+		level, limit_val[0], limit_val[1], limit_val[2]);
+
+	i = 0;
 	mutex_lock(&cpu_thr_lock);
 	for_each_possible_cpu(i) {
 		if (level == BATTERY_PERCENT_LEVEL_0)
@@ -400,6 +428,7 @@ static int mtk_cpu_power_throttling_probe(struct platform_device *pdev)
 
 				for (j = 0; j < cpu_pt_info[i].max_lv; j++)
 					freq_limit_t[j] = cpu_pt_info[i].freq_limit[j * CLUSTER_NUM + k];
+
 				pt_policy->pt_type = (enum cpu_pt_type)i;
 				pt_policy->policy = policy;
 				pt_policy->cpu = cpu;
