@@ -286,6 +286,7 @@ struct usb_offload_dev {
 	struct ssusb_offload *ssusb_offload_notify;
 	struct mutex dev_lock;
 	struct mutex xhci_lock;
+	struct mutex event_lock;
 	u64 *mapping_table;
 	void *tracer;
 };

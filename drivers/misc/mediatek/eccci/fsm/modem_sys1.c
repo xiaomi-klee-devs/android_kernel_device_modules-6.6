@@ -133,9 +133,6 @@ static inline int md_sys1_sw_init(struct ccci_modem *md)
 	CCCI_BOOTUP_LOG(0, TAG,
 		"%s, MD_WDT IRQ(%d)\n", __func__, md->md_wdt_irq_id);
 
-	irq_set_irqchip_state(md->md_wdt_irq_id,
-			IRQCHIP_STATE_PENDING, false);
-
 	ret = request_irq(md->md_wdt_irq_id, md_cd_wdt_isr,
 			md->md_wdt_irq_flags, "MD_WDT", md);
 	if (ret) {
@@ -388,8 +385,6 @@ static void dump_runtime_data_v2(struct ccci_modem *md,
 			i, ap_feature->feature_set[i].support_mask,
 			ap_feature->feature_set[i].version);
 	}
-
-#if IS_ENABLED(CONFIG_MTK_CCCI_DUMP)
 	CCCI_BOOTUP_LOG(0, TAG,
 		"share_memory_support 0x%x\n",
 		ap_feature->share_memory_support);
@@ -414,7 +409,6 @@ static void dump_runtime_data_v2(struct ccci_modem *md,
 	CCCI_BOOTUP_LOG(0, TAG,
 		"tail_pattern 0x%x\n",
 		ap_feature->tail_pattern);
-#endif
 }
 
 static void dump_runtime_data_v2_1(struct ccci_modem *md,
@@ -431,8 +425,6 @@ static void dump_runtime_data_v2_1(struct ccci_modem *md,
 			i, ap_feature->feature_set[i].support_mask,
 			ap_feature->feature_set[i].version);
 	}
-
-#if IS_ENABLED(CONFIG_MTK_CCCI_DUMP)
 	CCCI_BOOTUP_LOG(0, TAG,
 		"share_memory_support 0x%x\n",
 		ap_feature->share_memory_support);
@@ -463,7 +455,6 @@ static void dump_runtime_data_v2_1(struct ccci_modem *md,
 	CCCI_BOOTUP_LOG(0, TAG,
 		"tail_pattern 0x%x\n",
 		ap_feature->tail_pattern);
-#endif
 }
 
 static void md_cd_smem_sub_region_init_old(struct ccci_modem *md)

@@ -13,5 +13,4 @@
 
 
 ifneq ($(wildcard $(srctree)/$(src)/smap-mt6991.c),)
-obj-${CONFIG_MTK_SMAP_MT6991} += smap-mt6991.o
 endif

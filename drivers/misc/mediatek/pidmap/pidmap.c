@@ -316,8 +316,8 @@ static int mtk_pidmap_proc_init(void)
 	kuid_t uid;
 	kgid_t gid;
 
-	uid = make_kuid(&init_user_ns, 0);
-	gid = make_kgid(&init_user_ns, 1001);
+	uid = KUIDT_INIT(0);
+	gid = KGIDT_INIT(1001);
 
 	mtk_pidmap_proc_entry = proc_create("pidmap",
 		PIDMAP_PROC_PERM, NULL,

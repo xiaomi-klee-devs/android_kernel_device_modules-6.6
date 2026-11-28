@@ -717,6 +717,77 @@
  ************************************/
 /* SONY */
 #define IMX866RGB_I3C_PID							0x036008660000
+/*XIAOMI ADD START*/
+#define DALIOVX8000WIDE_SENSOR_ID                  0x5650
+#define SENSOR_DRVNAME_DALIOVX8000WIDE_MIPI_RAW   "daliovx8000wide_mipi_raw"
+
+#define DALIOV20BFRONT_SENSOR_ID                  0x2043
+#define SENSOR_DRVNAME_DALIOV20BFRONT_MIPI_RAW   "daliov20bfront_mipi_raw"
+
+#define DALIOV08F10ULTRA_SENSOR_ID                 0x5608
+#define SENSOR_DRVNAME_DALIOV08F10ULTRA_MIPI_RAW  "daliov08f10ultra_mipi_raw"
+
+#define KLIMTOVX9100WIDE_SENSOR_ID                  0x5652  //id duplication(original id + 2)
+#define SENSOR_DRVNAME_KLIMTOVX9100WIDE_MIPI_RAW   "klimtovx9100wide_mipi_raw"
+
+#define KLIMTS5KKDSFRONT_SENSOR_ID                  0x484F
+#define SENSOR_DRVNAME_KLIMTS5KKDSFRONT_MIPI_RAW   "klimts5kkdsfront_mipi_raw"
+
+#define KLIMTS5KJN5TELE_SENSOR_ID                 0x38E5
+#define SENSOR_DRVNAME_KLIMTS5KJN5TELE_MIPI_RAW  "klimts5kjn5tele_mipi_raw"
+
+#define KLIMTS5KJN5TELE_V2_SENSOR_ID                 0x38E7
+#define SENSOR_DRVNAME_KLIMTS5KJN5TELE_V2_MIPI_RAW  "klimts5kjn5tele_v2_mipi_raw"
+
+#define KLIMTOV13BULTRA_SENSOR_ID                  0x0D43
+#define SENSOR_DRVNAME_KLIMTOV13BULTRA_MIPI_RAW   "klimtov13bultra_mipi_raw"
+
+#define TURNEROV08F10FRONT_SENSOR_ID                 0x5609
+#define SENSOR_DRVNAME_TURNEROV08F10FRONT_MIPI_RAW  "turnerov08f10front_mipi_raw"
+
+#define TURNEROV13B10WIDE_SENSOR_ID                  0x0D42
+#define SENSOR_DRVNAME_TURNEROV13B10WIDE_MIPI_RAW   "turnerov13b10wide_mipi_raw"
+
+#define RODINOV20BFRONT_SENSOR_ID                  0x2042
+#define SENSOR_DRVNAME_RODINOV20BFRONT_MIPI_RAW   "rodinov20bfront_mipi_raw"
+
+#define RODINSC820CSULTRA_SENSOR_ID                  0xd154
+#define SENSOR_DRVNAME_RODINSC820CSULTRA_MIPI_RAW   "rodinsc820csultra_mipi_raw"
+
+#define RODINIMX882WIDE_SENSOR_ID                  0x8202
+#define SENSOR_DRVNAME_RODINIMX882WIDE_MIPI_RAW   "rodinimx882wide_mipi_raw"
+
+#define KLEEOV20BFRONT_SENSOR_ID                  0x2044
+#define SENSOR_DRVNAME_KLEEOV20BFRONT_MIPI_RAW   "kleeov20bfront_mipi_raw"
+
+#define KLEESC821CSULTRA_SENSOR_ID                  0xd18a
+#define SENSOR_DRVNAME_KLEESC821CSULTRA_MIPI_RAW   "kleesc821csultra_mipi_raw"
+
+#define KLEEIMX882WIDE_SENSOR_ID                  0x8203
+#define SENSOR_DRVNAME_KLEEIMX882WIDE_MIPI_RAW   "kleeimx882wide_mipi_raw"
+
+#define GOYAS5KJN5DTELE_SENSOR_ID                 0x38E6
+#define SENSOR_DRVNAME_GOYAS5KJN5DTELE_MIPI_RAW  "goyas5kjn5dtele_mipi_raw"
+
+#define GOYAOVX8000WIDE_SENSOR_ID                  0x5650
+#define SENSOR_DRVNAME_GOYAOVX8000WIDE_MIPI_RAW   "goyaovx8000wide_mipi_raw"
+
+#define GOYAOV13BULTRA_SENSOR_ID                  0x0D44
+#define SENSOR_DRVNAME_GOYAOV13BULTRA_MIPI_RAW   "goyaov13bultra_mipi_raw"
+
+#define GOYAS5KKDSFRONT_SENSOR_ID                  0x484F
+#define SENSOR_DRVNAME_GOYAS5KKDSFRONT_MIPI_RAW   "goyas5kkdsfront_mipi_raw"
+
+#define DASHOV20BFRONT_SENSOR_ID                    0x2045
+#define SENSOR_DRVNAME_DASHOV20BFRONT_MIPI_RAW      "dashov20bfront_mipi_raw"
+
+#define DASHSC821CSULTRA_SENSOR_ID                  0xD18B
+#define SENSOR_DRVNAME_DASHSC821CSULTRA_MIPI_RAW    "dashsc821csultra_mipi_raw"
+
+#define DASHSC532HSWIDE_SENSOR_ID                   0xB787
+#define SENSOR_DRVNAME_DASHSC532HSWIDE_MIPI_RAW     "dashsc532hswide_mipi_raw"
+
+/*XIAOMI ADD END*/
 
 
 /************************************

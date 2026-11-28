@@ -14,6 +14,7 @@
 #include <linux/proc_fs.h>
 #include <linux/spinlock.h>
 #include <linux/timer.h>
+#include <linux/delay.h>
 #include "mtk_battery_oc_throttling.h"
 #include "mtk_low_battery_throttling.h"
 #include "mtk_bp_thl.h"
@@ -33,7 +34,13 @@
 #define STR_SIZE 1024
 #define MAX_VALUE 0x7FFF
 #define MAX_POWER_DRAM 4000
-#define MAX_POWER_DISPLAY 2000
+#if defined(CONFIG_TARGET_PRODUCT_GOYA)
+#define MAX_POWER_DISPLAY 2876
+#elif defined(CONFIG_TARGET_PRODUCT_KLEE)
+#define MAX_POWER_DISPLAY 3196
+#else
+#define MAX_POWER_DISPLAY 4490
+#endif
 #define SOC_ERROR 3000
 #define BAT_CIRCUIT_DEFAULT_RDC 55
 #define BAT_PATH_DEFAULT_RDC 100
@@ -46,8 +53,6 @@
 #define HPT_PREUV_VOLT_DEFAULT   2 //0(2.4V), 1(2.6V) 2(2.8V) 3(3.0V) 4(3.2V)
 #define PPB_MODE_DEFAULT         12
 #define DEFAULT_COMBO0_UISOC MAX_VALUE
-#define DEFAULT_MINCOMBO_TEMP_THD MAX_VALUE
-#define DEFAULT_MINCOMBO_MIN_COMBO 7
 
 static bool mt_ppb_debug;
 static spinlock_t ppb_lock;
@@ -301,6 +306,7 @@ static void __used ppb_print_dbg_log(struct timer_list *timer)
 	unsigned int cpub_cnt, cpub_th_t, cpum_cnt, cpum_th_t, gpu_cnt, gpu_th_t;
 	int cpub_sf = 0, cpum_sf = 0, gpu_sf = 0, cg_pwr = 0, combo = 0, cb_cnt = 0, i, offset, ret;
 	char str[STR_SIZE];
+	u32 cb_freq = 0, cm_freq = 0, cl_freq = 0, gpu_freq = 0;
 
 	if (!ppb_ctrl.ppb_drv_done)
 		return;
@@ -379,6 +385,13 @@ static void __used ppb_print_dbg_log(struct timer_list *timer)
 		offset = offset + ret;
 
 	pr_info("%s\n", str);
+
+	if (cgppt_dbg_ops && cgppt_dbg_ops->get_combo)
+		cgppt_dbg_ops->get_cg_freq(&cb_freq, &cm_freq, &cl_freq, &gpu_freq);
+
+	pr_info("[PPB] throttle cpub_limit_freq=%d cpum_limit_freq=%d cpul_limit_freq=%d gpu_limit_freq=%d\n",
+		cb_freq, cm_freq, cl_freq, gpu_freq);
+
 	memcpy(&last_klog_xpu_dbg, &dbg_data, sizeof(struct xpu_dbg_t));
 	mod_timer(&ppb_dbg_timer, jiffies + PPB_LOG_DURATION);
 }
@@ -411,10 +424,9 @@ static int __used notify_gpueb(void)
 {
 	struct ppb_ipi_data ipi_data;
 	int ret;
-
+	
 	if (ppb_gpueb_ipi_init())
 		return -1;
-
 	ipi_data.cmd = 0;
 	ret = mtk_ipi_send_compl_to_gpueb(channel_id, IPI_SEND_WAIT, &ipi_data,
 			PPB_IPI_DATA_LEN, PPB_IPI_TIMEOUT_MS);
@@ -822,10 +834,16 @@ static void bat_handler(struct work_struct *work)
 	unsigned int temp_stage, uisoc_stage, aging_stage = 0;
 	int ret = 0, soc, temp, volt, qmax, cycle, bat_rdc, uisoc, i, cb_idx;
 	bool loop;
-	int min_power = 0;
 
-	if (!pb.psy)
+	if (!pb.psy) {
+		pr_info("%s: pb.psy null!!\n", __func__);
 		return;
+	}
+
+	if (strcmp(psy->desc->name, "battery") != 0) {
+		pr_info("%s: name not battery!!\n", __func__);
+		return;
+	}
 
 	psy_mtk = power_supply_get_by_name("mtk-gauge");
 	if (!psy_mtk || IS_ERR(psy_mtk)) {
@@ -836,29 +854,33 @@ static void bat_handler(struct work_struct *work)
 		}
 	}
 
-	ret = power_supply_get_property(psy_mtk, POWER_SUPPLY_PROP_ENERGY_NOW, &val);
-	if (ret)
+	ret = power_supply_get_property(psy, POWER_SUPPLY_PROP_CAPACITY, &val);
+	if (ret) {
+		pr_info("%s: get energy now fail!!\n", __func__);
 		return;
+	}
 
-	soc = val.intval / 100;
-	if (soc == 0)
+	soc = val.intval;
+	if (soc == 0) {
+		pr_info("%s: sco == 0!!\n", __func__);
 		return;
+	}
 
-	ret = power_supply_get_property(psy_mtk, POWER_SUPPLY_PROP_ENERGY_FULL, &val);
+	ret = power_supply_get_property(psy, POWER_SUPPLY_PROP_CHARGE_FULL, &val);
 	if (ret)
 		qmax = 0;
 	else
-		qmax = val.intval;
-
-	if (strcmp(psy->desc->name, "battery") != 0)
-		return;
+		qmax = val.intval/100;
 
 	ret = power_supply_get_property(psy, POWER_SUPPLY_PROP_TEMP, &val);
-	if (ret)
+	if (ret) {
+		pr_info("%s: temp get fail!!\n", __func__);
 		return;
+	}
 
 	temp = val.intval / 10;
 	temp_stage = pb.temp_cur_stage;
+	pr_info("%s: soc=%d, temp=%d, qmax=%d, temp_stage=%d, ppb_mode=%d\n", __func__, soc, temp, qmax, temp_stage, ppb_ctrl.ppb_mode);
 
 	cycle = 0;
 	if (pb.aging_max_stage > 0) {
@@ -920,10 +942,6 @@ static void bat_handler(struct work_struct *work)
 
 	if (temp != last_temp || soc != last_soc || uisoc != last_uisoc || pb.combo0_uisoc != last_combo0_uisoc
 		|| aging_stage != last_aging_stage) {
-		if (timer_pending(&ppb_dbg_timer)) {
-			del_timer_sync(&ppb_dbg_timer);
-			ppb_print_dbg_log(NULL);
-		}
 
 		volt = soc_to_ocv(soc * 100, 0, pb.soc_err);
 		pb.ocv = volt / 10;
@@ -947,20 +965,9 @@ static void bat_handler(struct work_struct *work)
 		if (uisoc >= pb.combo0_uisoc ||
 			(pb.combo0_uisoc == DEFAULT_COMBO0_UISOC && pb.fix_combo0[cb_idx] > 0)) {
 			pb.sys_power_noerr = 100000;
-		} else {
+		} else
 			pb.sys_power_noerr = get_sys_power_budget(pb.ocv_noerr, pb.cur_rdc, pb.cur_rac, pb.ocp,
 				pb.uvlo);
-
-			if (pb.version >= 2 && temp >= pb.mincombo_temp_thd) {
-				if (cgppt_dbg_ops && cgppt_dbg_ops->get_cpucb_pb) {
-					min_power = cgppt_dbg_ops->get_cpucb_pb(pb.mincombo_min_combo);
-					if (pb.sys_power_noerr < min_power + 1)
-						pb.sys_power_noerr = min_power + 1;
-				}
-			}
-			pr_info("mincombo: temp=%d temp_thd=%d min_combo=%d pb.sys_power_noerr=%d min_power=%d\n",
-				temp, pb.mincombo_temp_thd, pb.mincombo_min_combo, pb.sys_power_noerr, min_power);
-		}
 
 		pb.soc = soc;
 		pb.temp = temp;
@@ -970,10 +977,16 @@ static void bat_handler(struct work_struct *work)
 #if !IS_ENABLED(CONFIG_MTK_GPU_LEGACY)
 		notify_gpueb();
 #endif
+		msleep(20); //sleep for xpu update throttle status
 		pr_info("%s: update vsys-er[p,v]=%d,%d vsys[p,v]=%d,%d SOC[soc,ui,s]=%d,%d,%d R[C,A,dc,ac]=%d,%d,%d,%d T[t,s]=%d,%d A[c,s]=%d,%d\n",
 			__func__, pb.sys_power, pb.ocv, pb.sys_power_noerr,
 			pb.ocv_noerr, soc, uisoc, pb.temp_cur_stage, pb.circuit_rdc, pb.aging_rdc, pb.cur_rdc,
 			pb.cur_rac, temp, pb.temp_cur_stage, cycle, pb.aging_cur_stage);
+
+		if (timer_pending(&ppb_dbg_timer)) {
+			del_timer_sync(&ppb_dbg_timer);
+			ppb_print_dbg_log(NULL);
+		}
 
 		if (pb.sys_power_noerr <= MBRAIN_NOTIFY_BUDGET_THD && soc != last_soc && cb_func)
 			cb_func();
@@ -1088,6 +1101,10 @@ static int __used read_mtk_gauge_dts(struct platform_device *pdev)
 			read_dts_val_by_idx(np, str, j*num, &table_p->mah, 1);
 			read_dts_val_by_idx(np, str, j*num+1, &table_p->voltage, 1);
 			read_dts_val_by_idx(np, str, j*num+2, &table_p->rdc, 1);
+			if (j == 0 || j == info_p->ocv_table_size - 1)
+				pr_info("%s:%d: mah=%d, voltage=%d, rdc=%d\n", __func__, __LINE__,
+					table_p->mah, table_p->voltage, table_p->rdc);
+
 			if (info_p->ocv_table[j].dod == 0 && info_p->qmax > 0)
 				info_p->ocv_table[j].dod = info_p->ocv_table[j].mah * 1000 /
 					info_p->qmax;
@@ -1247,12 +1264,6 @@ static int __used read_power_budget_dts(struct platform_device *pdev)
 
 	if (num > 0)
 		of_property_read_u32_array(np, "ppt-fix-cb0", &pb.fix_combo0[0], num);
-
-	if (read_dts_val(np, "mincombo-temp-threshold", &pb.mincombo_temp_thd, 1))
-		pb.mincombo_temp_thd = DEFAULT_MINCOMBO_TEMP_THD;
-
-	if (read_dts_val(np, "mincombo-min-combo", &pb.mincombo_min_combo, 1))
-		pb.mincombo_min_combo = DEFAULT_MINCOMBO_MIN_COMBO;
 
 	if (read_dts_val(np, "battery-circult-rdc", &pb.circuit_rdc, 1))
 		pb.circuit_rdc = BAT_CIRCUIT_DEFAULT_RDC;
@@ -1694,6 +1705,7 @@ static ssize_t mt_peak_power_mode_proc_write
 		bat_oc_set_ppb_mode(mode);
 	} else if (pb.version == 2) {
 #if !IS_ENABLED(CONFIG_MTK_GPU_LEGACY)
+		pr_info("%s: start notify_gpueb set ppb_mode=%d\n", __func__, mode);
 		notify_gpueb();
 #endif
 	}

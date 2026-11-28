@@ -1341,26 +1341,6 @@ static int cgppt_get_gpu_combo_usage_count(int idx)
 	return value;
 }
 
-static int cgppt_get_cpu_combo_pb(int idx)
-{
-	int value = 0;
-
-	if (g_dlpt_sram_layout_ptr && idx >= 0 && idx < CPU_PEAK_POWER_COMBO_TABLE_IDX_ROW_COUNT)
-		value = ioread32(&g_dlpt_sram_layout_ptr->peak_power_combo_table_cpu[idx].combopeakpowerin_mw);
-
-	return value;
-}
-
-static int cgppt_get_gpu_combo_pb(int idx)
-{
-	int value = 0;
-
-	if (g_dlpt_sram_layout_ptr && idx >= 0 && idx < GPU_PEAK_POWER_COMBO_TABLE_IDX_ROW_COUNT)
-		value = ioread32(&g_dlpt_sram_layout_ptr->peak_power_combo_table_gpu[idx].combopeakpowerin_mw);
-
-	return value;
-}
-
 static int cgppt_get_cpu_m_scaling_factor(void)
 {
 	int value = 0;
@@ -1407,6 +1387,22 @@ static int cgppt_get_cg_budget(void)
 	return value;
 }
 
+static int cgppt_get_cg_freq(u32 *cb_lf, u32 *cm_lf, u32 *cl_lf, u32 *g_lf)
+{
+	struct ThermalCsramCtrlBlock *ThermalCsramCtrlBlock_ptr =
+			thermal_csram_ctrl_block_get();
+
+	if (ThermalCsramCtrlBlock_ptr) {
+		*cb_lf = ioread32(&ThermalCsramCtrlBlock_ptr->g2c_b_pp_lmt_freq)*1000;
+		*cm_lf = ioread32(&ThermalCsramCtrlBlock_ptr->g2c_m_pp_lmt_freq)*1000;
+		*cl_lf = ioread32(&ThermalCsramCtrlBlock_ptr->g2c_l_pp_lmt_freq)*1000;
+	}
+
+	if (g_dlpt_sram_layout_ptr)
+		*g_lf = ioread32(&g_dlpt_sram_layout_ptr->gswrun_info.gpu_limit_freq_m)*1000;
+
+	return 0;
+}
 
 /*
  * ========================================================
@@ -1531,9 +1527,8 @@ static struct ppb_cgppt_dbg_operation cgppt_dbg_op_t = {
 	.get_combo = cgppt_get_combo_idx,
 	.get_cpucb_cnt = cgppt_get_cpu_combo_usage_count,
 	.get_gpucb_cnt = cgppt_get_gpu_combo_usage_count,
-	.get_cpucb_pb = cgppt_get_cpu_combo_pb,
-	.get_gpucb_pb = cgppt_get_gpu_combo_pb,
 	.get_cg_bgt = cgppt_get_cg_budget,
+	.get_cg_freq = cgppt_get_cg_freq,
 };
 
 /*

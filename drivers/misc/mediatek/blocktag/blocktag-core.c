@@ -1131,8 +1131,8 @@ static int mtk_btag_init_procfs(void)
 	if (btag_proc_root)
 		return 0;
 
-	uid = make_kuid(&init_user_ns, 0);
-	gid = make_kgid(&init_user_ns, 1001);
+	uid = KUIDT_INIT(0);
+	gid = KGIDT_INIT(1001);
 
 	btag_proc_root = proc_mkdir("blocktag", NULL);
 

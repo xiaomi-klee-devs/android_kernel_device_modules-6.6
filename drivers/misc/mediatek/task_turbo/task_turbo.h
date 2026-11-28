@@ -25,6 +25,8 @@
 #define LOOM_NO_TASK -1
 #define MAX_NR_THREAD 200
 #define MIN_CPUS 4
+#define MAX_NR_THREAD 200
+#define MIN_CPUS 4
 
 DECLARE_PER_CPU(unsigned long, max_freq_scale);
 DECLARE_PER_CPU(unsigned long, min_freq_scale);

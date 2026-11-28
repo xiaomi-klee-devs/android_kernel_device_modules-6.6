@@ -926,9 +926,6 @@ static void tt_vip(void)
 
 	mutex_lock(&wi_lock);
 
-	if (tt_cpu_count_check() <= MIN_CPUS)
-		ct_vip_qualified = false;
-
 	if (tt_vip_algo_hook)
 		tt_vip_algo_hook(ct_vip_qualified, ssid_tgid, sui_tgid, f_tgid, touching);
 
@@ -1354,7 +1351,7 @@ static void probe_android_vh_alter_futex_plist_add(void *ignore, struct plist_no
 	int prev_pid = 0;
 	bool prev_turbo = 1;
 	bool this_turbo;
-
+	
 	if (!sub_feat_enable(SUB_FEAT_LOCK) ||
 	    !is_turbo_task(current)) {
 		*already_on_hb = false;
@@ -1436,7 +1433,6 @@ static unsigned long cpu_util_without(int cpu, struct task_struct *p)
 
 	return cpu_util(cpu, p, -1, 0);
 }
-
 /**
  * cpu_util() - Estimates the amount of CPU capacity used by CFS tasks.
  * @cpu: the CPU to get the utilization for

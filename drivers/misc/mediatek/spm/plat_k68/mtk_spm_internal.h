@@ -10,6 +10,9 @@
 #include <linux/spinlock.h>
 #include <linux/io.h>
 #include <linux/timekeeping.h>
+#if IS_ENABLED(CONFIG_MTK_IDLE_BOOST)
+#include <linux/platform_device.h>
+#endif
 
 #include "mt-plat/sync_write.h"
 #include "mt-plat/aee.h"
@@ -339,8 +342,6 @@ extern struct spm_lp_scen __spm_suspend;
 int mtk_idle_cond_check_init(void);
 void mtk_idle_cond_check_exit(void);
 #if IS_ENABLED(CONFIG_MTK_IDLE_BOOST)
-#define VCORE_OPP_BOOST   2
-#define VCORE_OPP_RELEASE 0
-void spm_idle_vcore_boost(int level);
+extern int mtk_spm_regulator_map(struct platform_device *pdev);
 #endif
 #endif /* __MTK_SPM_INTERNAL_H__ */

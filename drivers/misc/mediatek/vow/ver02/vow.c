@@ -587,6 +587,7 @@ bool vow_ipi_rceive_ack(unsigned int msg_id,
 	case IPIMSG_VOW_PCM_DUMP_ON:
 	case IPIMSG_VOW_PCM_DUMP_OFF:
 	case IPIMSG_VOW_SET_FLAG:
+	case IPIMSG_VOW_ONESHOT_SUPPORT:
 		result = true;
 		break;
 	case IPIMSG_VOW_SET_BARGEIN_ON:
@@ -1323,6 +1324,23 @@ static void vow_register_vendor_feature(int uuid)
 #endif
 }
 
+static void vow_set_oneshotsupport(unsigned int status) {
+	unsigned int enable;
+        int ipi_ret;
+	if (status == VOWControlCmd_Oneshot_Enable) {
+		enable = 1;
+	} else {
+		enable = 0;
+	}
+	ipi_ret = vow_ipi_send(IPIMSG_VOW_ONESHOT_SUPPORT,
+				   1,
+				   &enable,
+				   VOW_IPI_BYPASS_ACK);
+	if (ipi_ret == IPI_SCP_SEND_FAIL || ipi_ret == IPI_SCP_NO_SUPPORT) {
+		VOWDRV_DEBUG("[vow oneshot]set oneshot support fail, ret = %d\n", ipi_ret);
+	}
+}
+
 static void vow_deregister_vendor_feature(int uuid)
 {
 #if IS_ENABLED(CONFIG_MTK_TINYSYS_SCP_SUPPORT)
@@ -1713,15 +1731,16 @@ static int vow_service_ReadVoiceData_Internal(void)
 		if (buf_length != 0) {
 			unsigned int buffer_bound = 0;
 			unsigned int read_buf_sample = 0;
+			read_buf_sample = (dual_ch_transfer == true) ? buf_length : (buf_length >> 1);
 
-			read_buf_sample = (dual_ch_transfer == true)?
-					  buf_length : (buf_length >> 1);
+
 			if ((vowserv.kernel_voicedata_idx + read_buf_sample)
 			    > (vowserv.voicedata_user_size >> 1)) {
 				VOWDRV_DEBUG(
-			"[vow check] data_idx=0x%x(W), r_buf_sample=0x%x(W), user_size=0x%x(B)\n",
-					vowserv.kernel_voicedata_idx, read_buf_sample,
-					(unsigned int)vowserv.voicedata_user_size);
+				"[vow check] data_idx=0x%x(W), r_buf_sample=0x%x(W), user_size=0x%x(B)\n",
+						vowserv.kernel_voicedata_idx, read_buf_sample,
+						(unsigned int)vowserv.voicedata_user_size);
+
 				/* VOW_ASSERT(0); */
 				if (buf_length > VOW_VOICE_RECORD_BIG_THRESHOLD) {
 					// only seamless buffer package will reset buf idx
@@ -1816,7 +1835,7 @@ static int vow_service_ReadVoiceData_Internal(void)
 			unsigned int idx;
 
 			tmp = (vowserv.kernel_voicedata_idx << 1)
-			      - vowserv.transfer_length; // unit: byte
+				- vowserv.transfer_length; // unit: byte
 			idx = (vowserv.transfer_length >> 1); //unit: short
 			vow_check_boundary(tmp + (idx << 1), vow_vbuf_length);
 			mutex_lock(&vow_vmalloc_lock);
@@ -3112,6 +3131,10 @@ static long VowDrv_ioctl(struct file *fp, unsigned int cmd, unsigned long arg_da
 			break;
 		case VOWControlCmd_GetDump:
 			vow_service_ReadDumpData();
+			break;
+		case VOWControlCmd_Oneshot_Enable:
+		case VOWControlCmd_Oneshot_Disable:
+			vow_set_oneshotsupport(arg);
 			break;
 		default:
 			VOWDRV_DEBUG("VOW_SET_CONTROL no such command = %lu",
