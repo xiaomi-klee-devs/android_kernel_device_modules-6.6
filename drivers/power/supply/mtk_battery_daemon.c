@@ -2618,9 +2618,7 @@ static ssize_t BAT_EC_store(
 	}
 
 	if (buf != NULL && size != 0) {
-
 		bm_err(gm, "buf is %s\n", buf);
-
 		cmd_buf[0] = buf[0];
 		cmd_buf[1] = buf[1];
 		cmd_buf[2] = buf[2];
@@ -2738,6 +2736,20 @@ static ssize_t BAT_SHUTDOWN_store(
 		return -1;
 	}
 
+	if (size > 50) {
+		bm_err(gm, "%s error, size mismatch\n", __func__);
+		return -1;
+	}
+
+	for (i = 0; i < strlen(buf); i++) {
+		if (buf[i] == ',')
+			j++;
+	}
+	if (j != 7) {
+		bm_err(gm, "%s error, invalid input\n", __func__);
+		return -1;
+	}
+
 	bm_err(gm, "%s, size =%zu\n", __func__, size);
 	copy_len = size;
 	if (copy_len >= sizeof(buf_str))
@@ -2755,7 +2767,6 @@ static ssize_t BAT_SHUTDOWN_store(
 			}
 
 			field_start = s;
-
 			saved = *pch;
 			*pch = '\0';
 
@@ -2765,7 +2776,6 @@ static ssize_t BAT_SHUTDOWN_store(
 				*pch = saved;
 				return -1;
 			}
-
 			bm_err(gm, "::%s::count:%d,%d\n", field_start, count, value[count]);
 
 			*pch = saved;
@@ -2854,16 +2864,15 @@ static ssize_t BAT_HEALTH_store(
 		copy_len = sizeof(buf_str) - 1;
 	memcpy(buf_str, buf, copy_len);
 	buf_str[copy_len] = '\0';
+
 	bm_err(gm, "%s, copy str=%s\n", __func__, buf_str);
 
 	if (buf != NULL && size != 0) {
 		pch = strchr(s, ',');
 		while (pch != NULL) {
 			field_start = (count == 0) ? s : (s + 1);
-
 			saved = *pch;
 			*pch = '\0';
-
 			result = kstrtoint(field_start, 10, &value[count]);
 
 			if (result < 0) {
@@ -2871,7 +2880,6 @@ static ssize_t BAT_HEALTH_store(
 				*pch = saved;
 				return -1;
 			}
-
 			bm_err(gm, "::%s::count:%d,%d\n", field_start, count, value[count]);
 			*pch = saved;
 			s = pch;
