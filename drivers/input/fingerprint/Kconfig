@@ -5,6 +5,19 @@ config SILEAD_FP
 	help
 	  This supports Silead Fingerprint drivers.
 
-source "$(KCONFIG_EXT_PREFIX)drivers/input/fingerprint/silead/Kconfig"
+
+endmenu
+
+menu "Fingerprint support"
+	depends on INPUT
+
+config MTK_FINGERPRINT_SUPPORT
+	tristate "Mediatek Fingerprint"
+	default n
+	help
+	  Fingerprint mtk driver enable/disable
+	  in the kernel.Say Y here if you want to
+	  use mediatek fingerprint driver,fingerprint
+	  driver will support fingerprint function
 
 endmenu
