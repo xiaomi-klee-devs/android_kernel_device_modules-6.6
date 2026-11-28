@@ -64,4 +64,3 @@ config MTK_PELT_HINT
 	  tasks require more immediate CPU resources for better performance.
 	  If unsure, or if you do not need task-specific CPU resource optimization,
 	  select 'n'.
-

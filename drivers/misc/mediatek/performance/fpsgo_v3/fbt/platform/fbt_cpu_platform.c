@@ -43,6 +43,24 @@ static int generate_sbe_rescue_enable(void);
 static int generate_dram_boost_enable(void);
 static int generate_ux_scroll_general_policy(void);
 static int generate_smart_launch_enable(void);
+
+// MIUI ADD: Performance_Kscene
+#if IS_ENABLED(CONFIG_MI_KSCENE)
+typedef void (*notify_kscene_set_cap)(int pid, int min_cap);
+
+static notify_kscene_set_cap notify_kscene_set_cap_func = NULL;
+
+void register_notify_kscene_set_cap_func(notify_kscene_set_cap func) {
+	notify_kscene_set_cap_func = func;
+}
+EXPORT_SYMBOL_GPL(register_notify_kscene_set_cap_func);
+
+void unregister_notify_kscene_set_cap_func(void) {
+	notify_kscene_set_cap_func = NULL;
+}
+EXPORT_SYMBOL_GPL(unregister_notify_kscene_set_cap_func);
+#endif
+
 static int platform_fpsgo_probe(struct platform_device *pdev)
 {
 	int ret = 0, retval = 0;
@@ -232,6 +250,17 @@ void fbt_set_per_task_cap(int pid, unsigned int min_blc,
 			attr.sched_policy = p->policy;
 		if (rt_policy(p->policy))
 			attr.sched_priority = p->rt_priority;
+		// MIUI ADD: Performance_PerformanceEnhance
+		if (strcmp(p->comm, "RenderThread") == 0) {
+			if (p->group_leader != NULL) {
+				if (strcmp(p->group_leader->comm, "com.miui.home") == 0 ||
+				    strcmp(p->group_leader->comm, "ndroid.systemui") == 0) {
+					if (!p->sched_reset_on_fork)
+						attr.sched_flags &= ~SCHED_FLAG_RESET_ON_FORK;
+				}
+			}
+		}
+        // END Performance_PerformanceEnhance
 		ret = sched_setattr_nocheck(p, &attr);
 		}
 		put_task_struct(p);
@@ -243,6 +272,12 @@ out:
 		fpsgo_systrace_c_fbt(pid, 0, 0, "uclamp fail");
 		return;
 	}
+
+#if IS_ENABLED(CONFIG_MI_KSCENE)
+    if (NULL != notify_kscene_set_cap_func) {
+        notify_kscene_set_cap_func(pid, min_blc_1024);
+    }
+#endif
 
 	fpsgo_systrace_c_fbt_debug(pid, 0, attr.sched_util_min, "min_cap");
 	fpsgo_systrace_c_fbt_debug(pid, 0, attr.sched_util_max, "max_cap");

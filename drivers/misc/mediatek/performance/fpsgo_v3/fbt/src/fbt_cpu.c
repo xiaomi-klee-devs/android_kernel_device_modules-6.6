@@ -1601,6 +1601,7 @@ static void fbt_set_task_ls(int set, int ls_mask, int pid, int group, int *ori_l
 			unset_task_ls(pid);
 		*ori_ls = 0;
 	}
+	fpsgo_systrace_c_fbt_debug(pid, 0, *ori_ls, "task_ls");
 #endif
 }
 
@@ -2114,10 +2115,7 @@ static int fbt_group_dep(int group_by_lr, struct fpsgo_loading *dep_arr, int dep
 	for (i = 0; i < dep_size; i++) {
 		struct fpsgo_loading *fl = &dep_arr[i];
 
-		if (fl->action == XGF_ADD_DEP_FORCE_GROUPING_HEAVY)
-			fl->heavyidx = FPSGO_GROUP_HEAVY;
-
-		if (fl->action == XGF_ADD_DEP_FORCE_GROUPING_SECOND)
+		if (fl->heavyidx == FPSGO_GROUP_OTHERS && fl->action == XGF_ADD_DEP_FORCE_GROUPING)
 			fl->heavyidx = FPSGO_GROUP_SECOND;
 	}
 	return ret;
@@ -2791,7 +2789,8 @@ void fbt_set_min_cap_locked(struct render_info *thr, int min_cap,
 
 		if ((boost_LR_final && fbt_is_R_L_task(fl->pid, heaviest_pid, second_heavy_pid, thr->pid)) ||
 				(boost_affinity_final && fl->heavyidx) ||
-				(boost_affinity_final == FPSGO_BAFFINITY_B_M && fl->action == XGF_ADD_DEP_NO_LLF))
+				(boost_affinity_final == FPSGO_BAFFINITY_B_M && fl->action == XGF_ADD_DEP_NO_LLF)
+		)
 			fbt_nice_task(fl->pid, 1, &fl->ori_nice);
 		else
 			fbt_nice_task(fl->pid, 0, &fl->ori_nice);

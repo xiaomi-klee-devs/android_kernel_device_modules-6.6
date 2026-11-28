@@ -217,7 +217,8 @@ static int __init game_init(void)
 
 	fpsgo2game_noitfy_queue_end = game_noitfy_queue_end;
 	kGame_task = kthread_create(gameMain, NULL, "kGameThread");
-	if (kGame_task == NULL) {
+	if (IS_ERR(kGame_task)) {
+		kGame_task = NULL;
 		ret = -EFAULT;
 		goto end;
 	}
