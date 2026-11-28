@@ -24,10 +24,6 @@
 #define MAX_SPMI_SLVID 32
 #endif
 
-#if IS_ENABLED(CONFIG_DEVICE_MODULES_REGULATOR_RT6160)
-#include <rt6160.h>
-#endif
-
 #if IS_ENABLED(CONFIG_MFD_MTK_SPMI_PMIC)
 #include <mtk-spmi-pmic-debug.h>
 #define MAX_SPMI_GLITCH_ID spmi_glitch_idx_cnt
@@ -405,7 +401,7 @@ static int mbraink_v6899_power_get_spm_info(struct mbraink_power_spm_raw *spm_bu
 			data_size += MAX_POWER_HD_SZ;
 		}
 
-		pr_notice("[Mbraink][SPM] g_data_size (%d, %d)\n", g_data_size, data_size);
+		//pr_notice("[Mbraink][SPM] g_data_size (%d, %d)\n", g_data_size, data_size);
 
 		if (data_size != g_data_size)
 			goto End;
@@ -652,33 +648,6 @@ static int mbraink_v6899_power_get_spmi_info(
 	num = (MAX_PMIC_SPMI_SZ > MAX_SPMI_SLVID) ? MAX_SPMI_SLVID : MAX_PMIC_SPMI_SZ;
 	memcpy(mbraink_spmi_data->spmi, Buf, sizeof(unsigned int)*num);
 	mbraink_spmi_data->spmi_count = num;
-
-	return ret;
-}
-
-static int mbraink_v6899_power_get_uvlo_info(
-	struct mbraink_uvlo_struct_data *mbraink_uvlo_data)
-{
-	int num = 0;
-	int i = 0;
-	int ret = 0;
-	struct rt6160_error rt6160_err;
-
-	if (mbraink_uvlo_data == NULL) {
-		pr_info("mbraink_uvlo_data is null\n");
-		return -1;
-	}
-
-	num = rt6160_get_chip_num();
-	num = (num > MAX_PMIC_UVLO_SZ) ? MAX_PMIC_UVLO_SZ : num;
-
-	mbraink_uvlo_data->uvlo_count = num;
-	for (i = 0; i < num; i++) {
-		rt6160_get_error_cnt(i, &rt6160_err);
-		mbraink_uvlo_data->uvlo_err_data[i].ot = rt6160_err.ot;
-		mbraink_uvlo_data->uvlo_err_data[i].uv = rt6160_err.uv;
-		mbraink_uvlo_data->uvlo_err_data[i].oc = rt6160_err.oc;
-	}
 
 	return ret;
 }
@@ -1025,7 +994,7 @@ static struct mbraink_power_ops mbraink_v6899_power_ops = {
 	.getScpInfo = mbraink_v6899_power_get_scp_info,
 	.getModemInfo = mbraink_v6899_power_get_modem_info,
 	.getSpmiInfo = mbraink_v6899_power_get_spmi_info,
-	.getUvloInfo = mbraink_v6899_power_get_uvlo_info,
+	.getUvloInfo = NULL,
 	.getPmicVoltageInfo = mbraink_v6899_power_get_pmic_voltage_info,
 	.suspendprepare = mbraink_v6899_power_suspend_prepare,
 	.postsuspend = mbraink_v6899_power_post_suspend,
