@@ -18,12 +18,8 @@ done
 set +a
 
 KLEAF_SUPPORTED_PROJECTS="mgk_64_k66"
+KLEAF_GKI_CHECKER="no"
 
-if [ -z ${PROJECT} ]
-then
-  echo "ERROR: PROJECT must be set!"
-  exit 1
-fi
 if [ -z ${MODE} ]
 then
   MODE=user
@@ -33,9 +29,14 @@ if [ -z ${OUT_DIR} ]
 then
   OUT_DIR=${ROOT_DIR}/out
 fi
-if ! [ "x${OUT_DIR}" = "x/*" ]
+case "${OUT_DIR}" in
+  /*) ;;  # already absolute, leave as-is
+  *) OUT_DIR="${ROOT_DIR}/${OUT_DIR}" ;;
+esac
+OUT_DIR=$(readlink -f "${OUT_DIR}")
+if [ -z ${COMMON_OUT_DIR} ]
 then
-  OUT_DIR=$(readlink -f ${ROOT_DIR}/${OUT_DIR})
+  COMMON_OUT_DIR=${ROOT_DIR}
 fi
 
 if [ "x${DEBUG}" == "x1" ]
