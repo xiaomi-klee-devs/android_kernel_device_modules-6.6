@@ -85,6 +85,27 @@ static bool rpmb_rsp_valid;
 /* protect nl_rpmb_req */
 struct mutex rpmb_lock;
 
+/*
+ * Dummy definition for MAX_RPMB_TRANSFER_BLK.
+ *
+ * For UFS RPMB driver, MAX_RPMB_TRANSFER_BLK will be always
+ * used however it will NOT be defined in projects w/o Security
+ * OS. Thus we add a dummy definition here to avoid build errors.
+ *
+ * For eMMC RPMB driver, MAX_RPMB_TRANSFER_BLK will be used
+ * only if RPMB_MULTI_BLOCK_ACCESS is defined. thus
+ * build error will not happen on projects w/o Security OS.
+ *
+ * NOTE: This dummy definition shall be located after
+ *       #include "drrpmb_Api.h" and
+ *       #include "rpmb-mtk.h"
+ *       since MAX_RPMB_TRANSFER_BLK will be defined in those
+ *       header files if security OS is enabled.
+ */
+#ifndef MAX_RPMB_TRANSFER_BLK
+#define MAX_RPMB_TRANSFER_BLK (1U)
+#define MAX_RPMB_REQUEST_SIZE (512U * MAX_RPMB_TRANSFER_BLK) /* 8KB */
+#endif
 #define NL_RPMB_TRANSFER_DEFAULT_BLK (512U)
 
 /**
@@ -121,31 +142,11 @@ struct nl_rpmb_send_req {
 static struct nl_rpmb_send_req nl_rpmb_req;
 #endif
 
-/*
- * Dummy definition for MAX_RPMB_TRANSFER_BLK.
- *
- * For UFS RPMB driver, MAX_RPMB_TRANSFER_BLK will be always
- * used however it will NOT be defined in projects w/o Security
- * OS. Thus we add a dummy definition here to avoid build errors.
- *
- * For eMMC RPMB driver, MAX_RPMB_TRANSFER_BLK will be used
- * only if RPMB_MULTI_BLOCK_ACCESS is defined. thus
- * build error will not happen on projects w/o Security OS.
- *
- * NOTE: This dummy definition shall be located after
- *       #include "drrpmb_Api.h" and
- *       #include "rpmb-mtk.h"
- *       since MAX_RPMB_TRANSFER_BLK will be defined in those
- *       header files if security OS is enabled.
- */
-#ifndef MAX_RPMB_TRANSFER_BLK
-#define MAX_RPMB_TRANSFER_BLK (1U)
-#endif
-
 #define RPMB_NAME "rpmb"
 
+#ifndef MIN
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
-
+#endif
 
 enum ufs_ioctl {
 	RPMB_IOCTL_PROGRAM_KEY_REGION0 = 1,
