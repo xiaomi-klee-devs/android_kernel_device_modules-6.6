@@ -462,6 +462,11 @@ static inline void dpm_update_request(
 		dpm_update_request_not_bat(pd_port, req_info, flags);
 	pd_port->prev_src_pdo = pd_port->last_src_pdo;
 	pd_port->last_src_pdo = src_cap->pdos[req_info->pos-1];
+
+#if CONFIG_USB_PD_DIRECT_CHARGE
+	pd_notify_pe_direct_charge(pd_port,
+			req_info->vmin < TCPC_VBUS_SINK_5V);
+#endif	/* CONFIG_USB_PD_DIRECT_CHARGE */
 }
 
 int pd_dpm_update_tcp_request(struct pd_port *pd_port,
@@ -601,7 +606,7 @@ void pd_dpm_snk_standby_power(struct pd_port *pd_port)
 	 */
 	uint8_t type;
 	int ma = -1;
-	const int standby_curr = 2500000 / max(pd_port->request_v,
+	int standby_curr = 2500000 / max(pd_port->request_v,
 					       pd_port->request_v_new);
 
 #if CONFIG_USB_PD_VCONN_SAFE5V_ONLY
@@ -631,19 +636,28 @@ void pd_dpm_snk_standby_power(struct pd_port *pd_port)
 		return;
 #endif	/* CONFIG_USB_PD_REV30_PPS_SINK */
 
-	if (pd_port->request_v_new == pd_port->request_v &&
-	    pd_port->request_i_new == pd_port->request_i)
-		return;
-	else if (pd_port->request_i > standby_curr ||
-		 pd_port->request_i > pd_port->request_i_new) {
-		ma = (standby_curr > pd_port->request_i_new) ?
-		      pd_port->request_i_new : standby_curr;
-		if (pd_port->request_v_new > pd_port->request_v)
-			type = TCP_VBUS_CTRL_STANDBY_UP;
-		else if (pd_port->request_v_new < pd_port->request_v)
-			type = TCP_VBUS_CTRL_STANDBY_DOWN;
-		else
-			type = TCP_VBUS_CTRL_STANDBY;
+	if(standby_curr > pd_port->request_i_new)
+		standby_curr = pd_port->request_i_new;
+
+	if (pd_port->request_v_new > pd_port->request_v) {
+		/* Case2 Increasing the Voltage */
+		/* Case3 Increasing the Voltage and Current */
+		/* Case4 Increasing the Voltage and Decreasing the Curren */
+		ma = standby_curr;
+		type = TCP_VBUS_CTRL_STANDBY_UP;
+	} else if (pd_port->request_v_new < pd_port->request_v) {
+		/* Case5 Decreasing the Voltage and Increasing the Current */
+		/* Case7 Decreasing the Voltage */
+		/* Case8 Decreasing the Voltage and the Current*/
+		ma = standby_curr;
+		type = TCP_VBUS_CTRL_STANDBY_DOWN;
+	} else if (pd_port->request_i_new < pd_port->request_i) {
+		/* Case6 Decreasing the Current, t1 i = new */
+		ma = pd_port->request_i_new;
+		type = TCP_VBUS_CTRL_STANDBY;
+	}
+
+	if (ma >= 0) {
 		tcpci_sink_vbus(
 			pd_port->tcpc, type, pd_port->request_v_new, ma);
 	}
@@ -651,9 +665,7 @@ void pd_dpm_snk_standby_power(struct pd_port *pd_port)
 
 void pd_dpm_snk_transition_power(struct pd_port *pd_port)
 {
-	struct tcpc_device __maybe_unused *tcpc = pd_port->tcpc;
-
-	tcpci_sink_vbus(tcpc, TCP_VBUS_CTRL_REQUEST,
+	tcpci_sink_vbus(pd_port->tcpc, TCP_VBUS_CTRL_REQUEST,
 		pd_port->request_v_new, pd_port->request_i_new);
 
 	pd_port->request_v = pd_port->request_v_new;
@@ -664,11 +676,6 @@ void pd_dpm_snk_transition_power(struct pd_port *pd_port)
 		PDO_TYPE(pd_port->last_src_pdo) == PDO_TYPE_APDO;
 	pd_dpm_start_pps_request(pd_port, pd_port->request_apdo);
 #endif	/* CONFIG_USB_PD_REV30_PPS_SINK */
-
-#if CONFIG_TYPEC_DIRECT_CHARGE
-	tcpci_notify_direct_charge(tcpc,
-			pd_port->request_v < TCPC_VBUS_SINK_5V);
-#endif	/* CONFIG_TYPEC_DIRECT_CHARGE */
 }
 
 void pd_dpm_snk_hard_reset(struct pd_port *pd_port)
@@ -1038,6 +1045,12 @@ static inline void dpm_dfp_update_partner_id(
 	memset((char *)pe_data->partner_vdos + size, 0,
 		sizeof(uint32_t) * VDO_MAX_NR - size);
 	pe_data->partner_id_present = true;
+
+	if (pd_port->power_role == PD_ROLE_SOURCE) {
+		if (pd_check_rev30(pd_port)) {
+			pd_update_connect_state(pd_port, PD_CONNECT_PARTNER_ID_PRESENT);
+		}
+	}
 #endif	/* CONFIG_USB_PD_KEEP_PARTNER_ID */
 }
 static inline void dpm_dfp_update_svid_data_exist(
@@ -1889,6 +1902,7 @@ int pd_dpm_send_country_codes(struct pd_port *pd_port)
 		2 + ccdb.length*2, &ccdb);
 }
 #endif	/* CONFIG_USB_PD_REV30_COUNTRY_CODE_LOCAL */
+
 
 #if CONFIG_USB_PD_REV30_COUNTRY_INFO_REMOTE
 void pd_dpm_inform_country_info(struct pd_port *pd_port)

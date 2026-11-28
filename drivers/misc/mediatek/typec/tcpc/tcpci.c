@@ -3,6 +3,7 @@
  * Copyright (c) 2020 MediaTek Inc.
  */
 
+#if IS_ENABLED(CONFIG_TCPC_CLASS)
 #include "inc/tcpci.h"
 #include <linux/time.h>
 #include <linux/slab.h>
@@ -82,7 +83,7 @@ static int tcpc_check_notify_time(struct tcpc_device *tcpc,
 }
 #endif /* CONFIG_TCPC_NOTIFICATION_NON_BLOCKING */
 
-bool tcpci_check_vbus_valid_from_ic(struct tcpc_device *tcpc)
+int tcpci_check_vbus_valid_from_ic(struct tcpc_device *tcpc)
 {
 	int vbus_level = tcpc->vbus_level;
 
@@ -130,6 +131,33 @@ bool tcpci_check_vsafe0v(struct tcpc_device *tcpc)
 	return tcpc->vbus_level == TCPC_VBUS_SAFE0V;
 }
 EXPORT_SYMBOL(tcpci_check_vsafe0v);
+
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+int tcpci_get_chip_id(struct tcpc_device *tcpc,uint32_t *chip_id) 
+{
+    if (tcpc->ops->get_chip_id == NULL) {
+        return -ENOTSUPP;
+    }
+    return tcpc->ops->get_chip_id(tcpc,chip_id);
+}
+
+int tcpci_get_chip_pid(struct tcpc_device *tcpc,uint32_t *chip_pid) 
+{
+    if (tcpc->ops->get_chip_pid == NULL) {
+        return -ENOTSUPP;
+    }
+    return tcpc->ops->get_chip_pid(tcpc,chip_pid);
+}
+
+int tcpci_get_chip_vid(struct tcpc_device *tcpc,uint32_t *chip_vid) 
+{
+    if (tcpc->ops->get_chip_vid == NULL) {
+        return -ENOTSUPP;
+    }
+    return tcpc->ops->get_chip_vid(tcpc,chip_vid);
+}
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
+
 
 int tcpci_alert_status_clear(
 	struct tcpc_device *tcpc, uint32_t mask)
@@ -352,6 +380,30 @@ int tcpci_set_low_power_mode(struct tcpc_device *tcpc, bool en)
 }
 EXPORT_SYMBOL(tcpci_set_low_power_mode);
 
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+int tcpci_set_watchdog(struct tcpc_device *tcpc, bool en)
+{
+    int rv = 0;
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+    uint32_t chip_vid = 0;
+    rv = tcpci_get_chip_vid(tcpc, &chip_vid);
+    if (!rv && (chip_vid == SOUTHCHIP_PD_VID)) {
+        if (tcpc->ops->set_watchdog)
+            rv = tcpc->ops->set_watchdog(tcpc, en);
+    } else {
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
+    if (tcpc->tcpc_flags & TCPC_FLAGS_WATCHDOG_EN)
+        if (tcpc->ops->set_watchdog)
+            rv = tcpc->ops->set_watchdog(tcpc, en);
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+    }
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
+
+    return rv;
+}
+EXPORT_SYMBOL(tcpci_set_watchdog);
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
+
 int tcpci_alert_vendor_defined_handler(struct tcpc_device *tcpc)
 {
 	int ret = 0;
@@ -394,14 +446,6 @@ int tcpci_notify_fod_status(struct tcpc_device *tcpc)
 EXPORT_SYMBOL(tcpci_notify_fod_status);
 
 #if CONFIG_CABLE_TYPE_DETECTION
-int tcpci_reset_ctd(struct tcpc_device *tcpc)
-{
-	if (tcpc->ops->reset_ctd)
-		return tcpc->ops->reset_ctd(tcpc);
-	return 0;
-}
-EXPORT_SYMBOL(tcpci_reset_ctd);
-
 int tcpci_notify_cable_type(struct tcpc_device *tcpc)
 {
 	struct tcp_notify tcp_noti;
@@ -446,6 +490,43 @@ out:
 }
 EXPORT_SYMBOL(tcpci_set_cc_hidet);
 
+int tcpci_set_vbus_short_cc_en(struct tcpc_device *tcpc, bool cc1, bool cc2)
+{
+	int ret = 0;
+
+	if (tcpc->ops->set_vbus_short_cc)
+		ret = tcpc->ops->set_vbus_short_cc(tcpc, cc1, cc2);
+
+	return ret;
+}
+EXPORT_SYMBOL(tcpci_set_vbus_short_cc_en);
+
+// int tcpci_notify_vbus_short_cc_status(struct tcpc_device *tcpc, bool vsc_status, bool short_cc)
+// {
+// 	struct tcp_notify tcp_noti;
+
+// 	tcp_noti.vsc_status.short_status = vsc_status;
+// 	tcp_noti.vsc_status.short_cc = short_cc;
+// 	TCPC_DBG("notify_vbus_short_cc: %d\n", vsc_status);
+// 	return tcpc_check_notify_time(tcpc, &tcp_noti, TCP_NOTIFY_IDX_MISC,
+// 					TCP_NOTIFY_VBUS_SHORT_CC);
+// }
+// EXPORT_SYMBOL(tcpci_notify_vbus_short_cc_status);
+
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+int tcpci_notify_wd0_state(struct tcpc_device *tcpc, bool wd0_state, bool typec_port_stat)
+{
+	struct tcp_notify tcp_noti;
+
+	tcp_noti.wd0_state.wd0 = wd0_state;
+	tcp_noti.wd0_state.is_typec_port0 = typec_port_stat;
+
+	TCPC_DBG("wd0: %d\n", wd0_state);
+	return tcpc_check_notify_time(tcpc, &tcp_noti, TCP_NOTIFY_IDX_MISC,
+				      TCP_NOTIFY_WD0_STATE);
+}
+EXPORT_SYMBOL(tcpci_notify_wd0_state);
+#else
 int tcpci_notify_wd0_state(struct tcpc_device *tcpc, bool wd0_state)
 {
 	struct tcp_notify tcp_noti;
@@ -457,6 +538,7 @@ int tcpci_notify_wd0_state(struct tcpc_device *tcpc, bool wd0_state)
 				      TCP_NOTIFY_WD0_STATE);
 }
 EXPORT_SYMBOL(tcpci_notify_wd0_state);
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
 
 int tcpci_set_vbus_short_cc(struct tcpc_device *tcpc, bool cc1, bool cc2)
 {
@@ -620,6 +702,7 @@ int tcpci_transmit(struct tcpc_device *tcpc,
 }
 EXPORT_SYMBOL(tcpci_transmit);
 
+#if CONFIG_USB_PD_RETRY_CRC_DISCARD
 int tcpci_retransmit(struct tcpc_device *tcpc)
 {
 	int ret = 0;
@@ -638,6 +721,7 @@ int tcpci_retransmit(struct tcpc_device *tcpc)
 	return ret;
 }
 EXPORT_SYMBOL(tcpci_retransmit);
+#endif	/* CONFIG_USB_PD_RETRY_CRC_DISCARD */
 
 int tcpci_set_bist_test_mode(struct tcpc_device *tcpc, bool en)
 {
@@ -648,17 +732,6 @@ int tcpci_set_bist_test_mode(struct tcpc_device *tcpc, bool en)
 }
 EXPORT_SYMBOL(tcpci_set_bist_test_mode);
 #endif	/* CONFIG_USB_POWER_DELIVERY */
-
-#if CONFIG_TYPEC_DIRECT_CHARGE
-int tcpci_notify_direct_charge(struct tcpc_device *tcpc, bool en)
-{
-	mutex_lock(&tcpc->access_lock);
-	tcpc->typec_during_direct_charge = en;
-	mutex_unlock(&tcpc->access_lock);
-
-	return 0;
-}
-#endif	/* CONFIG_TYPEC_DIRECT_CHARGE */
 
 int tcpci_notify_typec_state(struct tcpc_device *tcpc)
 {
@@ -891,6 +964,14 @@ int tcpci_enable_discharge(struct tcpc_device *tcpc, bool en, int mv)
 
 	return ret;
 }
+
+int tcpci_enable_io_boost(struct tcpc_device *tcpc, bool en)
+{
+	if (tcpc->ops->enable_io_boost)
+		return tcpc->ops->enable_io_boost(tcpc, en);
+	return -EOPNOTSUPP;
+}
+EXPORT_SYMBOL(tcpci_enable_io_boost);
 
 int tcpci_notify_ps_change(struct tcpc_device *tcpc, int vbus_level)
 {
@@ -1157,3 +1238,4 @@ EXPORT_SYMBOL(tcpci_notify_request_bat_info);
 #endif	/* CONFIG_USB_PD_REV30_BAT_INFO */
 #endif	/* CONFIG_USB_PD_REV30 */
 #endif	/* CONFIG_USB_POWER_DELIVERY */
+#endif	/* CONFIG_TCPC_CLASS */

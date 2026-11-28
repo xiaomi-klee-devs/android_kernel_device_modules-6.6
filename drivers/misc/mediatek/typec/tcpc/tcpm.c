@@ -3,6 +3,7 @@
  * Copyright (c) 2020 MediaTek Inc.
  */
 
+#if IS_ENABLED(CONFIG_TCPC_CLASS)
 #include "inc/tcpm.h"
 #include "inc/tcpci.h"
 #include "inc/tcpci_typec.h"
@@ -113,12 +114,18 @@ int tcpm_suspend(struct tcpc_device *tcpc)
 		return ret;
 #endif	/* CONFIG_TYPEC_SNK_ONLY_WHEN_SUSPEND */
 
-	return 0;
+	atomic_set(&tcpc->is_suspended, true);
+
+	ret = tcpm_check_suspend_pending(tcpc);
+	if (ret)
+		tcpm_resume(tcpc);
+	return ret;
 }
 EXPORT_SYMBOL(tcpm_suspend);
 
 void tcpm_resume(struct tcpc_device *tcpc)
 {
+	atomic_set(&tcpc->is_suspended, false);
 	wake_up_all(&tcpc->resume_wait_que);
 
 #if CONFIG_TYPEC_SNK_ONLY_WHEN_SUSPEND
@@ -354,20 +361,6 @@ int tcpm_typec_disable_function(struct tcpc_device *tcpc, bool disable)
 }
 EXPORT_SYMBOL(tcpm_typec_disable_function);
 
-#if CONFIG_TYPEC_DIRECT_CHARGE
-int tcpm_set_direct_charge_en(struct tcpc_device *tcpc, bool en)
-{
-	return tcpci_notify_direct_charge(tcpc, en);
-}
-EXPORT_SYMBOL(tcpm_set_direct_charge_en);
-
-bool tcpm_inquire_during_direct_charge(struct tcpc_device *tcpc)
-{
-	return tcpc->typec_during_direct_charge;
-}
-EXPORT_SYMBOL(tcpm_inquire_during_direct_charge);
-#endif	/* CONFIG_TYPEC_DIRECT_CHARGE */
-
 #if IS_ENABLED(CONFIG_USB_POWER_DELIVERY)
 
 bool tcpm_inquire_pd_connected(struct tcpc_device *tcpc)
@@ -401,6 +394,14 @@ uint8_t tcpm_inquire_pd_power_role(struct tcpc_device *tcpc)
 	return pd_port->power_role;
 }
 EXPORT_SYMBOL(tcpm_inquire_pd_power_role);
+
+uint8_t tcpm_inquire_pd_state_curr(
+	struct tcpc_device *tcpc_dev)
+{
+	struct pd_port *pd_port = &tcpc_dev->pd_port;
+	return pd_port->pe_state_curr;
+}
+EXPORT_SYMBOL(tcpm_inquire_pd_state_curr);
 
 uint8_t tcpm_inquire_pd_vconn_role(struct tcpc_device *tcpc)
 {
@@ -1210,6 +1211,7 @@ int tcpm_dpm_pd_hard_reset(struct tcpc_device *tcpc,
 		.event_id = TCP_DPM_EVT_HARD_RESET,
 	};
 
+	/* check not block case !!! */
 	return tcpm_put_tcp_dpm_event_cbk1(
 		tcpc, &tcp_event, cb_data, TCPM_BK_HARD_RESET_TOUT);
 }
@@ -1588,6 +1590,24 @@ int tcpm_set_pd_charging_policy(struct tcpc_device *tcpc,
 		tcpc, &tcp_event, cb_data, TCPM_BK_REQUEST_TOUT);
 }
 EXPORT_SYMBOL(tcpm_set_pd_charging_policy);
+
+#if CONFIG_USB_PD_DIRECT_CHARGE
+int tcpm_set_direct_charge_en(struct tcpc_device *tcpc, bool en)
+{
+	mutex_lock(&tcpc->access_lock);
+	tcpc->pd_during_direct_charge = en;
+	mutex_unlock(&tcpc->access_lock);
+
+	return 0;
+}
+EXPORT_SYMBOL(tcpm_set_direct_charge_en);
+
+bool tcpm_inquire_during_direct_charge(struct tcpc_device *tcpc)
+{
+	return tcpc->pd_during_direct_charge;
+}
+EXPORT_SYMBOL(tcpm_inquire_during_direct_charge);
+#endif	/* CONFIG_USB_PD_DIRECT_CHARGE */
 
 int tcpm_set_exit_attached_snk_via_cc(struct tcpc_device *tcpc, bool en)
 {
@@ -2171,3 +2191,4 @@ static int tcpm_put_tcp_dpm_event_bk(
 #endif	/* CONFIG_USB_PD_BLOCK_TCPM */
 
 #endif /* CONFIG_USB_POWER_DELIVERY */
+#endif	/* CONFIG_TCPC_CLASS */

@@ -60,6 +60,9 @@ static inline void pd_parse_pdata_bat_info(
 	if (ret < 0) {
 		bat_cap->bat_design_cap = PD_BCDB_BAT_CAP_UNKNOWN;
 		pr_err("%s get bat,dsn_cat fail\n", __func__);
+	} else if (pd_port->support_quick_revchg) {
+		bat_cap->bat_design_cap = PD_BCDB_BAT_CAP_UNKNOWN;
+		pr_err("%s get bat,dsn_cat unknow for revchg\n", __func__);
 	} else {
 		bat_cap->bat_design_cap = (uint16_t)
 			PD_BCDB_BAT_CAP_RAW(design_cap);
@@ -102,7 +105,7 @@ static inline int pd_parse_pdata_bats(
 
 	for (i = 0; i < pd_port->bat_nr; i++) {
 		snprintf(temp_string, 26, "bat-info%d", i);
-		sub = of_get_child_by_name(np, temp_string);
+		sub = of_find_node_by_name(np, temp_string);
 		if (!sub) {
 			pr_err("%s get sub bat node fail\n", __func__);
 			return -ENODEV;
@@ -210,7 +213,7 @@ static inline int pd_parse_pdata_countries(
 
 	for (i = 0; i < pd_port->country_nr; i++) {
 		snprintf(temp_string, 26, "country%d", i);
-		sub = of_get_child_by_name(np, temp_string);
+		sub = of_find_node_by_name(np, temp_string);
 		if (!sub) {
 			pr_err("%s get sub country node fail\n",
 				__func__);
@@ -378,7 +381,7 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 	int ret = 0, i;
 
 	pr_info("%s\n", __func__);
-	np = of_get_child_by_name(pd_port->tcpc->dev.of_node, "pd-data");
+	np = of_find_node_by_name(pd_port->tcpc->dev.of_node, "pd-data");
 
 	if (np) {
 		ret = of_property_read_u32(np, "pd,source-pdo-size",
@@ -451,6 +454,11 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 		pd_port->dpm_charging_policy_default = val;
 		pr_info("%s charging_policy = 0x%02x\n", __func__, val);
 
+		pd_port->support_quick_revchg = of_property_read_bool(np, "pd,support-quick-revchg");
+		pr_info("%s support_quick_revchg = %d\n", __func__, pd_port->support_quick_revchg);
+		pd_port->support_revcable = of_property_read_bool(np, "pd,support-revcable");
+		pr_info("%s support_revcable = %d\n", __func__, pd_port->support_revcable);
+
 #if CONFIG_USB_PD_REV30_BAT_INFO
 		ret = pd_parse_pdata_bats(pd_port, np);
 		if (ret < 0)
@@ -511,9 +519,9 @@ static void pd_core_power_flags_init(struct pd_port *pd_port)
 	struct pd_port_power_caps *src_cap =
 				&pd_port->local_src_cap_default;
 
-	np = of_get_child_by_name(pd_port->tcpc->dev.of_node, "dpm-caps");
+	np = of_find_node_by_name(pd_port->tcpc->dev.of_node, "dpm-caps");
 	if (!np)
-		np = of_get_child_by_name(pd_port->tcpc->dev.of_node, "dpm_caps");
+		np = of_find_node_by_name(pd_port->tcpc->dev.of_node, "dpm_caps");
 
 	for (i = 0; i < ARRAY_SIZE(supported_dpm_caps); i++) {
 		if (of_property_read_bool(np, supported_dpm_caps[i].prop_name) ||
@@ -580,6 +588,7 @@ static void fg_bat_absent_work(struct work_struct *work)
 void pe_data_init(struct pe_data *pe_data)
 {
 	pe_data->pe_state_timer = PD_TIMER_NR;
+	pe_data->vdm_state_timer = PD_TIMER_NR;
 }
 
 int pd_core_init(struct tcpc_device *tcpc)
@@ -596,7 +605,7 @@ int pd_core_init(struct tcpc_device *tcpc)
 #endif	/* CONFIG_USB_PD_BLOCK_TCPM */
 
 	pd_port->tcpc = tcpc;
-	pd_port->pe_state_curr = PE_IDLE2;
+	pd_port->pe_pd_state = PE_IDLE2;
 
 	pe_data_init(pe_data);
 
@@ -1420,5 +1429,34 @@ struct pd_battery_info *pd_get_battery_info(
 	/* TODO: for swap battery */
 	return NULL;
 }
+
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+void pd_add_miss_msg(struct pd_port *pd_port,struct pd_event *pd_event,
+                uint8_t msg)
+{
+    struct pd_msg *pd_msg = pd_event->pd_msg;
+    struct pd_msg * miss_msg = NULL;
+    uint8_t sop_type = 0;
+    struct pd_event evt = {
+        .event_type = PD_EVT_CTRL_MSG,
+        .msg = msg,
+        .pd_msg = NULL,
+    };
+    if (pd_msg != NULL) {
+        sop_type = pd_msg->frame_type;
+    }
+    pd_put_event(pd_port->tcpc,&evt,true);
+    miss_msg = pd_alloc_msg(pd_port->tcpc);
+    if (miss_msg == NULL) {
+        return;
+    }
+    if (pd_msg != NULL)
+        memcpy(miss_msg,pd_msg,sizeof(struct pd_msg));
+
+    pd_put_pd_msg_event(pd_port->tcpc,miss_msg);
+    pd_port->pe_data.msg_id_rx[sop_type]--;
+    return;
+}
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
 
 #endif	/* CONFIG_USB_PD_REV30 */

@@ -131,8 +131,12 @@ static inline bool pd_process_hw_msg(
 {
 	switch (pd_event->msg) {
 	case PD_HW_VBUS_PRESENT:
-		if (pd_port->pe_state_curr == PE_PRS_SNK_SRC_SOURCE_ON)
+		if (pd_port->pe_state_curr == PE_PRS_SNK_SRC_SOURCE_ON) {
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+			mdelay(20);
+#endif
 			pd_send_sop_ctrl_msg(pd_port, PD_CTRL_PS_RDY);
+		}
 
 		return false;
 
@@ -174,11 +178,6 @@ static inline bool pd_process_timer_msg(
 	case PD_TIMER_SOURCE_SWAP_STANDBY:
 		return PE_MAKE_STATE_TRANSIT_SINGLE(
 			PE_PRS_SRC_SNK_TRANSITION_TO_OFF,
-			PE_PRS_SRC_HARD_RESET);
-
-	case PD_TIMER_NEW_SOURCE:
-		return PE_MAKE_STATE_TRANSIT_SINGLE(
-			PE_PRS_SNK_SRC_SOURCE_ON,
 			PE_PRS_SRC_HARD_RESET);
 
 	default:

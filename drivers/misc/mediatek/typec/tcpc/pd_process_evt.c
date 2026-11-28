@@ -40,6 +40,9 @@ static const char * const pd_ctrl_msg_name[] = {
 	"get_snk_cap_ext",
 	"ctrl17",
 	"get_rev",
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+    "get_source_info",
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
 #endif	/* CONFIG_USB_PD_REV30 */
 };
 
@@ -123,7 +126,9 @@ static const char *const pd_hw_msg_name[] = {
 #if CONFIG_USB_PD_REV30
 	"sink_tx_change",
 #endif	/* CONFIG_USB_PD_REV30 */
+#if CONFIG_USB_PD_RETRY_CRC_DISCARD
 	"tx_retransmit",
+#endif	/* CONFIG_USB_PD_RETRY_CRC_DISCARD */
 };
 
 static inline void print_hw_msg_event(struct tcpc_device *tcpc, uint8_t msg)
@@ -137,6 +142,7 @@ static const char *const pd_pe_msg_name[] = {
 	"pr_at_dft",
 	"hard_reset_done",
 	"pe_idle",
+	"vdm_reset",
 	"vdm_not_support",
 };
 
@@ -265,6 +271,9 @@ static inline void print_event(
 		break;
 
 	case PD_EVT_TIMER_MSG:
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+        if (pd_event->msg != PD_TIMER_INT_INVAILD)
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
 		PE_EVT_INFO("timer, %u\n", pd_event->msg);
 		break;
 
@@ -421,6 +430,30 @@ bool pd_process_protocol_error(
 		fallthrough;
 	case PE_SRC_TRANSITION_SUPPLY2:
 		power_change = true;
+		if (pd_event_msg_match(pd_event,
+				PD_EVT_CTRL_MSG, PD_CTRL_PING)) {
+			PE_INFO("Ignore Ping\n");
+			goto out;
+		}
+		break;
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+    /* while send <request msg>, recevied <alert msg> ignore */
+    case PE_SNK_SELECT_CAPABILITY:
+        if (pd_event_msg_match(pd_event,
+                PD_EVT_DATA_MSG, PD_DATA_ALERT)) {
+            PE_INFO("Ignore Alert\n");
+            goto out;
+        }
+        break;
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
+#if CONFIG_USB_PD_PR_SWAP
+	case PE_PRS_SRC_SNK_WAIT_SOURCE_ON:
+#endif	/* CONFIG_USB_PD_PR_SWAP */
+		if (pd_event_msg_match(pd_event,
+				PD_EVT_CTRL_MSG, PD_CTRL_PING)) {
+			PE_INFO("Ignore Ping\n");
+			goto out;
+		}
 		break;
 
 	case PE_SNK_READY:
@@ -623,7 +656,6 @@ static inline bool pe_is_valid_pd_msg_id(struct pd_port *pd_port,
 			pd_event->msg, msg_id);
 		return false;
 	}
-
 	pd_port->pe_data.msg_id_rx[sop_type] = msg_id;
 	return true;
 }
@@ -738,11 +770,20 @@ static inline bool pe_transit_startup_state(
 {
 	uint8_t startup_state =
 		pe_get_startup_state(pd_port, pd_event);
-
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+    int rv = 0;
+    uint32_t chip_pid = 0;
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
 	if (startup_state == 0xff)
 		return false;
 
 	pd_dpm_notify_pe_startup(pd_port);
+#ifdef CONFIG_SUPPORT_SOUTHCHIP_PDPHY
+    rv = tcpci_get_chip_pid(pd_port->tcpc, &chip_pid);
+    if (!rv &&  SC660X_PID == chip_pid) {
+        pd_enable_timer(pd_port, PD_TIMER_INT_INVAILD);
+    }
+#endif /* CONFIG_SUPPORT_SOUTHCHIP_PDPHY */
 	PE_TRANSIT_STATE(pd_port, startup_state);
 
 	return true;
@@ -759,7 +800,7 @@ static inline uint8_t pe_check_trap_in_idle_state(
 {
 	struct tcpc_device __maybe_unused *tcpc = pd_port->tcpc;
 
-	switch (pd_port->pe_state_curr) {
+	switch (pd_port->pe_pd_state) {
 	case PE_IDLE1:
 	case PE_ERROR_RECOVERY:
 		if (pd_event_pe_msg_match(pd_event, PD_PE_IDLE))  {
@@ -818,6 +859,7 @@ bool pd_process_event(
 	struct pd_port *pd_port, struct pd_event *pd_event)
 {
 	bool ret = false;
+	struct tcpc_device *tcpc = pd_port->tcpc;
 	struct pd_msg *pd_msg = pd_event->pd_msg;
 	uint8_t tii = pe_check_trap_in_idle_state(pd_port, pd_event);
 
@@ -828,8 +870,14 @@ bool pd_process_event(
 
 	if (pd_event->event_type == PD_EVT_PD_MSG)
 		pe_translate_pd_msg_event(pd_port, pd_event, pd_msg);
+	else if (pd_event->event_type == PD_EVT_TIMER_MSG &&
+		 !tcpc->tcpc_timer[pd_event->msg].en)
+		return false;
 
-	print_event(pd_port, pd_event);
+#if PE_EVT_INFO_VDM_DIS
+	if (!pd_curr_is_vdm_evt(pd_port))
+#endif
+		print_event(pd_port, pd_event);
 
 	pd_copy_msg_data_from_evt(pd_port, pd_event);
 
