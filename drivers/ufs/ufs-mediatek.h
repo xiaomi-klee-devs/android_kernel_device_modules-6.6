@@ -13,9 +13,9 @@
 #include <linux/spinlock_types.h>
 #include <linux/workqueue.h>
 
-#include <ufs/ufs.h>
-#include <ufs/ufshcd.h>
-#include <ufs/ufshci.h>
+#include "mi_ufs/include/mi_ufs.h"
+#include "mi_ufs/include/mi_ufshcd.h"
+#include "mi_ufs/include/mi_ufshci.h"
 
 #include "ufs-mediatek-mbrain.h"
 #include "ufs-mediatek-rpmb.h"

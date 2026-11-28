@@ -4,6 +4,10 @@
  * Authors:
  *	Stanley Chu <stanley.chu@mediatek.com>
  *	Peter Wang <peter.wang@mediatek.com>
+ *
+ * Co-authors:
+ *	kylieeXD <khayloaftck@gmail.com>
+ *	Ido <dev.xyzuniverse@gmail.com>
  */
 
 #include <linux/arm-smccc.h>
@@ -26,13 +30,13 @@
 #include <linux/tracepoint.h>
 #include <scsi/scsi_proto.h>
 #include <scsi/scsi_dbg.h>
-#include <ufs/ufs_quirks.h>
-#include <ufs/ufshcd.h>
-#include <ufs/unipro.h>
+#include "mi_ufs/include/mi_ufs_quirks.h"
+#include "mi_ufs/include/mi_ufshcd.h"
+#include "mi_ufs/include/mi_unipro.h"
 
-#include "ufshcd-crypto.h"
-#include "ufshcd-pltfrm.h"
-#include "ufshcd-priv.h"
+#include "mi_ufs/core/mi_ufshcd-crypto.h"
+#include "mi_ufs/host/mi_ufshcd-pltfrm.h"
+#include "mi_ufs/core/mi_ufshcd-priv.h"
 
 /* MediaTek UFS facilities */
 #include "ufs-mediatek-btag.h"

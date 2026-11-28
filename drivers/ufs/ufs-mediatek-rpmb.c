@@ -4,6 +4,10 @@
  * Authors:
  *	Stanley Chu <stanley.chu@mediatek.com>
  *	Peter Wang <peter.wang@mediatek.com>
+ *
+ * Co-authors:
+ *	kylieeXD <khayloaftck@gmail.com>
+ *	Ido <dev.xyzuniverse@gmail.com>
  */
 
 #include <asm-generic/errno-base.h>
@@ -20,10 +24,10 @@
 #include <linux/timer.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_dbg.h>
-#include <ufs/ufshcd.h>
+#include "mi_ufs/include/mi_ufshcd.h"
 #include "ufs-mediatek-ise.h"
 #include "ufs-mediatek.h"
-#include "ufshcd-priv.h"
+#include "mi_ufs/core/mi_ufshcd-priv.h"
 
 static struct rpmb_dev *rawdev_ufs_rpmb;
 static int ufs_mtk_rpmb_cmd_seq(struct device *dev,

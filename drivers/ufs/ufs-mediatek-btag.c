@@ -4,11 +4,15 @@
  * Authors:
  *	Stanley Chu <stanley.chu@mediatek.com>
  *	Peter Wang <peter.wang@mediatek.com>
+ *
+ * Co-authors:
+ *	kylieeXD <khayloaftck@gmail.com>
+ *	Ido <dev.xyzuniverse@gmail.com>
  */
 
 #include <linux/async.h>
 #include <scsi/scsi_cmnd.h>
-#include <ufs/ufshcd.h>
+#include "mi_ufs/include/mi_ufshcd.h"
 #include "ufs-mediatek.h"
 #include "ufs-mediatek-sysfs.h"
 #include <mt-plat/mtk_blocktag.h>

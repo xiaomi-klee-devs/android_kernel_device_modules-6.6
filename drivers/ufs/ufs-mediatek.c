@@ -4,6 +4,10 @@
  * Authors:
  *	Stanley Chu <stanley.chu@mediatek.com>
  *	Peter Wang <peter.wang@mediatek.com>
+ *
+ * Co-authors:
+ *	kylieeXD <khayloaftck@gmail.com>
+ *	Ido <dev.xyzuniverse@gmail.com>
  */
 
 #include <linux/arm-smccc.h>
@@ -26,13 +30,13 @@
 #include <linux/tracepoint.h>
 #include <scsi/scsi_proto.h>
 #include <scsi/scsi_dbg.h>
-#include <ufs/ufs_quirks.h>
-#include <ufs/ufshcd.h>
-#include <ufs/unipro.h>
+#include "mi_ufs/include/mi_ufs_quirks.h"
+#include "mi_ufs/include/mi_ufshcd.h"
+#include "mi_ufs/include/mi_unipro.h"
 
-#include "ufshcd-crypto.h"
-#include "ufshcd-pltfrm.h"
-#include "ufshcd-priv.h"
+#include "mi_ufs/core/mi_ufshcd-crypto.h"
+#include "mi_ufs/host/mi_ufshcd-pltfrm.h"
+#include "mi_ufs/core/mi_ufshcd-priv.h"
 
 /* MediaTek UFS facilities */
 #include "ufs-mediatek-btag.h"
@@ -973,6 +977,7 @@ static void ufs_mtk_trace_vh_send_command(void *data, struct ufs_hba *hba, struc
 		return;
 
 	ufs_mtk_btag_send_command(hba, lrbp);
+
 }
 
 static void ufs_mtk_trace_vh_compl_command(void *data, struct ufs_hba *hba, struct ufshcd_lrb *lrbp)
@@ -987,6 +992,7 @@ static void ufs_mtk_trace_vh_compl_command(void *data, struct ufs_hba *hba, stru
 #endif
 
 	ufs_mtk_btag_compl_command(hba, lrbp);
+
 }
 
 void ufs_mtk_trace_vh_check_int_errors(void *data, struct ufs_hba *hba, bool queue_eh_work)
@@ -1017,6 +1023,7 @@ static struct tracepoints_table interests[] = {
 #define FOR_EACH_INTEREST(i) \
 	for (i = 0; i < sizeof(interests) / sizeof(struct tracepoints_table); \
 	i++)
+
 
 static void ufs_mtk_lookup_tracepoints(struct tracepoint *tp,
 				       void *ignore)
@@ -1913,8 +1920,9 @@ static int ufs_mtk_pwr_change_notify(struct ufs_hba *hba,
 					     dev_req_params);
 		break;
 	case POST_CHANGE:
-		if (ufshcd_is_auto_hibern8_supported(hba))
+		if (ufshcd_is_auto_hibern8_supported(hba)) {
 			ufshcd_writel(hba, reg, REG_AUTO_HIBERNATE_IDLE_TIMER);
+		}
 		break;
 	default:
 		ret = -EINVAL;
@@ -1949,7 +1957,7 @@ static int ufs_mtk_unipro_set_lpm(struct ufs_hba *hba, bool lpm)
 
 static int ufs_mtk_pre_link(struct ufs_hba *hba)
 {
-	int ret = 0;
+	int ret;
 	u32 tmp;
 	struct ufs_mtk_host *host = ufshcd_get_variant(hba);
 
@@ -1957,7 +1965,7 @@ static int ufs_mtk_pre_link(struct ufs_hba *hba)
 
 	ret = ufs_mtk_unipro_set_lpm(hba, false);
 	if (ret)
-		goto out;
+		return ret;
 
 	/*
 	 * Setting PA_Local_TX_LCC_Enable to 0 before link startup
@@ -1966,45 +1974,26 @@ static int ufs_mtk_pre_link(struct ufs_hba *hba)
 	 */
 	ret = ufshcd_disable_host_tx_lcc(hba);
 	if (ret)
-		goto out;
+		return ret;
 
 	/* disable deep stall */
 	ret = ufshcd_dme_get(hba, UIC_ARG_MIB(VS_SAVEPOWERCONTROL), &tmp);
 	if (ret)
-		goto out;
+		return ret;
 
 	tmp &= ~(1 << 6);
+
 	ret = ufshcd_dme_set(hba, UIC_ARG_MIB(VS_SAVEPOWERCONTROL), tmp);
-	if (ret)
-		goto out;
 
 	/* Enable the 1144 functions setting */
 	if (host->ip_ver == IP_VER_MT6989) {
 		ret = ufshcd_dme_get(hba, UIC_ARG_MIB(VS_DEBUGOMC), &tmp);
 		if (ret)
-			goto out;
+			return ret;
 
 		tmp |= 0x10;
 		ret = ufshcd_dme_set(hba, UIC_ARG_MIB(VS_DEBUGOMC), tmp);
-		if (ret)
-			goto out;
 	}
-
-	/* Enable RX_SYM_CLK_GAT to decrease clk noise */
-	if (host->ip_ver >= IP_VER_MT6991_B0) {
-		ret = ufshcd_dme_get(hba, UIC_ARG_MIB(VS_SAVEPOWERCONTROL), &tmp);
-		if (ret)
-			goto out;
-
-		tmp |= 1 << RX_SYMBOL_CLK_GATE_EN;
-		ret = ufshcd_dme_set(hba, UIC_ARG_MIB(VS_SAVEPOWERCONTROL), tmp);
-		if (ret)
-			goto out;
-	}
-
-out:
-	if (ret)
-		dev_err(hba->dev, "%s: err = %d\n", __func__, ret);
 
 	return ret;
 }
@@ -2762,7 +2751,6 @@ static void ufs_mtk_event_notify(struct ufs_hba *hba,
 	struct ufs_event_hist *e;
 
 	trace_ufs_mtk_event(evt, val);
-
 
 	/* error check for mbrain */
 	if (evt <= UFS_EVT_FATAL_ERR){
