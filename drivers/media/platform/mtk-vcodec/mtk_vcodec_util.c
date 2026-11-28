@@ -25,9 +25,6 @@
 #include "vdec_drv_if.h"
 #include "venc_drv_if.h"
 #include "group.h"
-#ifdef MTK_VIDEO_GO_SUPPORT
-#include "videogo_public.h"
-#endif
 
 #define LOG_PARAM_INFO_SIZE 64
 #define MAX_SUPPORTED_LOG_PARAMS_COUNT 12
@@ -38,9 +35,6 @@ char mtk_vdec_tmp_prop[LOG_PROPERTY_SIZE];
 char mtk_venc_tmp_prop[LOG_PROPERTY_SIZE];
 
 static struct mtk_vcodec_dev *dev_ptr[MTK_INST_MAX];
-#ifdef MTK_VIDEO_GO_SUPPORT
-static void (*vcodec_to_vgo)(int, void *);
-#endif
 
 
 void mtk_vcodec_set_dev(struct mtk_vcodec_dev *dev, enum mtk_instance_type type)
@@ -430,26 +424,6 @@ struct mtk_vcodec_ctx *mtk_vcodec_get_curr_ctx(struct mtk_vcodec_dev *dev,
 }
 EXPORT_SYMBOL_GPL(mtk_vcodec_get_curr_ctx);
 
-#ifdef MTK_VIDEO_GO_SUPPORT
-static struct mtk_vcodec_ctx *mtk_vcodec_get_ctx_by_id(struct mtk_vcodec_dev *dev, unsigned int ctx_id)
-{
-	struct mtk_vcodec_ctx *ctx = NULL;
-
-	if (dev == NULL)
-		return NULL;
-
-	mutex_lock(&dev->ctx_mutex);
-	list_for_each_entry(ctx, &dev->ctx_list, list) {
-		if (ctx != NULL && ctx != &dev->dev_ctx && ctx->id == ctx_id) {
-			mutex_unlock(&dev->ctx_mutex);
-			return ctx;
-		}
-	}
-	mutex_unlock(&dev->ctx_mutex);
-	return NULL;
-}
-#endif
-
 void mtk_vcodec_add_ctx_list(struct mtk_vcodec_ctx *ctx)
 {
 	if (ctx != NULL) {
@@ -635,6 +609,44 @@ void mtk_vcodec_set_cpu_hint(struct mtk_vcodec_dev *dev, bool enable,
 	vcodec_trace_end();
 }
 EXPORT_SYMBOL_GPL(mtk_vcodec_set_cpu_hint);
+
+void mtk_vcodec_set_cgrp(struct mtk_vcodec_ctx *ctx, bool enable, const char *debug_str)
+{
+	struct mtk_vcodec_dev *dev = ctx->dev;
+
+	vcodec_trace_begin("%s[%d](%d)(%s)", __func__, ctx->id, enable, debug_str);
+
+	mutex_lock(&dev->cgrp_mutex);
+	if (enable) {
+		if (!ctx->cgrp_enable) {
+			ctx->cgrp_enable = true;
+			dev->cgrp_ref_cnt++;
+#if IS_ENABLED(CONFIG_MTK_SCHED_FAST_LOAD_TRACKING)
+			group_set_cgroup_colocate(1, 0); // enable
+			mtk_v4l2_debug(0, "[%s][%d] enable cgroup_colocate by %s (ref cnt %d)",
+				(ctx->type == MTK_INST_DECODER) ? "VDEC" : "VENC", ctx->id,
+				debug_str, dev->cgrp_ref_cnt);
+#endif
+		}
+	} else {
+		if (ctx->cgrp_enable) {
+			ctx->cgrp_enable = false;
+			dev->cgrp_ref_cnt--;
+#if IS_ENABLED(CONFIG_MTK_SCHED_FAST_LOAD_TRACKING)
+			mtk_v4l2_debug(dev->cgrp_ref_cnt == 0 ? 0 : 2,
+				"[%s][%d] disable cgroup_colocate by %s (ref cnt %d)",
+				(ctx->type == MTK_INST_DECODER) ? "VDEC" : "VENC", ctx->id,
+				debug_str, dev->cgrp_ref_cnt);
+			if (dev->cgrp_ref_cnt == 0)
+				group_set_cgroup_colocate(1, -1); // disable, reset to default
+#endif
+		}
+	}
+	mutex_unlock(&dev->cgrp_mutex);
+
+	vcodec_trace_end();
+}
+EXPORT_SYMBOL_GPL(mtk_vcodec_set_cgrp);
 
 void mtk_vcodec_init_slice_info(struct mtk_vcodec_ctx *ctx, struct mtk_video_dec_buf *dst_buf_info)
 {
@@ -1617,133 +1629,6 @@ void mtk_vcodec_get_log(struct mtk_vcodec_ctx *ctx, struct mtk_vcodec_dev *dev,
 	mtk_v4l2_debug(0, "val: %s, log_index: %d", val, log_index);
 }
 EXPORT_SYMBOL_GPL(mtk_vcodec_get_log);
-
-/* utility functions for video go*/
-void mtk_vcodec_vgo_send(int type, void *data)
-{
-#ifdef MTK_VIDEO_GO_SUPPORT
-	struct mtk_vcodec_ctx *ctx;
-
-	switch (type) {
-	case VGO_SEND_UPDATE_FN:
-		vcodec_to_vgo = data;
-		mtk_v4l2_debug(0, "VGO_SEND_UPDATE_FN 0x%p (type %d)", data, type);
-		break;
-	case VGO_SEND_OPRATE: {
-		struct vgo_data *vgo_info = (struct vgo_data *)data;
-		struct oprate_data *op_data;
-		int i;
-
-		for (i = 0; i < vgo_info->count; i++) {
-			op_data = &vgo_info->data[i];
-			if (op_data->inst_type >= MTK_INST_MAX || op_data->inst_type < 0) {
-				mtk_v4l2_err("VGO_SEND_OPRATE data[%d] inst_type %d invalid (ctx_id %d, adaptive_oprate %d)",
-					i, op_data->inst_type, op_data->ctx_id, op_data->oprate);
-				continue;
-			}
-			ctx = mtk_vcodec_get_ctx_by_id(dev_ptr[op_data->inst_type], op_data->ctx_id);
-			if (!ctx) {
-				mtk_v4l2_err("VGO_SEND_OPRATE data[%d] inst_type %d ctx_id %d, but ctx not found (adaptive_oprate %d)",
-					i, op_data->inst_type, op_data->ctx_id, op_data->oprate);
-				continue;
-			}
-			ctx->vgo_op_rate = (unsigned int)op_data->oprate;
-			mtk_v4l2_debug(0, "[%d] %s VGO_SEND_OPRATE data[%d] %d",
-				ctx->id, INST_TYPE_STR(ctx->type), i, ctx->vgo_op_rate);
-		}
-		break;
-	}
-	default:
-		mtk_v4l2_err("type %d not support", type);
-	}
-#endif
-}
-EXPORT_SYMBOL_GPL(mtk_vcodec_vgo_send);
-
-void mtk_vcodec_send_info_to_vgo(struct mtk_vcodec_ctx *ctx, enum mtk_vcodec_send_vgo_type type)
-{
-#ifdef MTK_VIDEO_GO_SUPPORT
-	int vgo_type = -1;
-
-	if (!vcodec_to_vgo) {
-		mtk_v4l2_debug(1, "[%d] v4l2_to_vgo not exist (type %d)", ctx->id, type);
-		return;
-	}
-
-	switch (type) {
-	case MTK_VCODEC_VGO_OPEN: {
-		struct oprate_data data = {0};
-
-		vgo_type = VGO_RECV_STATE_OPEN;
-		data.inst_type = ctx->type;
-		data.ctx_id    = ctx->id;
-
-		mtk_v4l2_debug(2, "[%d] vgo open (type %d,%d): inst_type %s(%d)",
-			ctx->id, type, vgo_type, INST_TYPE_STR(data.inst_type), data.inst_type);
-		vcodec_to_vgo(vgo_type, &data);
-		break;
-	}
-	case MTK_VCODEC_VGO_ADD_INST:
-		vgo_type = VGO_RECV_INSTANCE_INC;
-		goto vgo_set_instance_data;
-	case MTK_VCODEC_VGO_DEL_INST:
-		vgo_type = VGO_RECV_INSTANCE_DEC;
-vgo_set_instance_data:
-	{
-		struct inst_init_data data = {0};
-
-		data.inst_type  = ctx->type;
-		data.ctx_id     = ctx->id;
-		data.caller_pid = ctx->cpu_caller_pid;
-		if (ctx->type == MTK_INST_DECODER) {
-			data.fourcc = ctx->q_data[MTK_Q_DATA_SRC].fmt->fourcc;
-			data.oprate = (int)ctx->dec_params.operating_rate;
-			data.width  = (int)ctx->last_decoded_picinfo.pic_w;
-			data.height = (int)ctx->last_decoded_picinfo.pic_h;
-		} else {
-			data.fourcc = ctx->q_data[MTK_Q_DATA_DST].fmt->fourcc;
-			data.oprate = (int)ctx->enc_params.operationrate;
-			data.width  = (int)ctx->q_data[MTK_Q_DATA_SRC].visible_width;
-			data.height = (int)ctx->q_data[MTK_Q_DATA_SRC].visible_height;
-		}
-		mtk_v4l2_debug(2, "[%d] vgo %s inst (type %d,%d): inst_type %s(%d), caller_pid %d, fourcc %s(0x%x), oprate %d, w/h %d,%d",
-			ctx->id, (type == MTK_VCODEC_VGO_ADD_INST) ? "add" : "del", type, vgo_type,
-			INST_TYPE_STR(data.inst_type), data.inst_type, data.caller_pid,
-			FOURCC_STR(data.fourcc), data.fourcc, data.oprate, data.width, data.height);
-		vcodec_to_vgo(vgo_type, &data);
-		break;
-	}
-	case MTK_VCODEC_VGO_UPDATE: {
-		struct inst_data data = {0};
-		int i, hw_num = 0;
-
-		if (ctx->type == MTK_INST_DECODER) {
-			if (ctx->dev->vdec_hw_ipm == VCODEC_IPM_V1)
-				hw_num = 1; // core
-			else if (ctx->dev->vdec_hw_ipm == VCODEC_IPM_V2)
-				hw_num = 2; // lat + core
-		} else if (ctx->type == MTK_INST_ENCODER)
-			hw_num = (ctx->dev->hw_max_count <= 3) ? ctx->dev->hw_max_count : 3;
-
-		vgo_type = VGO_RECV_RUNNING_UPDATE;
-		data.inst_type = ctx->type;
-		data.ctx_id    = ctx->id;
-		data.oprate    = ctx->op_rate_adaptive;
-		for (i = 0; i < hw_num; i++)
-			data.hw_proc_time[i] = 0;//ctx->hw_proc_time[i];
-
-		mtk_v4l2_debug(2, "[%d] vgo update (type %d,%d): inst_type %s(%d), oprate %d,hw_proc_time %d,%d,%d",
-			ctx->id, type, vgo_type, INST_TYPE_STR(data.inst_type), data.inst_type, data.oprate,
-			data.hw_proc_time[0], data.hw_proc_time[1], data.hw_proc_time[2]);
-		vcodec_to_vgo(vgo_type, &data);
-		break;
-	}
-	default:
-		mtk_v4l2_err("[%d] type %d not support", ctx->id, type);
-	}
-#endif
-}
-EXPORT_SYMBOL_GPL(mtk_vcodec_send_info_to_vgo);
 
 MODULE_IMPORT_NS(DMA_BUF);
 MODULE_LICENSE("GPL v2");

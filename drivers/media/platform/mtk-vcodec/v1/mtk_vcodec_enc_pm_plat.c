@@ -872,7 +872,6 @@ bool mtk_venc_dvfs_monitor_op_rate(struct mtk_vcodec_ctx *ctx, int buf_type)
 				dev->venc_dvfs_params.init_boost = 0;
 
 			mutex_unlock(&dev->enc_dvfs_mutex);
-			mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_UPDATE);
 			return true;
 		}
 	}

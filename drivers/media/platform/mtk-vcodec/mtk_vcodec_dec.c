@@ -871,6 +871,45 @@ static void mtk_vdec_trigger_set_frame(struct mtk_vcodec_ctx *ctx)
 		queue_work(ctx->vdec_set_frame_wq, &ctx->vdec_set_frame_work.work);
 }
 
+static void mtk_vdec_cgrp_handler(struct work_struct *work_ptr)
+{
+	struct delayed_work *delay_work = to_delayed_work(work_ptr);
+	struct mtk_vcodec_ctx *ctx = container_of(delay_work, struct mtk_vcodec_ctx, cgrp_delay_work);
+
+	mtk_vcodec_set_cgrp(ctx, false, __func__);
+}
+
+static void mtk_vdec_trigger_cgrp(struct mtk_vcodec_ctx *ctx)
+{
+	if (!ctx->cgrp_wq || mtk_vdec_open_cgrp_delay <= 0)
+		return;
+
+	mtk_vcodec_set_cgrp(ctx, true, __func__);
+	INIT_DELAYED_WORK(&ctx->cgrp_delay_work, mtk_vdec_cgrp_handler);
+	queue_delayed_work(ctx->cgrp_wq, &ctx->cgrp_delay_work, msecs_to_jiffies(mtk_vdec_open_cgrp_delay));
+}
+
+static void mtk_vdec_cgrp_init(struct mtk_vcodec_ctx *ctx)
+{
+	char name[25];
+
+	SNPRINTF(name, sizeof(name), "vdec_cgrp-%d", ctx->id);
+	ctx->cgrp_wq = create_workqueue(name);
+}
+
+static void mtk_vdec_cgrp_deinit(struct mtk_vcodec_ctx *ctx)
+{
+	if (!ctx->cgrp_wq)
+		return;
+
+	cancel_delayed_work(&ctx->cgrp_delay_work);
+	flush_workqueue(ctx->cgrp_wq);
+	destroy_workqueue(ctx->cgrp_wq);
+	ctx->cgrp_wq = NULL;
+
+	mtk_vcodec_set_cgrp(ctx, false, __func__); // double check to disable cgroup
+}
+
 /*
  * This function tries to clean all display buffers, the buffers will return
  * in display order.
@@ -1617,18 +1656,6 @@ void mtk_vdec_queue_error_code_event(struct mtk_vcodec_ctx *ctx, unsigned int in
 	v4l2_event_queue_fh(&ctx->fh, &ev_error);
 }
 
-void mtk_vdec_queue_videogo_info_event(struct mtk_vcodec_ctx *ctx, unsigned int info)
-{
-	struct v4l2_event event = {
-		.type = V4L2_EVENT_MTK_VCODEC_VIDEO_GO_INFO,
-	};
-
-	memcpy((void *)event.u.data, &info, sizeof(info));
-
-	mtk_v4l2_debug(1, "[%d] video go info %d", ctx->id, info);
-	v4l2_event_queue_fh(&ctx->fh, &event);
-}
-
 void mtk_vdec_error_handle(struct mtk_vcodec_ctx *ctx, char *debug_str)
 {
 	struct mtk_vcodec_dev *dev = ctx->dev;
@@ -1988,11 +2015,6 @@ static void mtk_vdec_worker(struct work_struct *work)
 	if (!mtk_vcodec_is_state(ctx, MTK_STATE_HEADER)) {
 		mtk_v4l2_debug(1, "[%d] state %d", ctx->id, mtk_vcodec_get_state(ctx));
 		goto vdec_worker_finish;
-	}
-
-	if (ctx->last_vgo_op_rate != ctx->vgo_op_rate) {
-		mtk_vdec_queue_videogo_info_event(ctx, ctx->vgo_op_rate);
-		ctx->last_vgo_op_rate = ctx->vgo_op_rate;
 	}
 
 	/* process deferred put fb job */
@@ -2484,6 +2506,8 @@ void mtk_vcodec_dec_release(struct mtk_vcodec_ctx *ctx)
 	}
 	memset(ctx->dma_meta_list, 0, sizeof(struct dma_meta_buf) * MAX_META_BUF_CNT);
 #endif
+
+	mtk_vdec_cgrp_deinit(ctx);
 }
 
 static bool mtk_vdec_dvfs_params_change(struct mtk_vcodec_ctx *ctx)
@@ -2547,8 +2571,6 @@ void mtk_vdec_check_alive_work(struct work_struct *ws)
 			mutex_unlock(&dev->dec_dvfs_mutex);
 			return;
 		}
-		if (!ctx->is_active)
-			mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_ADD_INST);
 		ctx->is_active = 1;
 		mtk_vdec_dvfs_update_dvfs_params(ctx);
 		kfree(caws);
@@ -2566,7 +2588,6 @@ void mtk_vdec_check_alive_work(struct work_struct *ws)
 					if (ctx->is_active) {
 						need_update = true;
 						ctx->is_active = 0;
-						mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_DEL_INST);
 						mtk_vdec_dvfs_update_dvfs_params(ctx);
 						mtk_v4l2_debug(0, "[VDVFS] ctx %d inactive",
 							ctx->id);
@@ -2575,7 +2596,6 @@ void mtk_vdec_check_alive_work(struct work_struct *ws)
 					if (!ctx->is_active) {
 						need_update = true;
 						ctx->is_active = 1;
-						mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_ADD_INST);
 						mtk_vdec_dvfs_update_dvfs_params(ctx);
 						mtk_v4l2_debug(0, "[VDVFS] ctx %d active", ctx->id);
 					}
@@ -2610,6 +2630,9 @@ void mtk_vdec_check_alive_work(struct work_struct *ws)
 void mtk_vcodec_dec_set_default_params(struct mtk_vcodec_ctx *ctx)
 {
 	struct mtk_q_data *q_data;
+
+	mtk_vdec_cgrp_init(ctx);
+	mtk_vdec_trigger_cgrp(ctx);
 
 	ctx->m2m_ctx->q_lock = &ctx->q_mutex;
 	ctx->fh.m2m_ctx = ctx->m2m_ctx;
@@ -3044,8 +3067,6 @@ static int vidioc_vdec_subscribe_evt(struct v4l2_fh *fh,
 	case V4L2_EVENT_MTK_VDEC_NOHEADER:
 		return v4l2_event_subscribe(fh, sub, 0, NULL);
 	case V4L2_EVENT_MTK_VDEC_ERROR_INFO:
-		return v4l2_event_subscribe(fh, sub, 0, NULL);
-	case V4L2_EVENT_MTK_VCODEC_VIDEO_GO_INFO:
 		return v4l2_event_subscribe(fh, sub, 0, NULL);
 	default:
 		return v4l2_ctrl_subscribe_event(fh, sub);
@@ -3874,11 +3895,7 @@ static void vb2ops_vdec_buf_queue(struct vb2_buffer *vb)
 		retrigger_ctx_work->dev = ctx->dev;
 		queue_work(ctx->dev->check_alive_workqueue, &retrigger_ctx_work->work);
 		mtk_v4l2_debug(4, "%s [VDVFS] retrigger ctx work: %d", __func__, ctx->id);
-		mutex_lock(&ctx->dev->dec_dvfs_mutex);
-		if (!ctx->is_active)
-			mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_ADD_INST);
 		ctx->is_active = 1;
-		mutex_unlock(&ctx->dev->dec_dvfs_mutex);
 	}
 #endif
 	/*
@@ -4304,9 +4321,6 @@ static int vb2ops_vdec_start_streaming(struct vb2_queue *q, unsigned int count)
 
 		vcodec_trace_begin("dvfs(stream_on)");
 		mutex_lock(&ctx->dev->dec_dvfs_mutex);
-		if (!ctx->is_active)
-			mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_ADD_INST);
-		ctx->is_active = 1;
 		if (ctx->dev->vdec_dvfs_params.mmdvfs_in_vcp) {
 			mtk_vcodec_cpu_pf_ctrl(ctx, true);
 			mtk_vdec_prepare_vcp_dvfs_data(ctx, vcp_dvfs_data);
@@ -4470,8 +4484,6 @@ static void vb2ops_vdec_stop_streaming(struct vb2_queue *q)
 
 	vcodec_trace_begin("dvfs(stream_off)");
 	mutex_lock(&ctx->dev->dec_dvfs_mutex);
-	if (ctx->is_active)
-		mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_DEL_INST);
 	ctx->is_active = 0;
 	if (ctx->dev->vdec_dvfs_params.mmdvfs_in_vcp) {
 		mtk_vdec_unprepare_vcp_dvfs_data(ctx, vcp_dvfs_data);

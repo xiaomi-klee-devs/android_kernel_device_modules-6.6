@@ -1647,8 +1647,6 @@ static int vidioc_venc_subscribe_evt(struct v4l2_fh *fh,
 		return v4l2_event_subscribe(fh, sub, 2, NULL);
 	case V4L2_EVENT_MTK_VENC_ERROR:
 		return v4l2_event_subscribe(fh, sub, 0, NULL);
-	case V4L2_EVENT_MTK_VCODEC_VIDEO_GO_INFO:
-		return v4l2_event_subscribe(fh, sub, 0, NULL);
 	default:
 		return v4l2_ctrl_subscribe_event(fh, sub);
 	}
@@ -1674,18 +1672,6 @@ void mtk_venc_queue_error_event(struct mtk_vcodec_ctx *ctx)
 
 	mtk_v4l2_debug(0, "[%d] msg %x", ctx->id, ctx->err_msg);
 	v4l2_event_queue_fh(&ctx->fh, &ev_error);
-}
-
-void mtk_venc_queue_videogo_info_event(struct mtk_vcodec_ctx *ctx, unsigned int info)
-{
-	struct v4l2_event event = {
-		.type = V4L2_EVENT_MTK_VCODEC_VIDEO_GO_INFO,
-	};
-
-	memcpy((void *)event.u.data, &info, sizeof(info));
-
-	mtk_v4l2_debug(1, "[%d] video go info %d", ctx->id, info);
-	v4l2_event_queue_fh(&ctx->fh, &event);
 }
 
 static void mtk_venc_error_handle(struct mtk_vcodec_ctx *ctx)
@@ -2977,8 +2963,6 @@ static int vb2ops_venc_start_streaming(struct vb2_queue *q, unsigned int count)
 		mutex_unlock(&ctx->dev->enc_dvfs_mutex);
 	}
 
-	mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_ADD_INST);
-
 	return 0;
 
 err_set_param:
@@ -3055,8 +3039,6 @@ static void vb2ops_venc_stop_streaming(struct vb2_queue *q)
 				venc_check_release_lock(ctx);
 			}
 		}
-
-		mtk_vcodec_send_info_to_vgo(ctx, MTK_VCODEC_VGO_DEL_INST);
 	}
 
 	if (q->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
@@ -3533,11 +3515,6 @@ static void mtk_venc_worker(struct work_struct *work)
 		mtk_v4l2_debug(1, " %d", mtk_vcodec_get_state(ctx));
 		mutex_unlock(&ctx->worker_lock);
 		return;
-	}
-
-	if (ctx->last_vgo_op_rate != ctx->vgo_op_rate) {
-		//mtk_venc_queue_videogo_info_event(ctx, ctx->vgo_op_rate);
-		ctx->last_vgo_op_rate = ctx->vgo_op_rate;
 	}
 
 	/* check dst_buf, dst_buf may be removed in device_run
