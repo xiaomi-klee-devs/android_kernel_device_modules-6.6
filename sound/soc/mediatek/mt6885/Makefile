@@ -15,20 +15,5 @@ ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/base/power/include
 ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/include/mt-plat/$(MTK_PLATFORM)/include
 
 # platform driver
-obj-$(CONFIG_SND_SOC_MT6885) += snd-soc-mt6885-afe.o
-snd-soc-mt6885-afe-objs += \
-	mt6885-afe-pcm.o \
-	mt6885-afe-clk.o \
-	mt6885-afe-gpio.o \
-	mt6885-dai-adda.o \
-	mt6885-afe-control.o \
-	mt6885-dai-i2s.o \
-	mt6885-dai-hw-gain.o \
-	mt6885-dai-src.o \
-	mt6885-dai-pcm.o \
-	mt6885-dai-tdm.o \
-	mt6885-dai-hostless.o \
-	mt6885-misc-control.o
 
 # machine driver
-obj-$(CONFIG_SND_SOC_MT6885_MT6359P) += mt6885-mt6359p.o

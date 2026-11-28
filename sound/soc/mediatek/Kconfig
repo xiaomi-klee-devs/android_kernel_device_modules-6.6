@@ -488,6 +488,11 @@ config AW862xx_HAPTIC
 	  To compile this driver as a module, choose M here: the
 	  module will be called mpr121_touchkey.
 
+config DMIC_CLK_1P625
+	tristate "DMIC clk set to 1.625mhz"
+	help
+	  DMIC clk set to 1.625mhz
+
 config ADSP_SLB_LEGACY
 	bool "Enable legacy SLB support only for legacy chips"
 	depends on MTK_SLBC
