@@ -500,11 +500,6 @@ static int mtk_gpio_init_procfs(void)
 	struct mtk_pinctrl *hw = NULL;
 	struct gpio_desc *gdesc;
 	unsigned int pin = GPIO_DYNAMIC_BASE;
-	kuid_t uid;
-	kgid_t gid;
-
-	uid = make_kuid(&init_user_ns, 0);
-	gid = make_kgid(&init_user_ns, 1001);
 
 	mtk_gpio_debug_root = proc_mkdir("mtk_gpio", NULL);
 	if (!mtk_gpio_debug_root) {
@@ -538,7 +533,7 @@ static int mtk_gpio_init_procfs(void)
 					&mtk_gpio_fops, hw);
 
 			if (proc_entry)
-				proc_set_user(proc_entry, uid, gid);
+				proc_set_user(proc_entry, KUIDT_INIT(0), KGIDT_INIT(1001));
 		}
 
 		if (gdesc)
