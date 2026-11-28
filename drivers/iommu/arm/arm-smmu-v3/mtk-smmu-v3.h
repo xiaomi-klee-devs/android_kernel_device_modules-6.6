@@ -11,6 +11,7 @@
 #include <linux/io-pgtable.h>
 #include <linux/of_device.h>
 #include <linux/interrupt.h>
+#include <linux/suspend.h>
 #include <soc/mediatek/smi.h>
 
 #include <dt-bindings/memory/mtk-memory-port.h>
@@ -533,6 +534,8 @@ struct mtk_smmu_data {
 	unsigned long			irq_first_jiffies;
 	struct timer_list		irq_pause_timer;
 	bool				dvm_support;
+	bool				power_awake;
+	struct wakeup_source		*suspend_lock;
 };
 
 enum mtk_smmu_tfm_type {
