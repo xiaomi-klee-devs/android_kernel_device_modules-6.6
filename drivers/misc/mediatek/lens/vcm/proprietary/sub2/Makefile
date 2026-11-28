@@ -20,7 +20,5 @@ MTK_CUSTOM_PATH  := $(DEVICE_MODULES_PATH)/drivers/misc/mediatek
 
 subdir-ccflags-y += -I$(MTK_CUSTOM_PATH)/lens/vcm/proprietary/sub2/inc
 
-obj-$(CONFIG_MTK_LENS)    += sub2af.o
 
-sub2af-y  += sub2_lens.o
 #sub2af-y  += common/ak7371af/AK7371AF.o
