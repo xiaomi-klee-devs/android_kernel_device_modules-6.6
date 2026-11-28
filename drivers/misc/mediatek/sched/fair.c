@@ -1999,7 +1999,7 @@ static void mtk_find_best_candidates(struct cpumask *candidates, struct task_str
 				if (!cpumask_test_cpu(cpu, &vip_candidate))
 					continue;
 			}
-
+// Interfere with all possible core selections, including VIP threads.
 			cpu_util = mtk_cpu_util_next(cpu, p, cpu, 0);
 			cpu_util_without_uclamp = cpu_util;
 			cpu_util_without_p = mtk_cpu_util_next(cpu, p, -1, 0);
@@ -2158,6 +2158,7 @@ void mtk_find_energy_efficient_cpu(void *data, struct task_struct *p, int prev_c
 	bool is_vip = false;
 	int vip_prio = NOT_VIP;
 	struct cpumask vip_candidate;
+
 #if IS_ENABLED(CONFIG_MTK_SCHED_VIP_TASK)
 	struct vip_task_struct *vts = &((struct mtk_task *) p->android_vendor_data1)->vip_task;
 	int loom_select_reason = -1;
@@ -2830,7 +2831,8 @@ void mtk_sched_newidle_balance(void *data, struct rq *this_rq, struct rq_flags *
 				if (p->policy == SCHED_NORMAL &&
 					cpumask_test_cpu(this_cpu, p->cpus_ptr) &&
 					!(latency_sensitive &&
-					!cpumask_test_cpu(this_cpu, &effective_softmask))) {
+					!cpumask_test_cpu(this_cpu, &effective_softmask))
+					) {
 
 					misfit_task_rq = src_rq;
 					misfit_load = src_rq->misfit_task_load;
@@ -2864,9 +2866,10 @@ void mtk_sched_newidle_balance(void *data, struct rq *this_rq, struct rq_flags *
 	 * If p is null meaning that we have not pull a runnable task, we try to
 	 * pull a latency sensitive running task.
 	 */
-	if (!p && misfit_task_rq)
+	if (!p && misfit_task_rq) {
 		*done = migrate_running_task(this_cpu, best_running_task,
 					misfit_task_rq, MIGR_IDLE_PULL_MISFIT_RUNNING);
+	}
 	if (best_running_task)
 		put_task_struct(best_running_task);
 out:

@@ -481,7 +481,6 @@ static void mtk_rt_energy_aware_wake_cpu(struct task_struct *p,
 #else
 			cpu_has_lt = is_task_latency_sensitive(cpu_rq(cpu)->curr);
 #endif
-
 			/*
 			 * When the best cpu is suitable and the current is not,
 			 * skip it
@@ -526,7 +525,6 @@ static void mtk_rt_energy_aware_wake_cpu(struct task_struct *p,
 			if (best_idle_exit_latency == cpu_idle_exit_latency &&
 					best_cpu_util_cum < cpu_util_cum)
 				continue;
-
 			best_idle_exit_latency = cpu_idle_exit_latency;
 			best_cpu_util_cum = cpu_util_cum;
 			best_idle_cpu_cluster = cpu;

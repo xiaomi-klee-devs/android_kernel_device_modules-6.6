@@ -20,6 +20,43 @@ bool vip_enable;
 static int *tgid_vip_arr;
 int tgid_vip_status;
 
+// MIUI ADD: Performance_Kscene
+#if IS_ENABLED(CONFIG_MI_KSCENE)
+typedef void (*pick_next_task_fair_hook)(void *nouse, struct rq *rq,
+		struct task_struct **p, struct sched_entity **se,
+		bool *repick, bool simple, struct task_struct *prev);
+
+static pick_next_task_fair_hook kscene_pick_next_task_fair_hook_func = NULL;
+
+void register_pick_next_task_fair_hook_func(pick_next_task_fair_hook func) {
+	kscene_pick_next_task_fair_hook_func = func;
+}
+EXPORT_SYMBOL_GPL(register_pick_next_task_fair_hook_func);
+
+void unregister_pick_next_task_fair_hook_func(void) {
+	kscene_pick_next_task_fair_hook_func = NULL;
+}
+EXPORT_SYMBOL_GPL(unregister_pick_next_task_fair_hook_func);
+
+typedef void (*check_preempt_wakeup_hook)(void *nonus, struct rq *rq,
+		struct task_struct *p, bool *preempt, bool *nopreempt,
+		int wake_flags, struct sched_entity *se,
+		struct sched_entity *pse, int next_buddy_marked);
+
+static check_preempt_wakeup_hook kscene_check_preempt_wakeup_func = NULL;
+
+void register_kscene_check_preempt_wakeup_func (check_preempt_wakeup_hook func) {
+	kscene_check_preempt_wakeup_func = func;
+}
+EXPORT_SYMBOL_GPL(register_kscene_check_preempt_wakeup_func );
+
+void unregister_kscene_check_preempt_wakeup_func (void) {
+	kscene_check_preempt_wakeup_func = NULL;
+}
+EXPORT_SYMBOL_GPL(unregister_kscene_check_preempt_wakeup_func );
+#endif
+// END Performance_Kscene
+
 DEFINE_PER_CPU(struct vip_rq, vip_rq);
 unsigned int sum_num_vip_in_cpu(int cpu)
 {
@@ -1190,6 +1227,16 @@ void vip_replace_next_task_fair(void *unused, struct rq *rq, struct task_struct 
 	struct vip_task_struct *vts;
 	struct task_struct *vip;
 
+// MIUI ADD: Performance_Kscene
+#if IS_ENABLED(CONFIG_MI_KSCENE)
+	if (NULL != kscene_pick_next_task_fair_hook_func) {
+		kscene_pick_next_task_fair_hook_func(unused, rq, p, se, repick, simple, prev);
+		if (*repick) {
+			return;
+        }
+	}
+#endif
+// END Performance_Kscene
 
 	if (unlikely(!vip_enable))
 		return;
@@ -1218,7 +1265,7 @@ __no_kcsan
 void vip_dequeue_task(void *unused, struct rq *rq, struct task_struct *p, int flags)
 {
 	struct vip_task_struct *vts = &((struct mtk_task *) p->android_vendor_data1)->vip_task;
-
+	
 	if (unlikely(!vip_enable))
 		return;
 
@@ -1301,7 +1348,7 @@ DEFINE_PER_CPU(struct task_struct *, runnable_vip);
 void vip_push_runnable(struct rq *src_rq)
 {
 	int this_cpu = cpu_of(src_rq);
-	int new_cpu = INT_MAX;
+	int new_cpu = -1;
 	struct task_struct *task_to_pushed = per_cpu(runnable_vip, src_rq->cpu);
 	struct vip_task_struct *vts;
 	struct rq *dst_rq;
@@ -1316,7 +1363,10 @@ void vip_push_runnable(struct rq *src_rq)
 	vts->faster_compute_eng = true;
 	mtk_find_energy_efficient_cpu(NULL, task_to_pushed, this_cpu, 0, &new_cpu);
 
-	if (new_cpu == INT_MAX || new_cpu < 0 || new_cpu == this_cpu)
+	if (new_cpu < 0)
+		goto put_task;
+
+	if (new_cpu == this_cpu)
 		goto put_task;
 
 	dst_rq = cpu_rq(new_cpu);

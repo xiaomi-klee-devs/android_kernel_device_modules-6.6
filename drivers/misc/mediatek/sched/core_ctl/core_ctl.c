@@ -690,6 +690,7 @@ static void set_min_cpus(struct cluster_data *cluster, unsigned int val, int req
 		cluster->min_cpus = min(max_min, cluster->max_cpus);
 	else
 		cluster->min_cpus = default_min_cpus[cluster->cluster_id];
+
 	spin_unlock_irqrestore(&core_ctl_state_lock, flags);
 	core_ctl_cpu_request_trace();
 	wake_up_core_ctl_thread(cluster);
@@ -711,6 +712,7 @@ static void set_max_cpus(struct cluster_data *cluster, unsigned int val, int req
 		return;
 
 	spin_lock_irqsave(&core_ctl_state_lock, flags);
+
 	/* update requester demand */
 	cluster->demand_list[requester].have_demand = have_demand;
 	cluster->demand_list[requester].max_cpus = val;
@@ -733,6 +735,7 @@ static void set_max_cpus(struct cluster_data *cluster, unsigned int val, int req
 		cluster->min_cpus = min(cluster->min_cpus, cluster->max_cpus);
 	} else
 		cluster->max_cpus = cluster->num_cpus;
+
 	spin_unlock_irqrestore(&core_ctl_state_lock, flags);
 	core_ctl_cpu_request_trace();
 	wake_up_core_ctl_thread(cluster);

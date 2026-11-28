@@ -45,7 +45,6 @@
 
 #define CREATE_TRACE_POINTS
 #include "eas_trace.h"
-
 #define TAG "EAS_IOCTL"
 
 int mtk_sched_asym_cpucapacity  =  1;
@@ -1064,7 +1063,6 @@ static int __init mtk_scheduler_init(void)
 	init_updown_migration();
 	init_percore_l3_bw();
 	init_dsu_pwr_enable();
-
 	ret = init_sched_common_sysfs();
 	if (ret)
 		return ret;
@@ -1243,7 +1241,6 @@ static int __init mtk_scheduler_init(void)
 	ret = register_trace_android_rvh_set_cpus_allowed_ptr(mtk_set_cpus_allowed_ptr, NULL);
 	if (ret)
 		pr_info("register mtk_set_cpus_allowed_ptr hooks failed, returned %d\n", ret);
-
 out_wq:
 	return ret;
 
