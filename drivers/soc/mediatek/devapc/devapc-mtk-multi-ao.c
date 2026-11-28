@@ -1013,8 +1013,6 @@ static void devapc_extra_handler(int slave_type, const char *vio_master,
 	/* Severity level */
 	if (dbg_stat->enable_KE && (ret_cb != DEVAPC_NOT_KE)) {
 		pr_info(PFX "Device APC Violation Issue/%s", dispatch_key);
-		BUG_ON(id != INFRA_SUBSYS_CONN && id != INFRA_SUBSYS_PCIE);
-
 	} else if (dbg_stat->enable_AEE) {
 		/* call mtk aee_kernel_exception */
 #if IS_ENABLED(CONFIG_MTK_AEE_FEATURE)
