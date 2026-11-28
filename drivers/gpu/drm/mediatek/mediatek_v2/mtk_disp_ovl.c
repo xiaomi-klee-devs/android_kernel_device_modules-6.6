@@ -44,7 +44,6 @@
 #include "../mml/mtk-mml.h"
 #include <soc/mediatek/smi.h>
 #include "mtk_drm_fb.h"
-
 int mtk_dprec_mmp_dump_ovl_layer(struct mtk_plane_state *plane_state);
 
 #define REG_FLD(width, shift)                                                  \
@@ -1098,11 +1097,6 @@ static irqreturn_t mtk_disp_ovl_irq_handler(int irq, void *dev_id)
 	unsigned int ret = 0;
 	static DEFINE_RATELIMIT_STATE(isr_ratelimit, 1 * HZ, 4);
 
-#ifdef DISP_UNDERRUN_RECOVERY
-	static unsigned long long first_underflow_ts;
-	unsigned long long underflow_ts = 0;
-#endif
-
 	if (IS_ERR_OR_NULL(priv))
 		return IRQ_NONE;
 
@@ -1157,10 +1151,6 @@ static irqreturn_t mtk_disp_ovl_irq_handler(int irq, void *dev_id)
 		DDPIRQ("[IRQ] %s: OVL target line\n", mtk_dump_comp_str(ovl));
 	if (val & (1 << 2)) {
 		unsigned long long aee_now_ts = sched_clock();
-		if (!g_mobile_log) {
-			g_mobile_log = 1;
-			DDPMSG("%s, enable mobile log due to underflow\n", __func__);
-		}
 
 		if (drv_priv && (!atomic_read(&drv_priv->need_recover))) {
 			struct mtk_crtc_state *state;
@@ -1187,34 +1177,6 @@ static irqreturn_t mtk_disp_ovl_irq_handler(int irq, void *dev_id)
 			mtk_ovl_analysis(ovl);
 			mtk_crtc->last_aee_trigger_ts = aee_now_ts;
 		}
-
-#ifdef DISP_UNDERRUN_RECOVERY
-		underflow_ts = sched_clock();
-		if (ovl->id == DDP_COMPONENT_OVL0) {
-			if (!first_underflow_ts) {
-				first_underflow_ts = underflow_ts;
-				DDPMSG("OVL0 first underflow!\n");
-			} else if (underflow_ts - first_underflow_ts > 200*1000*1000) {
-				first_underflow_ts = 0;
-				priv->underflow_cnt = 0;
-				atomic_set(&mtk_crtc->underrun_recovery_level,
-						MTK_UNDERRUN_RECOVERY_NONE);
-				DDPMSG("OVL0 underflow more than 200ms, reset underflow_cnt!\n");
-			} else {
-				if (priv->underflow_cnt > 10) {
-					atomic_set(&mtk_crtc->underrun_recovery_level,
-							MTK_UNDERRUN_RECOVERY_ESD);
-					DDPMSG("underflow_cnt:%d, do esd recovery!\n", priv->underflow_cnt);
-					wake_up_interruptible(&mtk_crtc->signal_underrun_recovery_wq);
-				} else if (priv->underflow_cnt > 6) {
-					atomic_set(&mtk_crtc->underrun_recovery_level,
-							MTK_UNDERRUN_RECOVERY_RESET_DDP);
-					wake_up_interruptible(&mtk_crtc->signal_underrun_recovery_wq);
-					DDPMSG("underflow_cnt:%d, do ddp reset!\n", priv->underflow_cnt);
-				}
-			}
-		}
-#endif
 	}
 	if (val & (1 << 3))
 		DDPIRQ("[IRQ] %s: sw reset done!\n", mtk_dump_comp_str(ovl));
@@ -4694,6 +4656,10 @@ static int mtk_ovl_io_cmd(struct mtk_ddp_comp *comp, struct cmdq_pkt *handle,
 
 		if (!IS_ERR_OR_NULL(comp->hrt_qos_req)) {
 			port_bw = (bw_val * mtk_crtc->usage_ovl_fmt[phy_id]) >> 2;
+			if	((comp->id == DDP_COMPONENT_OVL0_2L) && mtk_crtc->balance_compensate) {
+				port_bw += bw_val;
+				DDPINFO("%s,balance compensate,port_bw %d\n", __func__,port_bw);
+			}
 			if (port_bw > comp->last_hrt_bw) {
 				DDPQOS("%s/%u,layer:%u fast up:%u->%u compress:%d\n",
 					mtk_dump_comp_str_id(comp->id), comp->id, phy_id,

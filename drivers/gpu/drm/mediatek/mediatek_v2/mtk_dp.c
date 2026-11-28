@@ -62,6 +62,7 @@ struct mutex dp_lock;
 static bool g_force_2lane;
 static bool g_hdcp_on = 1;
 static bool aux_swap;
+static bool aux_swap_is_set = false;
 static BYTE MAX_LANECOUNT = DP_LANECOUNT_4;
 
 static const struct drm_display_mode dptx_est_modes[] = {
@@ -2313,6 +2314,7 @@ int mdrv_DPTx_SetTrainingStart(struct mtk_dp *mtk_dp)
 
 int mdrv_DPTx_Training_Handler(struct mtk_dp *mtk_dp)
 {
+	u8 i = 0, try_max = 10;
 	int ret = DPTX_NOERR;
 	BYTE ubTempBuffer[0x10];
 
@@ -2355,43 +2357,51 @@ int mdrv_DPTx_Training_Handler(struct mtk_dp *mtk_dp)
 		break;
 
 	case DPTX_NTSTATE_CHECKEDID:
-		mtk_dp->edid = mtk_dp_handle_edid(mtk_dp);
-		if (mtk_dp->edid) {
-			DPTXMSG("READ EDID done!\n");
-			if (mtk_dp_debug_get()) {
-				u8 *raw_edid = (u8 *)mtk_dp->edid;
+		do {
+			mtk_dp->edid = mtk_dp_handle_edid(mtk_dp);
+			if (mtk_dp->edid) {
+				DPTXMSG("READ EDID done!\n");
+				if (mtk_dp_debug_get()) {
+					u8 *raw_edid = (u8 *)mtk_dp->edid;
 
-				DPTXMSG("Raw EDID:\n");
-				print_hex_dump(KERN_NOTICE,
-						"\t", DUMP_PREFIX_NONE, 16, 1,
-						raw_edid, EDID_LENGTH, false);
-				if ((raw_edid[0x7E] & 0x01) == 0x01) {
+					DPTXMSG("Raw EDID:\n");
 					print_hex_dump(KERN_NOTICE,
-						"\t", DUMP_PREFIX_NONE, 16, 1,
-						(raw_edid + 128), EDID_LENGTH,
-						false);
+							"\t", DUMP_PREFIX_NONE, 16, 1,
+							raw_edid, EDID_LENGTH, false);
+					if ((raw_edid[0x7E] & 0x01) == 0x01) {
+						print_hex_dump(KERN_NOTICE,
+							"\t", DUMP_PREFIX_NONE, 16, 1,
+							(raw_edid + 128), EDID_LENGTH,
+							false);
+					}
 				}
-			}
-			mdelay(10);
-			ubTempBuffer[0x0] = mtk_dp->edid->checksum;
-			drm_dp_dpcd_write(&mtk_dp->aux, DPCD_00261,
-				ubTempBuffer, 0x1);
-			ubTempBuffer[0x0] = 0x4;
-			drm_dp_dpcd_write(&mtk_dp->aux, DPCD_00260,
-				ubTempBuffer, 0x1);
+				mdelay(10);
+				ubTempBuffer[0x0] = mtk_dp->edid->checksum;
+				drm_dp_dpcd_write(&mtk_dp->aux, DPCD_00261,
+					ubTempBuffer, 0x1);
+				ubTempBuffer[0x0] = 0x4;
+				drm_dp_dpcd_write(&mtk_dp->aux, DPCD_00260,
+					ubTempBuffer, 0x1);
 
-			mtk_dp->info.audio_caps
-				= mdrv_DPTx_getAudioCaps(mtk_dp);
-#ifdef CONFIG_MTK_DPTX_PATCH_FOR_TABLET_ENABLE
-		} else {
-			mtk_dp->info.audio_caps = 0;
-			DPTXMSG("mtk_dp->info.audio_caps = 0!\n");
-			DPTXMSG("Read EDID Fail!\n");
-		}
-#else
-		} else
-			DPTXMSG("Read EDID Fail!\n");
-#endif
+				mtk_dp->info.audio_caps
+					= mdrv_DPTx_getAudioCaps(mtk_dp);
+				break;
+		#ifdef CONFIG_MTK_DPTX_PATCH_FOR_TABLET_ENABLE
+			} else {
+				mtk_dp->info.audio_caps = 0;
+				DPTXMSG("mtk_dp->info.audio_caps = 0!\n");
+				DPTXMSG("Read EDID Fail!\n");
+				mdelay(50);
+				i++;
+			}
+		#else
+			} else {
+				DPTXMSG("Read EDID Fail!\n");
+				mdelay(50);
+				i++;
+			}
+		#endif
+		} while (i < try_max);
 		mtk_dp->training_state = DPTX_NTSTATE_TRAINING_PRE;
 		break;
 
@@ -3168,10 +3178,10 @@ void mtk_dp_video_config(struct mtk_dp *mtk_dp)
 			break;
 		case SINK_1920_1080_120:
 			DPTX_TBL->FrameRate = 120;
-			DPTX_TBL->Htt = 2200; DPTX_TBL->Hbp = 148; DPTX_TBL->Hsw = 44;
-			DPTX_TBL->bHsp = 0; DPTX_TBL->Hfp = 88; DPTX_TBL->Hde = 1920;
-			DPTX_TBL->Vtt = 1125; DPTX_TBL->Vbp = 36; DPTX_TBL->Vsw = 5;
-			DPTX_TBL->bVsp = 0; DPTX_TBL->Vfp = 4; DPTX_TBL->Vde = 1080;
+			DPTX_TBL->Htt = 2200; DPTX_TBL->Hbp = 80; DPTX_TBL->Hsw = 32;
+			DPTX_TBL->bHsp = 0; DPTX_TBL->Hfp = 48; DPTX_TBL->Hde = 1920;
+			DPTX_TBL->Vtt = 1144; DPTX_TBL->Vbp = 56; DPTX_TBL->Vsw = 5;
+			DPTX_TBL->bVsp = 0; DPTX_TBL->Vfp = 3; DPTX_TBL->Vde = 1080;
 			break;
 		case SINK_1920_1080:
 			DPTX_TBL->FrameRate = 60;
@@ -4334,11 +4344,9 @@ void mtk_dp_HPDInterruptSet(int bstatus)
 
 	if ((bstatus == HPD_CONNECT && !g_mtk_dp->bPowerOn)
 		|| (bstatus == HPD_DISCONNECT && g_mtk_dp->bPowerOn)
-		|| (bstatus == HPD_INT_EVNET && g_mtk_dp->bPowerOn)) {
+		|| (bstatus == HPD_INT_EVNET && g_mtk_dp->bPowerOn && g_mtk_dp->dp_ready)) {
 
 		if (bstatus == HPD_CONNECT) {
-			// delay to prevent from slow connecting
-			msleep(500);
 			if (g_mtk_dp->priv->data->mmsys_id == MMSYS_MT6991) {
 				if (g_mtk_dp->priv->dpc_dev) {
 					/* get mminfra before DPTX on */
@@ -4385,11 +4393,24 @@ void mtk_dp_aux_swap_enable(bool enable)
 		DPTXMSG("%s: dp not initial\n", __func__);
 		return;
 	}
-
+	aux_swap_is_set = true;
 	DPTXMSG("%s, enable=%d -> %d\n", __func__, aux_swap, enable);
 	aux_swap = enable;
 }
 EXPORT_SYMBOL_GPL(mtk_dp_aux_swap_enable);
+
+int mtk_dp_aux_swap_enable_get(void)
+{
+	if (!g_mtk_dp) {
+		DPTXMSG("%s: dp not initial\n", __func__);
+		return -1;
+	}
+	if (!aux_swap_is_set)
+		return -1;
+	DPTXMSG("%s, aux_swap=%d\n", __func__, aux_swap);
+	return aux_swap;
+}
+EXPORT_SYMBOL_GPL(mtk_dp_aux_swap_enable_get);
 
 void mtk_dp_set_pin_assign(u8 type)
 {
@@ -4411,6 +4432,10 @@ EXPORT_SYMBOL_GPL(mtk_dp_set_pin_assign);
 
 void mtk_dp_SWInterruptSet(int bstatus)
 {
+	/* FIXME:If DP is inserted within 30s after boot，DP driver need to delay 3s */
+	if (ktime_get_boottime_seconds() < 30)
+		msleep(3000);
+
 	if (g_mtk_dp == NULL) {
 		DPTXERR("%s: dp not initial\n", __func__);
 		return;

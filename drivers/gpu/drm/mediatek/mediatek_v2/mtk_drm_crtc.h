@@ -32,7 +32,9 @@
 #include "mtk_disp_pmqos.h"
 #include "slbc_ops.h"
 #include "mtk_disp_pq_helper.h"
-
+#ifdef CONFIG_MI_DISP
+#include "mi_disp/mi_disp_esd_check.h"
+#endif
 #if IS_ENABLED(CONFIG_ARM64)
 #if IS_ENABLED(CONFIG_DRM_MEDIATEK_AUTO_YCT)
 #define MAX_CRTC 7
@@ -78,6 +80,7 @@
 
 #define HBM_BYPASS_PQ 0x10000
 #define DOZE_BYPASS_PQ 0x1
+#define ESD_TRIGGERED_BY_CMDQ_TIMEOUT 2
 
 /* TODO: BW report module should not hardcode */
 enum DISP_PMQOS_SLOT {
@@ -557,6 +560,11 @@ enum MTK_CRTC_PROP {
 	CRTC_PROP_COLOR_TRANSFORM,
 	CRTC_PROP_USER_SCEN,
 	CRTC_PROP_HDR_ENABLE,
+#ifdef CONFIG_MI_DISP
+#ifdef CONFIG_VIS_DISPLAY_DALI
+	CRTC_PROP_EXT_MV,
+#endif
+#endif
 	/*Msync 2.0*/
 	CRTC_PROP_MSYNC2_0_ENABLE,
 	CRTC_PROP_MSYNC2_0_EPT,
@@ -569,6 +577,10 @@ enum MTK_CRTC_PROP {
 	CRTC_PROP_DYNAMIC_WCG_OFF,
 	CRTC_PROP_WCG_BY_COLOR_MODE,
 	CRTC_PROP_STYLUS,
+#ifdef CONFIG_MI_DISP_FOD_SYNC
+	/*MI FOD SYNC*/
+	CRTC_PROP_MI_FOD_SYNC_INFO,
+#endif
 	CRTC_PROP_MAX,
 };
 
@@ -695,9 +707,6 @@ enum CRTC_GCE_EVENT_TYPE {
 	EVENT_OVLSYS_DISP_OVL0_SOF,
 	EVENT_WDMA4_EOF,
 	EVENT_OVLSYS0_EXDMA0_EOF,
-	EVENT_MML_STREAM_CONFIG,
-	EVENT_OVLSYS0_MUTEX0_SOF,
-	EVENT_DISP0_MUTEX0_SOF,
 	EVENT_TYPE_MAX,
 };
 
@@ -943,8 +952,6 @@ enum BIF_EN_MODE {
 struct mtk_bif_info {
 	int bif_enable;
 	bool racing_en;
-	int lcm_width;
-	int lcm_height;
 	struct mtk_ddp_comp *wb_comp;
 	struct mtk_ddp_comp *read_comp;
 	int wb_frame_done_event;
@@ -1297,8 +1304,10 @@ struct mtk_drm_crtc {
 
 	bool capturing;
 	bool recovery_flg;
-	atomic_t underrun_recovery_level;
-	wait_queue_head_t signal_underrun_recovery_wq;
+
+#ifdef CONFIG_MI_DISP_ESD_CHECK
+	struct mi_esd_ctx *mi_esd_ctx;
+#endif
 
 	int dli_relay_1tnp;
 
@@ -1344,11 +1353,15 @@ struct mtk_drm_crtc {
 	enum DISP_SE_STATE se_state;
 
 	bool is_plane0_updated;
-
+	int balance_compensate;
 	struct mutex sol_lock;
-
+	bool doze_into_suspend;
 	/* bif data */
 	struct mtk_bif_info *bif_info;
+#ifdef CONFIG_MI_DISP
+	int has_aod;
+	int aod_change;
+#endif
 };
 
 enum BL_GAMMA_GAIN {
@@ -1760,10 +1773,15 @@ enum addon_scenario mtk_crtc_wb_get_scn(struct mtk_crtc_state *state);
 void mtk_crtc_bif_enable_racing(struct mtk_drm_crtc *mtk_crtc, struct cmdq_pkt *handle);
 void mtk_crtc_bif_restore_path_mutex(struct mtk_drm_crtc *mtk_crtc, struct cmdq_pkt *handle);
 void mtk_crtc_bif_backup_path_mutex(struct mtk_drm_crtc *mtk_crtc);
+
+#ifdef CONFIG_MI_DISP
+#ifdef CONFIG_VIS_DISPLAY_DALI
+void mtk_crtc_extmv_notify(struct mtk_drm_crtc *mtk_crtc);
+#endif
+#endif
 bool mtk_crtc_bif_slbc_request(struct mtk_drm_crtc *mtk_crtc, bool en);
 void mtk_crtc_bif_keep_read_path(struct drm_crtc *crtc, struct cmdq_pkt *handle, bool bw);
 void mtk_crtc_bif_path_prepare(struct mtk_drm_crtc *mtk_crtc);
 void mtk_crtc_bif_apsrc_ddren_control(struct mtk_drm_crtc *mtk_crtc, bool en, struct cmdq_pkt *handle);
 void mtk_crtc_update_bif_roi(struct mtk_drm_crtc *mtk_crtc);
-void mtk_crtc_disconnect_ovlsys_mml_mutex(struct drm_crtc *crtc);
 #endif /* MTK_DRM_CRTC_H */

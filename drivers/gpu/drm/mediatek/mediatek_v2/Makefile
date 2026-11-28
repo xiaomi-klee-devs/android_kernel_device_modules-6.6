@@ -72,6 +72,10 @@ mediatek-drm-y := mtk_drm_drv.o \
 #ccflags-y += -DDRM_CMDQ_DISABLE
 #mediatek-drm-y += mtk_cmdq_dummy.o
 
+ifeq ($(CONFIG_MI_DISP),y)
+    include $(DEVICE_MODULES_PATH)/drivers/gpu/drm/mediatek/mediatek_v2/mi_disp/Makefile
+endif
+
 ifeq ($(CONFIG_DRM_MEDIATEK_AUTO), y)
 ccflags-y += -DMTK_AUTO_PRODUCT
 mediatek-drm-y += mtk_drm_auto/mtk_drm_ddp_comp_auto.o \
@@ -84,8 +88,10 @@ endif
 
 ifeq ($(strip $(MGK_INTERNAL)),true)
 ccflags-y += -DDISP_STASH_ENABLE
+endif
+
+ifeq ($(strip $(CONFIG_MI_DISP_PARTIAL_UPDATE_ENABLE)),y)
 ccflags-y += -DDRM_PARTIAL_UPDATE
-ccflags-y += -DDISP_COMPLEX_AEE_DUMP
 endif
 
 ifeq ($(CONFIG_DRM_MEDIATEK_DPTX_AUTO),y)
@@ -151,7 +157,8 @@ mediatek-drm-hdmi-objs := mtk_hdmi.o \
 	mtk_hdmi_ca.o \
 	mtk_hdmi_hdr.o \
 	mtk_hdmi_edid.o \
-	mtk_hdmi_debug.o
+	mtk_hdmi_debug.o \
+	
 
 ifneq ($(findstring $(CONFIG_DRM_MEDIATEK_HDMI_HDCP), y m),)
 ccflags-y += -I$(srctree)/drivers/misc/mediatek/hdmirx/
@@ -171,17 +178,17 @@ obj-$(CONFIG_DEVICE_MODULES_DRM_MEDIATEK) += mtk_panel_ext.o
 obj-$(CONFIG_DEVICE_MODULES_DRM_MEDIATEK) += mtk_disp_notify.o
 
 ifneq ($(CONFIG_MTK_TINYSYS_SCP_CM4_SUPPORT), y)
-obj-$(CONFIG_DEVICE_MODULES_DRM_MEDIATEK) += mtk_aod_scp.o
 endif
 
 ifneq ($(filter y m, $(CONFIG_MTK_TRUSTED_MEMORY_SUBSYSTEM)),)
 obj-$(CONFIG_DEVICE_MODULES_DRM_MEDIATEK) += mtk_disp_sec.o
 endif
 
+ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/aee/aed/
 ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/scp/include/
 ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/dramc/$(MTK_PLATFORM)	\
              -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/smi/			\
-	     -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/mminfra/			\
+             -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/mminfra/			\
              -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/mmp/			\
              -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/spi_slave_drv/          \
              -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/cmdq/bridge/ 	\
@@ -235,3 +242,12 @@ ccflags-y += -DDISP_MDP_COLOR_ON
 
 subdir-ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/include/
 subdir-ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/misc/mediatek/include/mt-plat/
+subdir-ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/gpu/drm/mediatek/mediatek_v2/
+
+# nova asic driver
+obj-$(CONFIG_VIS_DISPLAY_DALI) += driver_novatek/dali/vis_display/
+
+ifeq (${CONFIG_VIS_DISPLAY_DALI},m)
+ccflags-y += -I$(DEVICE_MODULES_PATH)/drivers/gpu/drm/mediatek/mediatek_v2/driver_novatek/dali/
+ccflags-y += -DCONFIG_VIS_DISPLAY_DALI
+endif

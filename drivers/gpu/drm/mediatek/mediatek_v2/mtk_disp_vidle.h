@@ -35,7 +35,6 @@ struct mtk_disp_vidle_para {
 #define VIDLE_MTCMOS_DEBOUNCE 3
 #define VIDLE_MODE_SWITCH_DEBOUNCE 3
 #define VIDLE_DOZE_DEBOUNCE 3
-#define VIDLE_DT_DEBOUNCE 2
 
 enum mtk_vidle_hint_type {
 	VIDLE_HINT_GET,
@@ -46,6 +45,12 @@ enum mtk_vidle_hint_type {
 	VIDLE_HINT_MULTI_CRTC_OFF,
 	VIDLE_HINT_TUI_ON,
 	VIDLE_HINT_TUI_OFF,
+#ifdef CONFIG_MI_DISP
+	VIDLE_HINT_AOD_ON,
+	VIDLE_HINT_AOD_OFF,
+	VIDLE_HINT_CLOUD_CONTROL_ON,
+	VIDLE_HINT_CLOUD_CONTROL_OFF,
+#endif
 };
 
 struct mtk_vidle_hint {
@@ -53,7 +58,11 @@ struct mtk_vidle_hint {
 	u8 mode_switch_debounce;	/* 0: okay */
 	u8 doze_debounce;		/* 0: okay */
 	u8 crtc_fuse;			/* 0: okay, or +1 by others(multi crtc, DP, ...) */
-	u8 tui_fuse;			/* 0: okay, or +1 by enter tui */
+	u8 tui_fuse;			/* 0: okay, or +1 by enter TUI */
+#ifdef CONFIG_MI_DISP
+	u8 aod_fuse;			/* 0: okay, 1: bypass */
+	u8 cloud_control_fuse;		/* 0: okay, 1: bypass */
+#endif
 };
 
 struct mtk_disp_dpc_data {
@@ -103,7 +112,5 @@ void mtk_vdisp_register(const struct mtk_vdisp_funcs *fp, enum mtk_vdisp_version
 void mtk_vidle_wait_init(void);
 int mtk_vidle_get_power_if_in_use(void);
 void mtk_vidle_put_power(void);
-int mtk_vidle_dt_available(void);
-void mtk_vidle_dt_hint_update(void);
 
 #endif

@@ -372,8 +372,6 @@ struct mtk_disp_oddmr_dbi_data {
 	void *scp_lifecycle;
 	unsigned int scp_lifecycle_size;
 	void __iomem *spm_base;
-	struct mtk_drm_dmr_fps_dbv_change_cfg fps_dbv_change_cfg_nomask;
-	struct mtk_drm_oddmr_dbv_chg_cfg dbv_change_cfg_nomask;
 };
 
 
@@ -502,7 +500,6 @@ void mtk_oddmr_ddren(struct cmdq_pkt *cmdq_handle,
 unsigned int check_oddmr_err_event(void);
 void clear_oddmr_err_event(void);
 void mtk_oddmr_scp_status(bool enable);
-bool mtk_oddmr_dbi_need_ddren_wa(struct mtk_ddp_comp *comp);
 
 
 #endif

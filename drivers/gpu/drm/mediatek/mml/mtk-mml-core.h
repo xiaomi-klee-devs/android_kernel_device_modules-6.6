@@ -61,7 +61,7 @@ extern int mml_irq;
  */
 #define MML_QOS_MIN_BW		513
 #define MML_QOS_MAX_BW		5329
-#define MML_QOS_MIN_STASH_BW	64
+#define MML_QOS_MIN_STASH_BW	17
 
 /* MML couple mode HRT mode, HRT bandwidth to MMQoS and DPC
  * MML_HRT_ENABLE:	default, config srt and hrt to mmqos and dpc
@@ -89,7 +89,6 @@ extern int mml_mutex_dl_sof;
 #define mutex_dl_perf_en	(mml_mutex_dl_sof & BIT(1))
 #define mutex_dl_perf_log	(mml_mutex_dl_sof & BIT(2))
 #define mutex_dl_disp_sof_vdo	(mml_mutex_dl_sof & BIT(3))	/* for vdo mode trigger by disp */
-#define mutex_dl_nopoll_dlo	(mml_mutex_dl_sof & BIT(4))	/* for vdo disable dlo poll */
 
 /* define in mtk-mml-wrot.c */
 extern int mml_wrot_bkgd_en;

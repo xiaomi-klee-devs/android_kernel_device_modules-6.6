@@ -58,6 +58,11 @@ extern unsigned int g_mml_mode;
 
 static struct drm_mtk_layering_info layering_info;
 static bool g_hrt_valid;
+
+#if IS_ENABLED(CONFIG_MTK_LCM_DUAL_PORT_SUPPORT) || IS_ENABLED(CONFIG_MTK_DISPLAY_DUAL_PIPE_DUAL_PORT_SUPPORT)
+bool g_hrt_valid_layer;
+#endif
+
 #ifdef HRT_UT_DEBUG
 static int debug_resolution_level;
 #endif
@@ -79,8 +84,6 @@ static DEFINE_MUTEX(layering_rule_lock);
 
 #define DISP_MML_LAYER_LIMIT 1
 #define DISP_LAYER_RULE_MAX_NUM 1024
-
-#define DISP_RSZ_LAYER_NUM 2
 
 #define DISP_EXDMA_LAYER_LIMIT 7
 #define DISP_DUAL_EXDMA_LAYER_LIMIT 4
@@ -3545,6 +3548,19 @@ static int _dispatch_lye_blob_idx(struct drm_mtk_layering_info *disp_info,
 		DDPINFO("%s disp_info->hrt_num=0x%x,no_comp_layer_num=%d,sum_layer_num:%d\n",
 			__func__, disp_info->hrt_num,
 			no_compress_layer_num, sum_layer_num);
+		lyeblob_ids->balance_compensate[disp_idx] = 0;
+
+		if (disp_info->layer_num[idx] == 5 && priv->data->mmsys_id == MMSYS_MT6899) {
+			if (((disp_info->input_config[idx][0].compress == 1) && disp_info->input_config[idx][0].src_height > 2200) &&
+				((disp_info->input_config[idx][1].compress == 1) && disp_info->input_config[idx][1].src_height > 2700) &&
+				((disp_info->input_config[idx][2].compress == 1) && disp_info->input_config[idx][2].src_height < 200) &&
+				((disp_info->input_config[idx][3].compress == 1) && is_extended_layer(&disp_info->input_config[idx][3])
+					&& disp_info->input_config[idx][3].src_height < 200) &&
+				((disp_info->input_config[idx][4].compress == 0) && disp_info->input_config[idx][4].src_height > 2700)) {
+				lyeblob_ids->balance_compensate[disp_idx] = 1;
+				DDPINFO("%s balance_compensate %d\n",__func__, lyeblob_ids->balance_compensate[disp_idx]);
+			}
+		}
 	}
 
 	return 0;
@@ -3729,8 +3745,9 @@ static int check_disp_info(struct drm_mtk_layering_info *disp_info)
 		return -1;
 	}
 
-	if (disp_info->disp_idx >= MAX_CRTC)
+	if (disp_info->disp_idx < 0 || disp_info->disp_idx >= MAX_CRTC) {
 		return -1;
+	}
 
 	for (disp_idx = 0; disp_idx < HRT_DISP_TYPE_NUM; disp_idx++) {
 		int mode = disp_info->disp_mode[disp_idx];
@@ -4253,21 +4270,11 @@ static int RPO_rule(struct drm_crtc *crtc,
 	for (i = 0; i < disp_info->layer_num[disp_idx]; i++) {
 		struct mtk_rsz_param param[2] = {0};
 
-		if (i >= DISP_RSZ_LAYER_NUM &&
-		    (private->data->mmsys_id == MMSYS_MT6768 ||
-		    private->data->mmsys_id == MMSYS_MT6765 ||
-		    private->data->mmsys_id == MMSYS_MT6761))
-			break;
-
 		c = &disp_info->input_config[disp_idx][i];
 
 		/*if (i == 0 && c->src_fmt == MTK_DRM_FORMAT_DIM)
 		 *	continue;
 		 */
-
-		/* only check L0 and L1 for platforms with two scale num */
-		if (l_rule_info->rpo_scale_num == 2 && i >= 2)
-			break;
 
 		if (disp_info->gles_head[disp_idx] >= 0 &&
 		    disp_info->gles_head[disp_idx] <= i)
@@ -4281,7 +4288,9 @@ static int RPO_rule(struct drm_crtc *crtc,
 		if (!is_rsz_valid(c))
 			continue;
 
-		if (ref_layer && is_same_ratio(ref_layer, c) == false &&
+		if (ref_layer && private && private->data &&
+				(private->data->mmsys_id == MMSYS_MT6768) &&
+				is_same_ratio(ref_layer, c) == false &&
 				is_same_ratio(c, ref_layer) == false)
 			break;
 
@@ -4357,8 +4366,6 @@ static int RPO_rule(struct drm_crtc *crtc,
 		if (!ref_layer)
 			ref_layer = c;
 	}
-	DDPINFO("%s scale_cnt:%d\n", __func__, scale_cnt);
-
 	return scale_cnt;
 }
 
@@ -4678,6 +4685,11 @@ static void check_is_mml_layer(const int disp_idx,
 			vfree(multi_mml_info);
 			return;
 		}
+		if (MML_FMT_10BIT(multi_mml_info->src.format) && fps == 120 && mml_duration != 0) {
+			mml_duration += 1140;
+			DDPINFO("mml_duration adjust\n");
+		}
+
 		mml_drm_query_multi_layer(mml_ctx, multi_mml_info, mml_cnt, mml_duration);
 	}
 
@@ -4747,6 +4759,15 @@ static void check_is_mml_layer(const int disp_idx,
 				c->layer_caps |= MTK_MML_DISP_DECOUPLE_LAYER;
 				DDPINFO("%s hrt_idx:%d unable to get sram, set to MML_DC\n",
 					__func__, hrt_idx);
+			}
+		}
+
+		/* Rollback to DC if AOD mode */
+		if (MTK_MML_DISP_DIRECT_DECOUPLE_LAYER & c->layer_caps) {
+			if (g_disp_aod_mode == 1) {
+				c->layer_caps &= ~MTK_MML_DISP_DIRECT_DECOUPLE_LAYER;
+				c->layer_caps |= MTK_MML_DISP_DECOUPLE_LAYER;
+				DDPINFO("%s AOD, set to MML_DC\n", __func__);
 			}
 		}
 
@@ -5054,6 +5075,11 @@ static int layering_rule_start(struct drm_mtk_layering_info *disp_info_user,
 	    layering_info.layer_num[HRT_PRIMARY] > 0)
 		g_hrt_valid = true;
 
+#if IS_ENABLED(CONFIG_MTK_LCM_DUAL_PORT_SUPPORT) || IS_ENABLED(CONFIG_MTK_DISPLAY_DUAL_PIPE_DUAL_PORT_SUPPORT)
+	if(g_hrt_valid)
+		g_hrt_valid_layer = true;
+#endif
+
 	hrt_idx = _layering_rule_get_hrt_idx(disp_idx);
 	if (++hrt_idx == 0xffffffff)
 		hrt_idx = 0;
@@ -5197,7 +5223,7 @@ static int layering_rule_start(struct drm_mtk_layering_info *disp_info_user,
 		}
 		scn_decision_flag |= SCN_IDLE;
 		layering_info.hrt_num = HRT_LEVEL_LEVEL0;
-		if (priv && priv->data && priv->data->need_emi_eff) {
+		if (priv && priv->data->need_emi_eff) {
 			weight = (400 * 10000) / default_emi_eff;
 			layering_info.hrt_weight = weight;
 			if (l_rule_info->dal_enable)

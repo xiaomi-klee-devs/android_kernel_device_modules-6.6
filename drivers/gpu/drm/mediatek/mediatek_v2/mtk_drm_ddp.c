@@ -38,6 +38,12 @@
 #include "mtk-afe-external.h"
 #endif
 
+#ifdef CONFIG_MI_DISP
+#ifdef CONFIG_VIS_DISPLAY_DALI
+#include "vis_display.h"
+#endif
+#endif
+
 #define DISPSYS0	0
 #define DISPSYS1	1
 #define OVLSYS0		2
@@ -23978,8 +23984,6 @@ static int mtk_ddp_disp0_pq_out_cb_MT6991(enum mtk_ddp_comp_id cur,
 		break;
 	case DDP_COMPONENT_PANEL0_COMP_OUT_CB1:
 		value = MT6991_DISP_PQ_OUT_CB_TO_DISP_PANEL_COMP_OUT_CB1;
-		if ((MT6991_CHIST_PATH_CONNECT & DISP_CHIST_AFTER_PQ) && (cur == DDP_COMPONENT_PQ0_OUT_CB0))
-			value |= MT6991_DISP_PQ_OUT_CB_TO_CHIST0;
 		break;
 	case DDP_COMPONENT_PANEL0_COMP_OUT_CB2:
 		value = MT6991_DISP_PQ_OUT_CB_TO_DISP_PANEL_COMP_OUT_CB2;
@@ -27471,7 +27475,7 @@ void mtk_disp_bif_racing_config_MT6991(struct cmdq_pkt *handle, struct mtk_drm_c
 						priv->side_config_regs + MT6991_DISP1_BIF_OFFSET_ADDR);
 				}
 			}
-			DDPDBG("%s,sram_en:%d,racing:%d,sram_addr:0x%llx,sz:%llx,BIF_CON:0x%x\n", __func__,
+			DDPINFO("%s,sram_en:%d,racing:%d,sram_addr:0x%llx,sz:%llx,BIF_CON:0x%x\n", __func__,
 				bif_info->sram_en, racing, bif_info->sram_pa, bif_info->sram_size, bif_con);
 
 			return;
@@ -27490,7 +27494,7 @@ none_racing_config:
 
 		}
 	}
-	DDPDBG("%s,sram_en:%d,racing:%d\n", __func__, bif_info->sram_en, racing);
+	DDPINFO("%s,sram_en:%d,racing:%d\n", __func__, bif_info->sram_en, racing);
 }
 
 void mtk_gce_event_config_MT6991(struct drm_device *drm)
@@ -33039,7 +33043,7 @@ void mtk_disp_mutex_inten_disable_cmdq(struct mtk_disp_mutex *mutex,
 		cmdq_pkt_write(handle, ddp->cmdq_base,
 				   ddp->ovlsys1_regs_pa + DISP_REG_MUTEX_INTEN, 0, mask);
 }
-
+#if !IS_ENABLED(CONFIG_MTK_DISPLAY_DUAL_PIPE_DUAL_PORT_SUPPORT)
 void mtk_disp_mutex_enable(struct mtk_disp_mutex *mutex)
 {
 	struct mtk_ddp *ddp =
@@ -33061,7 +33065,46 @@ void mtk_disp_mutex_enable(struct mtk_disp_mutex *mutex)
 	}
 	mtk_disp_mutex_inten_enable(mutex);
 }
+#else
+void mtk_disp_mutex_write_mask(void __iomem *addr, u32 value, u32 mask)
+{
+	unsigned int tmp;
 
+	tmp = readl(addr);
+	tmp = (tmp & ~mask) | (value & mask);
+	writel(tmp, addr);
+}
+
+void mtk_disp_mutex_enable(struct mtk_disp_mutex *mutex)
+{
+	struct mtk_ddp *ddp =
+		container_of(mutex, struct mtk_ddp, mutex[mutex->id]);
+	unsigned int mask = 1;
+
+	if (&ddp->mutex[mutex->id] != mutex)
+		DDPAEE("%s:%d, invalid mutex:(%p,%p) id:%d\n",
+			__func__, __LINE__,
+			&ddp->mutex[mutex->id], mutex, mutex->id);
+
+	mtk_disp_mutex_write_mask(ddp->regs + DISP_REG_MUTEX_CFG, 0, mask);
+	writel(1, ddp->regs + DISP_REG_MUTEX_EN(mutex->id));
+	if (ddp->ovlsys0_regs) {
+		mtk_disp_mutex_write_mask(ddp->ovlsys0_regs + DISP_REG_MUTEX_CFG, 0, mask);
+		writel(1, ddp->ovlsys0_regs + DISP_REG_MUTEX_EN(mutex->id));
+	}
+
+
+	if (ddp->data->dispsys_map && ddp->side_regs) {
+		writel(1, ddp->side_regs + DISP_REG_MUTEX_EN(mutex->id));
+		mtk_disp_mutex_write_mask(ddp->side_regs + DISP_REG_MUTEX_CFG, 0, mask);
+		if (ddp->ovlsys1_regs) {
+			mtk_disp_mutex_write_mask(ddp->ovlsys1_regs + DISP_REG_MUTEX_CFG, 0, mask);
+			writel(1, ddp->ovlsys1_regs + DISP_REG_MUTEX_EN(mutex->id));
+		}
+	}
+	mtk_disp_mutex_inten_enable(mutex);
+}
+#endif
 void mtk_disp_mutex_enable_cmdq(struct mtk_disp_mutex *mutex,
 				struct cmdq_pkt *cmdq_handle,
 				struct cmdq_base *cmdq_base)
@@ -33336,6 +33379,16 @@ static irqreturn_t mtk_disp_mutex_irq_handler(int irq, void *dev_id)
 			}
 		}
 		if (val & (0x1 << m_id)) {
+#ifdef CONFIG_MI_DISP
+#ifdef CONFIG_VIS_DISPLAY_DALI
+			if (is_mi_dev_support_nova())
+			{
+				if(m_id == 0) {
+					mtk_crtc_extmv_notify(mtk_crtc0);
+				}
+			}
+#endif
+#endif
 			DDPIRQ("[IRQ] mutex%d sof!\n", m_id);
 			DRM_MMP_MARK(mutex[m_id], val, 0);
 			if (m_id == 0) {

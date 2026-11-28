@@ -70,6 +70,11 @@
 #include "mtk_disp_vidle.h"
 #include "mtk_vdisp_common.h"
 
+#if defined(CONFIG_VIS_DISPLAY_DALI)
+//Novatek ASIC
+#include "vis_display.h"
+#endif
+
 #if IS_ENABLED(CONFIG_MTK_DISP_MMDVFS_INIT_SEQUENCE)
 #include <soc/mediatek/mmdvfs_v3.h>
 #endif
@@ -90,6 +95,10 @@
 #endif
 #if IS_ENABLED(CONFIG_DRM_MEDIATEK_EDPTX_AUTO_SUPPORT)
 #include "mtk_drm_edp/mtk_drm_edp_api.h"
+#endif
+#ifdef CONFIG_MI_DISP
+#include "mi_disp/mi_disp_feature.h"
+#include "mi_disp/mi_disp_log.h"
 #endif
 //#include "swpm_me.h"
 //#include "include/pmic_api_buck.h"
@@ -117,6 +126,10 @@
 
 #if IS_ENABLED(CONFIG_DRM_MEDIATEK_AUTO)
 #include "mtk_drm_auto/mtk_drm_crtc_auto.h"
+#endif
+
+#ifdef CONFIG_MI_DISP_DFS_EVENT
+#include "mi_disp/mi_disp_event.h"
 #endif
 
 #define CLKBUF_COMMON_H
@@ -148,6 +161,7 @@ long long mutex_time_period;
 const char *mutex_locker;
 
 int aod_scp_flag;
+unsigned int g_disp_aod_mode;
 unsigned long long mutex_nested_time_start;
 unsigned long long mutex_nested_time_end;
 long long mutex_nested_time_period;
@@ -1046,6 +1060,7 @@ static void pq_bypass_cmdq_cb(struct cmdq_cb_data data)
 	cmdq_pkt_destroy(cb_data->cmdq_handle);
 	kfree(cb_data);
 }
+
 static void mtk_atomic_doze_update_pq(struct drm_crtc *crtc, unsigned int stage, bool old_state)
 {
 	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
@@ -1063,18 +1078,45 @@ static void mtk_atomic_doze_update_pq(struct drm_crtc *crtc, unsigned int stage,
 		crtc->state->active, old_state, stage);
 	mtk_state = to_mtk_crtc_state(crtc->state);
 
+
 	if (!crtc->state->active) {
 		if (mtk_state->doze_changed &&
 			!mtk_state->prop_val[CRTC_PROP_DOZE_ACTIVE]) {
-			DDPINFO("%s: doze switch to suspend, need enable pq first\n", __func__);
+			DDPINFO("%s: doze switch to suspend, need enable pq before suspend\n", __func__);
+			mtk_crtc->doze_into_suspend = true;
+			return;
 		} else {
 			DDPINFO("%s: crtc is not active\n", __func__);
 			return;
 		}
 	}
 
+#ifdef CONFIG_MI_DISP
+	if (mtk_crtc->aod_change){
+		if (!crtc->state->active && stage == 1)
+				return;
+		else if (crtc->state->active && stage == 0)
+				return;
+		if(mtk_crtc->has_aod){
+			mtk_crtc->aod_change = 0;
+			bypass=1;
+			DDPINFO("%s: bypass=1\n", __func__);
+		} else if(!mtk_state->prop_val[CRTC_PROP_DOZE_ACTIVE]) {
+			mtk_crtc->aod_change = 0;
+			bypass=0;
+			DDPINFO("%s: bypass=0\n", __func__);
+		} else {
+			return;
+		}
+		goto mi_bypass;
+	}
+#endif
 	if (mtk_state->doze_changed) {
+#ifdef CONFIG_MI_DISP
+		if ((!mtk_state->prop_val[CRTC_PROP_DOZE_ACTIVE]) && (!mtk_crtc->has_aod)) {
+#else
 		if (!mtk_state->prop_val[CRTC_PROP_DOZE_ACTIVE]) {
+#endif
 			if (!crtc->state->active && stage == 1)
 				return;
 			else if (crtc->state->active && stage == 0)
@@ -1092,6 +1134,9 @@ static void mtk_atomic_doze_update_pq(struct drm_crtc *crtc, unsigned int stage,
 		return;
 	}
 
+#ifdef CONFIG_MI_DISP
+mi_bypass:
+#endif
 	cb_data = kmalloc(sizeof(*cb_data), GFP_KERNEL);
 	if (!cb_data) {
 		DDPPR_ERR("cb data creation failed\n");
@@ -1128,14 +1173,14 @@ static void mtk_atomic_doze_update_pq(struct drm_crtc *crtc, unsigned int stage,
 		}
 	}
 
-	if (cmdq_pkt_flush_threaded(cmdq_handle, pq_bypass_cmdq_cb, cb_data) < 0) {
-		DDPPR_ERR("failed to flush user_cmd\n");
-		kfree(cb_data);
-	}
+	if (cmdq_pkt_flush_threaded(cmdq_handle, pq_bypass_cmdq_cb, cb_data) < 0)
+        DDPPR_ERR("failed to flush user_cmd\n");
 
 #ifndef DRM_CMDQ_DISABLE
-	if (bypass)
-		cmdq_mbox_disable(client->chan); /* GCE clk refcnt - 1 */
+    if (bypass) {
+        //cmdq_mbox_stop(client); /* Before power off need stop first */
+        cmdq_mbox_disable(client->chan); /* GCE clk refcnt - 1 */
+    }
 #endif
 }
 
@@ -1180,16 +1225,14 @@ static void mtk_atomic_doze_finish(struct drm_device *dev,
 					 struct drm_atomic_state *old_state)
 {
 	struct drm_crtc *crtc;
-	struct drm_connector *connector;
-	struct drm_connector_state *old_conn_state;
+	struct drm_crtc_state  *old_crtc_state;
 	int i;
 	struct mtk_drm_crtc *mtk_crtc = NULL;
 	struct mtk_ddp_comp *comp = NULL;
 
-	for_each_new_connector_in_state(old_state, connector,
-		old_conn_state, i) {
+	for_each_new_crtc_in_state(old_state, crtc,
+		old_crtc_state, i) {
 
-		crtc = connector->state->crtc;
 		if (!crtc) {
 			DDPPR_ERR("%s connector has no crtc\n", __func__);
 			continue;
@@ -1199,12 +1242,19 @@ static void mtk_atomic_doze_finish(struct drm_device *dev,
 
 		mtk_crtc = to_mtk_crtc(crtc);
 		comp = mtk_ddp_comp_request_output(mtk_crtc);
-
+#ifdef CONFIG_MI_DISP
+		if (comp && comp->id == DDP_COMPONENT_DSI0 && (old_state->crtcs[0].old_state || mtk_crtc->aod_change==1))
+#else
 		if (comp && comp->id == DDP_COMPONENT_DSI0 && old_state->crtcs[0].old_state)
+#endif
 			mtk_atomic_doze_update_pq(crtc, 1,
 				old_state->crtcs[0].old_state->active);
 
+#ifdef CONFIG_MI_DISP
+		if (comp && comp->id == DDP_COMPONENT_DSI1 && (old_state->crtcs[3].old_state || mtk_crtc->aod_change==1))
+#else
 		if (comp && comp->id == DDP_COMPONENT_DSI1 && old_state->crtcs[3].old_state)
+#endif
 			mtk_atomic_doze_update_pq(crtc, 1,
 				old_state->crtcs[3].old_state->active);
 	}
@@ -1740,31 +1790,6 @@ static void mtk_atomic_mml(struct drm_device *dev,
 			mtk_crtc->mml_link_state = MML_IR_IDLE;
 		DDPINFO("no plane_update with mml lye, skip %s, mml_link_state = %d\n",
 			__func__, mtk_crtc->mml_link_state);
-
-		for (i = 0; i < mtk_crtc->layer_nr; i++) {
-			struct drm_plane *plane = &mtk_crtc->planes[i].base;
-			struct mtk_plane_state *plane_state;
-
-			plane_state = to_mtk_plane_state(plane->state);
-			DDPINFO("[test]%s:%d,i=%d,layer_caps = 0x%x\n",__func__,__LINE__,
-				i ,plane_state->comp_state.layer_caps);
-			if (plane_state->comp_state.layer_caps & MTK_MML_DISP_DIRECT_LINK_LAYER) {
-				plane_state->comp_state.layer_caps &= ~MTK_MML_DISP_DIRECT_LINK_LAYER;
-				plane_state->pending.enable = 0;
-				plane_state->pending.mml_mode = 0;
-				if (!mtk_crtc_is_frame_trigger_mode(&mtk_crtc->base))
-					mtk_crtc->mml_link_state = MML_STOP_LINKING;
-				break;
-			}
-
-			if (priv->data->mmsys_id == MMSYS_MT6899 &&
-				!mtk_crtc_is_frame_trigger_mode(&mtk_crtc->base) &&
-				(plane_state->comp_state.layer_caps & MTK_MML_DISP_DIRECT_DECOUPLE_LAYER)) {
-				plane_state->comp_state.layer_caps &= ~MTK_MML_DISP_DIRECT_DECOUPLE_LAYER;
-				mtk_crtc->mml_link_state = MML_STOP_LINKING;
-				break;
-			}
-		}
 		CRTC_MMP_MARK(0, mml_job_status, 0xFFFF, 2);
 		return;
 	}
@@ -2005,6 +2030,14 @@ static int mtk_atomic_check(struct drm_device *dev,
 				old_state->bl_sync_gamma_gain[GAMMA_GAIN_RANGE];
 		}
 
+		if (new_state->prop_val[CRTC_PROP_DOZE_ACTIVE] == 1) {
+			DDPINFO("[CRTC:%d:%s] doze active = 1\n",
+				crtc->base.id, crtc->name);
+			g_disp_aod_mode = 1;
+		} else
+			g_disp_aod_mode = 0;
+
+
 		if (old_state->prop_val[CRTC_PROP_DOZE_ACTIVE] ==
 		    new_state->prop_val[CRTC_PROP_DOZE_ACTIVE])
 			continue;
@@ -2058,8 +2091,7 @@ static void mtk_atomic_check_res_scaling(struct mtk_drm_crtc *mtk_crtc,
 				__func__, mode->hdisplay, mode->vdisplay,
 				mtk_crtc->scaling_ctx.scaling_mode->hdisplay,
 				mtk_crtc->scaling_ctx.scaling_mode->vdisplay);
-		} else
-			DDPPR_ERR("error fail:%s invalid scaling_mode\n", __func__);
+		}
 	} else {
 		mtk_crtc->scaling_ctx.scaling_en = false;
 		mtk_crtc->scaling_ctx.scaling_mode = mode;
@@ -2103,8 +2135,7 @@ static void mtk_atomic_check_res_switch(struct mtk_drm_private *private,
 			if ((mode->hdisplay == old_mode->hdisplay) &&
 				(mode->vdisplay == old_mode->vdisplay))
 				return;
-			if (!mtk_crtc->scaling_ctx.scaling_mode)
-				return;
+
 			DDPMSG("%s++ resolution switch:%dx%d->%dx%d,fps:%d->%d\n", __func__,
 				old_mode->hdisplay, old_mode->vdisplay,
 				mode->hdisplay, mode->vdisplay,
@@ -7696,17 +7727,8 @@ int mtk_drm_pm_ctrl(struct mtk_drm_private *priv, enum disp_pm_action action)
 
 		pm_runtime_put_sync(priv->mmsys_dev);
 
-		if (priv->dpc_dev) {
-			if (vdisp_func.poll_power_cnt) {
-				if (vdisp_func.poll_power_cnt(0) == 0)
-					pm_runtime_put_sync(priv->dpc_dev);
-				else {
-					DDPMSG("%s poll mtcmos off timeout, skip mminfra put\n", __func__);
-					priv->kernel_pm.skip_mminfra_ctrl = true;
-				}
-			} else
-				pm_runtime_put_sync(priv->dpc_dev);
-		}
+		if (priv->dpc_dev)
+			pm_runtime_put_sync(priv->dpc_dev);
 
 		if (priv->dsi_phy0_dev)
 			pm_runtime_put_sync(priv->dsi_phy0_dev);
@@ -10455,11 +10477,13 @@ static int mtk_drm_map_dma_buf(struct drm_device *dev, void *data,
 	struct mtk_drm_private *private = dev->dev_private;
 	struct mtk_se_dma_map *map_list;
 	dma_addr_t mva;
+#ifdef CONFIG_MI_DISP_DFS_EVENT
+	struct mi_event_info mi_event = {0};
+#endif
 	struct mtk_se_dma_map *m, *n = NULL;
 	struct dma_buf *temp_dmabuf;
 
 	dma_map->mva = 0;
-
 	if (dma_map->fd <= 0)
 		return -1;
 
@@ -10527,6 +10551,10 @@ fail_get:
 
 	kfree(map_list);
 	map_list = NULL;
+#ifdef CONFIG_MI_DISP_DFS_EVENT
+	mi_event.event_type = MI_EVENT_DMA_BUF_ALLOCATE_FAILED;
+	mi_disp_mievent_int(MI_DISP_PRIMARY, &mi_event);
+#endif
 	return -1;
 }
 
@@ -12999,6 +13027,10 @@ static int __init mtk_drm_init(void)
 	int i;
 
 	DDPINFO("%s+\n", __func__);
+#ifdef CONFIG_MI_DISP
+	mi_disp_feature_init();
+#endif
+
 	for (i = 0; i < ARRAY_SIZE(mtk_drm_drivers); i++) {
 		DDPINFO("%s register %s driver\n",
 			__func__, mtk_drm_drivers[i]->driver.name);
@@ -13009,6 +13041,12 @@ static int __init mtk_drm_init(void)
 			goto err;
 		}
 	}
+#if defined(CONFIG_VIS_DISPLAY_DALI)
+	if (is_mi_dev_support_nova()) {
+		vis_display_ops_set_idlemgr_notify(nvt_set_idlemgr);
+		vis_display_ops_set_pq_trigger_notify(nvt_set_pq_trigger);
+	}
+#endif
 	DDPINFO("%s-\n", __func__);
 
 	return 0;
@@ -13026,6 +13064,12 @@ static void __exit mtk_drm_exit(void)
 
 	for (i = ARRAY_SIZE(mtk_drm_drivers) - 1; i >= 0; i--)
 		platform_driver_unregister(mtk_drm_drivers[i]);
+#if defined(CONFIG_VIS_DISPLAY_DALI)
+	if (is_mi_dev_support_nova()) {
+		vis_display_ops_set_idlemgr_notify(NULL);
+		vis_display_ops_set_pq_trigger_notify(NULL);
+	}
+#endif
 }
 module_init(mtk_drm_init);
 module_exit(mtk_drm_exit);

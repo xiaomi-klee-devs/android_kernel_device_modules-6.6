@@ -53,6 +53,8 @@
 	#define CON_FLD_DP_BG_EN				BIT(0)
 #define DP_OUTPUT_SETTING				0x0014
 	#define RB_SWAP							BIT(0)
+	#define HSYNC_POL			BIT(13)
+	#define VSYNC_POL			BIT(14)
 #define DP_SIZE							0x0018
 #define DP_TGEN_HWIDTH					0x0020
 #define DP_TGEN_HPORCH					0x0024
@@ -93,6 +95,8 @@
     #define BUF_BUF_EN						BIT(0)
     #define BUF_BUF_FIFO_UNDERFLOW_DONT_BLOCK	BIT(4)
 #define DP_BUF_CON1						0x0214
+#define DP_BUF_RESET					0x0218
+	#define BUF_BUF_ENG_RESET				BIT(0)
 #define DP_BUF_RW_TIMES					0x0220
 #define DP_BUF_SODI_HIGH				0x0224
 #define DP_BUF_SODI_LOW					0x0228
@@ -871,6 +875,7 @@ static void mtk_dp_intf_start(struct mtk_ddp_comp *comp,
 	dp_intf_bw = 0;
 
 	mtk_dp_intf_mask(dp_intf, DP_INTSTA, 0xf, 0);
+	mtk_ddp_write_mask(comp, 0x0, DP_BUF_RESET, BUF_BUF_ENG_RESET, handle);
 	mtk_ddp_write_mask(comp, 1,
 		DP_RST, CON_FLD_DP_RST, handle);
 	mtk_ddp_write_mask(comp, 0,
@@ -912,6 +917,7 @@ static void mtk_dp_intf_stop(struct mtk_ddp_comp *comp, struct cmdq_pkt *handle)
 	irq_underflowsa = 0;
 	irq_tl = 0;
 	dp_intf_bw = 0;
+	mtk_ddp_write_mask(comp, BUF_BUF_ENG_RESET, DP_BUF_RESET, BUF_BUF_ENG_RESET, handle);
 
 	DPTXMSG("%s, stop\n", mtk_dump_comp_str(comp));
 }
@@ -983,6 +989,12 @@ static void mtk_dp_intf_unprepare(struct mtk_ddp_comp *comp)
 	udelay(1000);
 	mtk_ddp_write_mask(comp, 0x0, DP_EN, DP_CONTROLLER_EN, NULL);
 	dp_intf = comp_to_dp_intf(comp);
+
+	mtk_dp_intf_mask(dp_intf, DP_INTSTA, 0xffff, 0);
+	mtk_ddp_write_mask(comp, 0, DP_INTEN,
+			(INT_UNDERFLOW_EN | INT_VDE_EN | INT_VSYNC_EN), NULL);
+	mtk_dp_intf_mask(dp_intf, DP_INTSTA, 0xffff, 0);
+	mtk_ddp_write_mask(comp, 0x0, DP_EN, DP_CONTROLLER_EN, NULL);
 
 	/* disable dp intf clk */
 	if (dp_intf != NULL) {
@@ -1366,7 +1378,6 @@ void mtk_dp_inf_video_clock(struct mtk_dp_intf *dp_intf)
 
 void mhal_DPTx_VideoClock(bool enable, int resolution)
 {
-
 	int ret = 0;
 
 	if (enable) {
@@ -1513,6 +1524,12 @@ static void mtk_dp_intf_config(struct mtk_ddp_comp *comp,
 
 #endif
 	mtk_dp_inf_video_clock(dp_intf);
+
+	if (priv->data->mmsys_id == MMSYS_MT6991) {
+		/* Due to the HW design, force DPI polarity positive */
+		mtk_ddp_write_mask(comp, 0, DP_OUTPUT_SETTING, HSYNC_POL, handle);
+		mtk_ddp_write_mask(comp, 0, DP_OUTPUT_SETTING, VSYNC_POL, handle);
+	}
 
 	mtk_ddp_write_relaxed(comp, vsize << 16 | hsize,
 			DP_SIZE, handle);

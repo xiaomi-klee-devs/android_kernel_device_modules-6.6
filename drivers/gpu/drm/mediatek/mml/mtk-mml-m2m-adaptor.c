@@ -239,19 +239,8 @@ done:
 static void m2m_task_signal_irq(struct mml_task *task)
 {
 	enum vb2_buffer_state vb_state = VB2_BUF_STATE_DONE;
-	struct mml_m2m_ctx *mctx = container_of(task->ctx, struct mml_m2m_ctx, ctx);
-	struct device *mmu_dev;
 
 	mml_msg("[m2m]%s signal user done job id %u", __func__, task->job.jobid);
-
-	/* invalidate */
-	if (!mctx->param.secure && task->buf.dest[0].invalid) {
-		mmu_dev = mml_get_mmu_dev(task->ctx->mml, mctx->param.secure);
-		if (mmu_dev)
-			dma_sync_sgtable_for_cpu(mmu_dev, task->buf.dest[0].dma[0].sgt,
-				DMA_BIDIRECTIONAL);
-	}
-
 	mml_trace_ex_begin("%s_%u", __func__, task->job.jobid);
 	if (unlikely(!task->pkts[0] || (task->config->dual && !task->pkts[1])))
 		vb_state = VB2_BUF_STATE_ERROR;
@@ -2030,7 +2019,7 @@ err_unlock_exit:
 	mutex_unlock(&ctx->config_mutex);
 err_buf_exit:
 	mml_trace_end();
-	mml_log("[m2m]%s fail result %d task %p", __func__, result, task);
+	mml_log("%s fail result %d task %p", __func__, result, task);
 	if (task) {
 		bool is_init_state = task->state == MML_TASK_INITIAL;
 
@@ -2040,12 +2029,12 @@ err_buf_exit:
 		cfg->await_task_cnt--;
 
 		if (is_init_state) {
-			mml_log("[m2m]dec config %p and del", cfg);
+			mml_log("dec config %p and del", cfg);
 
 			list_del_init(&cfg->entry);
 			ctx->config_cnt--;
 		} else
-			mml_log("[m2m]dec config %p", cfg);
+			mml_log("dec config %p", cfg);
 
 		mutex_unlock(&ctx->config_mutex);
 

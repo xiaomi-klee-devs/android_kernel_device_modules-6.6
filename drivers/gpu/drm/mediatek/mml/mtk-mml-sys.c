@@ -412,7 +412,7 @@ static void sys_sync_disp(struct mml_comp *comp, struct mml_task *task,
 	if (cfg->disp_vdo)
 		cmdq_pkt_set_event(pkt, mml_ir_get_mml_ready_event(mml));
 	cmdq_pkt_wfe(pkt, mml_ir_get_disp_ready_event(mml));
-	if (cfg->disp_vdo && cfg->info.mode == MML_MODE_RACING) {
+	if (cfg->disp_vdo) {
 		u16 disp_ready = mml_ir_get_target_event(mml);
 
 		if (disp_ready)
@@ -1235,15 +1235,12 @@ static void sys_reset(struct mml_comp *comp, struct mml_frame_config *cfg, u32 p
 		cfg->info.mode == MML_MODE_APUDC) {
 		struct mml_sys *sys = comp_to_sys(comp);
 		u16 event_ir_eof = mml_ir_get_target_event(cfg->mml);
-		u16 event_disp_done = mml_ir_get_disp_done_event(cfg->mml);
 
 		cmdq_clear_event(path->clt->chan, sys->event_racing_pipe0);
 		cmdq_clear_event(path->clt->chan, sys->event_racing_pipe1);
 		cmdq_clear_event(path->clt->chan, sys->event_racing_pipe1_next);
 		if (event_ir_eof)
 			cmdq_clear_event(path->clt->chan, event_ir_eof);
-		if (event_disp_done)
-			cmdq_clear_event(path->clt->chan, event_disp_done);
 	}
 }
 
@@ -1268,15 +1265,12 @@ static void sys_reset_current(struct mml_comp *comp, struct mml_frame_config *cf
 		cfg->info.mode == MML_MODE_DIRECT_LINK ||
 		cfg->info.mode == MML_MODE_APUDC) {
 		u16 event_ir_eof = mml_ir_get_target_event(cfg->mml);
-		u16 event_disp_done = mml_ir_get_disp_done_event(cfg->mml);
 
 		cmdq_clear_event(path->clt->chan, sys->event_racing_pipe0);
 		cmdq_clear_event(path->clt->chan, sys->event_racing_pipe1);
 		cmdq_clear_event(path->clt->chan, sys->event_racing_pipe1_next);
 		if (event_ir_eof)
 			cmdq_clear_event(path->clt->chan, event_ir_eof);
-		if (event_disp_done)
-			cmdq_clear_event(path->clt->chan, event_disp_done);
 	}
 }
 
@@ -1484,16 +1478,16 @@ static void mml_sys_taskdone(struct mml_comp *comp, struct mml_task *task,
 		u32 ovldli_status1 = cmdq_pkt_backup_get(pkt, &task->ovl_dli[2]);
 
 		if ((status1 & 0x0fff0000) != (task->dlo_size & 0x0fff0000)) {
-			mml_msg("task job %u dlo size %#010x status %#010x(%u) not match ovl %#010x %#010x %#010x",
-				task->job.jobid, task->dlo_size, status1, validx,
+			mml_err("task job %u dlo size %#010x(%u) status %#010x not match ovl %#010x %#010x %#010x",
+				task->job.jobid, task->dlo_size, validx, status1,
 				ovldli_sz, ovldli_status0, ovldli_status1);
 		} else if (mml_dlo_dbg & BIT(2))
-			mml_msg("task job %u dlo size %#010x status %#010x(%u) ovl %#010x %#010x %#010x",
-				task->job.jobid, task->dlo_size, status1, validx,
+			mml_log("task job %u dlo size %#010x(%u) status %#010x ovl %#010x %#010x %#010x",
+				task->job.jobid, task->dlo_size, validx, status1,
 				ovldli_sz, ovldli_status0, ovldli_status1);
 		else if (mml_dlo_dbg & BIT(1))
-			mml_msg("task job %u dlo size %#010x status %#010x(%u) ovl %#010x %#010x %#010x",
-				task->job.jobid, task->dlo_size, status1, validx,
+			mml_msg("task job %u dlo size %#010x(%u) status %#010x ovl %#010x %#010x %#010x",
+				task->job.jobid, task->dlo_size, validx, status1,
 				ovldli_sz, ovldli_status0, ovldli_status1);
 
 		mml_mmp(dlo, MMPROFILE_FLAG_PULSE, task->dlo_size, status1);
@@ -2360,27 +2354,6 @@ static const struct mml_comp_config_ops dl_config_ops = {
 #define OVL_DLI_ASYNC1_STATUS0 0x32800308
 #define OVL_DLI_ASYNC1_STATUS1 0x3280030c
 
-static s32 dl_wait_mt6991f(struct mml_comp *comp, struct mml_task *task,
-	struct mml_comp_config *ccfg, u32 idx)
-{
-	if (task->config->info.mode == MML_MODE_DIRECT_LINK) {
-		struct mml_frame_config *cfg = task->config;
-
-		if (cfg->disp_vdo && !mutex_dl_nopoll_dlo) {
-			const phys_addr_t pa = comp->base_pa + MT6991_MML_DLO_ASYNC5_STATUS1;
-			struct dl_frame_data *dl_frm = dl_frm_data(ccfg);
-			u32 size = dl_frm->max_size.height << 16;
-
-			mml_msg("%s dlo poll %#x addr %pa", __func__, size, &pa);
-			cmdq_pkt_poll_sleep(task->pkts[ccfg->pipe], size, pa, GENMASK(29, 16));
-		}
-
-		cmdq_pkt_wfe(task->pkts[ccfg->pipe], task->config->info.disp_done_event);
-	}
-
-	return 0;
-}
-
 static s32 dlo_post_mt6991f(struct mml_comp *comp, struct mml_task *task,
 		   struct mml_comp_config *ccfg)
 {
@@ -2426,7 +2399,7 @@ static s32 dlo_post_mt6991f(struct mml_comp *comp, struct mml_task *task,
 
 static const struct mml_comp_config_ops dlo_config_ops_mt6991f = {
 	.tile = dl_config_tile,
-	.wait = dl_wait_mt6991f,
+	.wait = dl_wait,
 	.post = dlo_post_mt6991f,
 };
 

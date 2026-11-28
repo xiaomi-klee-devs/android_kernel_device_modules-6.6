@@ -387,7 +387,9 @@ static irqreturn_t mtk_wdma_irq_handler(int irq, void *dev_id)
 			mtk_dump_analysis(wdma);
 			mtk_dump_reg(wdma);
 		}
-
+#if IS_ENABLED(CONFIG_MTK_DISPLAY_DUAL_PIPE_DUAL_PORT_SUPPORT)
+		goto out;
+#endif
 		underrun_new_ts = sched_clock();
 		if (wdma->mtk_crtc && &(wdma->mtk_crtc->base)
 			&& (underrun_new_ts - underrun_old_ts > 1000*1000*1000)) { //1s
@@ -670,8 +672,6 @@ static void mtk_wdma_stop(struct mtk_ddp_comp *comp, struct cmdq_pkt *handle)
 	bool en = 0;
 	int crtc_idx = drm_crtc_index(&comp->mtk_crtc->base);
 	struct mtk_drm_private *priv = comp->mtk_crtc->base.dev->dev_private;
-
-	DDPMSG("%s,[capture] stop wdma\n", __func__);
 
 	if (wdma->info_data->is_support_ufbc) {
 		mtk_ddp_write(comp, 0, DISP_REG_UFBC_WDMA_EN, handle);
@@ -1749,7 +1749,10 @@ static void mtk_wdma_addon_config(struct mtk_ddp_comp *comp,
 
 	DDPINFO("%s WDMA config iommu, CRTC%d\n", __func__, crtc_idx);
 	mtk_ddp_comp_iommu_enable(comp, handle);
-
+#if IS_ENABLED(CONFIG_MTK_DISPLAY_DUAL_PIPE_DUAL_PORT_SUPPORT)
+	mtk_ddp_write(comp, 0x01, DISP_REG_WDMA_RST, handle);
+	mtk_ddp_write(comp, 0x00, DISP_REG_WDMA_RST, handle);
+#endif
 	write_dst_addr(comp, handle, 0, addr);
 
 	con = wdma_fmt_convert(comp->fb->format->format);

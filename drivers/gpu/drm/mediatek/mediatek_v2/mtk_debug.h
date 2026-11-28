@@ -47,14 +47,8 @@ enum MTK_DRM_DEBUG_LOG_SWITCH_OPS {
 	MTK_DRM_FENCE_LOG,
 	MTK_DRM_IRQ_LOG,
 };
-enum MTK_UNDERRUN_RECOVERY_LEVEL {
-	MTK_UNDERRUN_RECOVERY_NONE = 0,
-	MTK_UNDERRUN_RECOVERY_RESET_DDP,
-	MTK_UNDERRUN_RECOVERY_ESD,
-};
 
 extern int mtk_disp_hrt_bw_dbg(void);
-extern bool g_mobile_log_bak;
 
 struct cb_data_store {
 	struct cmdq_cb_data data;
@@ -183,6 +177,9 @@ enum GCE_COND_REVERSE_COND {
 int mtk_disp_ioctl_debug_log_switch(struct drm_device *dev, void *data,
 	struct drm_file *file_priv);
 
-// #define DISP_UNDERRUN_RECOVERY
+#if defined(CONFIG_VIS_DISPLAY_DALI)
+void nvt_set_idlemgr(unsigned int flag);
+void nvt_set_pq_trigger(unsigned int flag);
+#endif
 
 #endif

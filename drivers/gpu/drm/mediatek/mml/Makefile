@@ -117,8 +117,6 @@ mtk-mml-mt6878-objs := mtk-mml-tp-mt6878.o
 endif
 
 ifneq ($(wildcard $(srctree)/$(src)/mtk-mml-tp-mt6991.c),)
-obj-$(CONFIG_MTK_MML) += mtk-mml-mt6991.o
-mtk-mml-mt6991-objs := mtk-mml-tp-mt6991.o
 endif
 
 # for unit test
@@ -131,9 +129,9 @@ ifeq ($(strip $(CONFIG_FPGA_EARLY_PORTING)),y)
 ccflags-y += -DMML_FPGA
 endif
 
-ifeq ($(strip $(MGK_INTERNAL)),true)
+#ifeq ($(strip $(MGK_INTERNAL)),true)
 ccflags-y += -DMML_DL_SUPPORT
-endif
+#endif
 
 ifeq ($(strip $(MGK_INTERNAL)),true)
 ccflags-y += -DMML_STASH_SUPPORT

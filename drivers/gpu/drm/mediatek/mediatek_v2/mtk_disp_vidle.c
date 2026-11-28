@@ -20,7 +20,6 @@
 
 static atomic_t g_ff_enabled = ATOMIC_INIT(0);
 static bool vidle_paused;
-static atomic_t g_dt_debounce_cnt = ATOMIC_INIT(-1);
 
 static struct mtk_disp_vidle_para mtk_disp_vidle_flag = {
 	0,	/* vidle_en */
@@ -141,23 +140,6 @@ static void mtk_vidle_dt_enable(unsigned int en)
 		(en && mtk_vidle_check(DISP_VIDLE_QOS_DT_EN)));
 	disp_dpc_driver.dpc_group_enable(DPC_DISP_VIDLE_SRT_BW,
 		(en && mtk_vidle_check(DISP_VIDLE_QOS_DT_EN)));
-}
-
-int mtk_vidle_dt_available(void)
-{
-	if (vidle_data.dpc_version == DPC_VER1)
-		return !atomic_read(&g_dt_debounce_cnt);
-	else
-		return 1;
-}
-
-void mtk_vidle_dt_hint_update(void)
-{
-	if (vidle_data.dpc_version == DPC_VER1 && atomic_read(&g_dt_debounce_cnt) > 0) {
-		atomic_dec(&g_dt_debounce_cnt);
-		if (atomic_read(&g_dt_debounce_cnt) == 0)
-			DDPINFO("%s, dt:%d\n", __func__, atomic_read(&g_dt_debounce_cnt));
-	}
 }
 
 void mtk_vidle_clear_wfe_event(enum mtk_vidle_voter_user user, struct cmdq_pkt *pkt, int event)
@@ -657,10 +639,9 @@ static void mtk_vidle_enable_v1(bool en, void *_drm_priv)
 	}
 	/* TODO: enable timestamp */
 
-	atomic_set(&g_dt_debounce_cnt, en ? VIDLE_DT_DEBOUNCE : -1);
 	status = en;
-	DDPINFO("%s, en:%d, stop:0x%x, pause:%d, status:%d, dt:%d\n", __func__, en,
-		mtk_disp_vidle_flag.vidle_stop, vidle_paused, status, atomic_read(&g_dt_debounce_cnt));
+	DDPINFO("%s, en:%d, stop:0x%x, pause:%d, status:%d\n", __func__, en,
+		mtk_disp_vidle_flag.vidle_stop, vidle_paused, status);
 }
 
 static void mtk_vidle_enable_v2(bool _en, void *_drm_priv)
@@ -682,6 +663,8 @@ static void mtk_vidle_enable_v2(bool _en, void *_drm_priv)
 		en = mtk_crtc_is_frame_trigger_mode(drm_priv->crtc[0]) ? 1 : 2;
 
 	disp_dpc_driver.dpc_enable(en);
+
+	DDPINFO("%s, en:%d\n", __func__, en);
 }
 
 void mtk_vidle_enable(bool _en, void *_drm_priv)
@@ -782,6 +765,8 @@ void mtk_vidle_config_ff(bool en)
 
 	if (ret == 0)
 		atomic_set(&g_ff_enabled, en);
+
+	DDPINFO("%s, en:%d\n", __func__, en);
 }
 
 void mtk_vidle_dpc_analysis(void)
@@ -843,6 +828,20 @@ u32 mtk_vidle_hint_update(enum mtk_vidle_hint_type type)
 	case VIDLE_HINT_TUI_OFF:
 		vidle_data.hint.tui_fuse--;
 		break;
+#ifdef CONFIG_MI_DISP
+	case VIDLE_HINT_AOD_ON:
+		vidle_data.hint.aod_fuse = 1;
+		break;
+	case VIDLE_HINT_AOD_OFF:
+		vidle_data.hint.aod_fuse = 0;
+		break;
+	case VIDLE_HINT_CLOUD_CONTROL_ON:
+		vidle_data.hint.cloud_control_fuse = 0;
+		break;
+	case VIDLE_HINT_CLOUD_CONTROL_OFF:
+		vidle_data.hint.cloud_control_fuse = 1;
+		break;
+#endif
 	default:
 		break;
 	}
@@ -863,6 +862,10 @@ int mtk_vidle_hint_decision(const char *caller)
 
 	decision = !(vidle_data.hint.crtc_fuse |
 		     vidle_data.hint.tui_fuse |
+#ifdef CONFIG_MI_DISP
+		     vidle_data.hint.aod_fuse |
+		     vidle_data.hint.cloud_control_fuse |
+#endif
 		     vidle_data.hint.doze_debounce |
 		     vidle_data.hint.mode_switch_debounce |
 		     vidle_data.hint.mtcmos_debounce);

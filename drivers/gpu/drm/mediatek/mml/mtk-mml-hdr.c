@@ -345,9 +345,13 @@ static void hdr_disable_curve(struct mml_comp *comp, struct cmdq_pkt *pkt,
 {
 	struct mml_comp_hdr *hdr = comp_to_hdr(comp);
 
-	if (!hdr->data->tile_loss && !MML_FMT_IS_RGB(src->format))
+	mml_pq_msg("%s: input format is %s",
+ 		__func__, MML_FMT_IS_RGB(src->format) ? "RGB" : "YUV");
+
+	if (!hdr->data->tile_loss && !MML_FMT_IS_RGB(src->format)) {
+		mml_pq_err("%s: Use relay setting", __func__);
 		hdr_relay(comp, pkt, base_pa, 0x1);
-	else {
+	} else {
 		cmdq_pkt_write(pkt, NULL,
 			base_pa + hdr->data->reg_table[HDR_TONE_MAP_TOP], 0x0, 0x1);
 		cmdq_pkt_write(pkt, NULL,
@@ -358,13 +362,20 @@ static void hdr_disable_curve(struct mml_comp *comp, struct cmdq_pkt *pkt,
 			base_pa + hdr->data->reg_table[HDR_B_CHANNEL_NR], 0x0, 0x1);
 		cmdq_pkt_write(pkt, NULL,
 			base_pa + hdr->data->reg_table[HDR_A_LUMINANCE], 0x0, 0x1);
-		// RGB In, enable R2Y, disable Y2R
-		//TODO: Add R2Y matrix detail setting
+		// HDR_R2Y_09
+		// bit 0 reg_hdr_r2y_en
+		// bit 2~3 r2y_output_format
+		// 0: RGB2REC709 limited YUV
+		// 1: RGB2BT.2020-nc limited YUV
+		// 2: RGB2REC601 limited YUV
 		if(MML_FMT_IS_RGB(src->format)) {
+			mml_pq_err("%s: Input is RGB format, use common R2Y setting", __func__);
 			cmdq_pkt_write(pkt, NULL,
-				base_pa + hdr->data->reg_table[HDR_R2Y_09], 0x1, 0x1);
+				base_pa + hdr->data->reg_table[HDR_R2Y_09], 0x1, 0xd);
 			cmdq_pkt_write(pkt, NULL,
 				base_pa + hdr->data->reg_table[HDR_Y2R_09], 0x0, 0x1);
+		} else {
+			mml_pq_err("%s: Input is YUV format, do nothing", __func__);
 		}
 	}
 
@@ -558,7 +569,6 @@ static s32 hdr_config_frame(struct mml_comp *comp, struct mml_task *task,
 		mml_pq_msg("[hdr][config][%x] = %#x mask(%#x)",
 			regs[i].offset, regs[i].value, regs[i].mask);
 	}
-
 	if (mode == MML_MODE_MML_DECOUPLE || mode == MML_MODE_MML_DECOUPLE2) {
 		for (i = 0; i < HDR_CURVE_NUM; i += 2) {
 			mml_write_array(comp->id, pkt, base_pa + hdr->data->reg_table[HDR_GAIN_TABLE_1],
@@ -1023,7 +1033,6 @@ static s32 hdr_reconfig_frame(struct mml_comp *comp, struct mml_task *task,
 		queue_work(hdr->hdr_curve_wq, &hdr->hdr_curve_task);
 		hdr_hist_ctrl(comp, task, ccfg, result);
 	}
-
 	mml_pq_msg("%s is_hdr_need_readback[%d]",
 		__func__, result->is_hdr_need_readback);
 	hdr_frm->is_hdr_need_readback = result->is_hdr_need_readback;
@@ -1325,7 +1334,7 @@ static void hdr_debug_dump(struct mml_comp *comp)
 {
 	struct mml_comp_hdr *hdr = comp_to_hdr(comp);
 	void __iomem *base = comp->base;
-	u32 value[20];
+	u32 value[22];
 	u32 hdr_top;
 
 	mml_err("hdr component %u dump:", comp->id);
@@ -1355,6 +1364,8 @@ static void hdr_debug_dump(struct mml_comp *comp)
 	value[17] = read_reg_value(comp, hdr->data->reg_table[HDR_DUMMY1]);
 	value[18] = read_reg_value(comp, hdr->data->reg_table[HDR_HIST_ADDR]);
 	value[19] = read_reg_value(comp, hdr->data->reg_table[HDR_HIST_CTRL_2]);
+	value[20] = read_reg_value(comp, hdr->data->reg_table[HDR_R2Y_09]);
+	value[21] = read_reg_value(comp, hdr->data->reg_table[HDR_Y2R_09]);
 
 	mml_err("HDR_TOP %#010x HDR_RELAY %#010x HDR_INTSTA %#010x HDR_ENGSTA %#010x",
 		value[0], value[1], value[2], value[3]);
@@ -1369,6 +1380,7 @@ static void hdr_debug_dump(struct mml_comp *comp)
 		value[13], value[14], value[15]);
 	mml_err("HDR_DEBUG %#010x HDR_DUMMY1 %#010x", value[16], value[17]);
 	mml_err("HDR_HIST_ADDR %#010x HDR_HIST_CTRL_2 %#010x", value[18], value[19]);
+	mml_err("HDR_R2Y_09 %#010x HDR_Y2R_09 %#010x", value[20], value[21]);
 }
 
 static const struct mml_comp_debug_ops hdr_debug_ops = {

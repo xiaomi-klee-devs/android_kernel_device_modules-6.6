@@ -648,6 +648,13 @@ static void mtk_postmask_bypass(struct mtk_ddp_comp *comp, int bypass,
 	/* config relay mode */
 	cmdq_pkt_write(handle, comp->cmdq_base,
 		       comp->regs_pa + DISP_POSTMASK_CFG, bypass, 0x1);
+
+	if (bypass)
+		cmdq_pkt_write(handle, comp->cmdq_base, comp->regs_pa + DISP_POSTMASK_BANK_CON,
+			DDREN_REQ_DIS, DDREN_REQ_DIS);
+	else
+		cmdq_pkt_write(handle, comp->cmdq_base, comp->regs_pa + DISP_POSTMASK_BANK_CON,
+			0x0, DDREN_REQ_DIS);
 }
 
 void mtk_postmask_relay_debug(struct mtk_ddp_comp *comp, unsigned int relay)

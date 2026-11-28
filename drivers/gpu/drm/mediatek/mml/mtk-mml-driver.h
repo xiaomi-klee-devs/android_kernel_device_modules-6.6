@@ -37,13 +37,6 @@ enum mml_sys_id {
 	mml_max_sys
 };
 
-enum mml_kt {
-	mml_kt_taskdone,
-	mml_kt_config0,
-	mml_kt_config1,
-	mml_kt_total
-};
-
 struct platform_device *mml_get_plat_device(struct platform_device *pdev);
 
 static inline int of_mml_count_comps(const struct device_node *np)
@@ -138,8 +131,8 @@ void mml_dpc_task_cnt_inc(struct mml_task *task);
 void mml_dpc_task_cnt_dec(struct mml_task *task);
 void mml_dpc_exc_keep(struct mml_dev *mml, u32 sysid);
 void mml_dpc_exc_release(struct mml_dev *mml, u32 sysid);
-void mml_dpc_exc_keep_path(struct mml_dev *mml, const struct mml_topology_path *path);
-void mml_dpc_exc_release_path(struct mml_dev *mml, const struct mml_topology_path *path);
+void mml_dpc_exc_keep_task(struct mml_task *task, const struct mml_topology_path *path);
+void mml_dpc_exc_release_task(struct mml_task *task, const struct mml_topology_path *path);
 void mml_dpc_dc_enable(struct mml_dev *mml, u32 sysid, bool en);
 void mml_dpc_bw_update(struct mml_dev *mml, enum mml_sys_id sysid, u32 total_bw, u32 hrt_bw);
 
@@ -188,15 +181,6 @@ struct device *mml_get_mmu_dev(struct mml_dev *mml, bool secure);
  * Return:	True for enable, false for disable.
  */
 bool mml_dl_enable(struct mml_dev *mml);
-
-/*
- * mml_dl_vdo - enable direct link mode vdo or not
- *
- * @mml:	The mml driver instance
- *
- * Return:	True for enable, false for disable.
- */
-bool mml_dl_vdo(struct mml_dev *mml);
 
 /*
  * mml_dpc_disable - dpc disable or not
@@ -271,24 +255,6 @@ u16 mml_ir_get_mml_stop_event(struct mml_dev *mml);
 u16 mml_ir_get_target_event(struct mml_dev *mml);
 
 /*
- * mml_ir_get_disp_done_event - get disp done event mark by trig loop
- *
- * @mml:	The mml driver instance
- *
- * Return:	The event id of disp done
- */
-u16 mml_ir_get_disp_done_event(struct mml_dev *mml);
-
-/*
- * mml_ir_get_config_event - get target line event
- *
- * @mml:	The mml driver instance
- *
- * Return:	The event id of mml config
- */
-u16 mml_ir_get_config_event(struct mml_dev *mml);
-
-/*
  * mml_ir_get_cmdq_clt - get cmdq clt
  *
  * @mml:	The mml driver instance
@@ -359,7 +325,7 @@ void mml_dev_put_dle_ctx(struct mml_dev *mml,
 	void (*ctx_release)(struct mml_dle_ctx *ctx));
 struct mml_m2m_ctx *mml_dev_create_m2m_ctx(struct mml_dev *mml,
 	struct mml_m2m_ctx *(*ctx_create)(struct mml_dev *mml));
-struct kthread_worker *mml_dev_get_kt_worker(struct mml_dev *mml, enum mml_kt kt_id);
+struct kthread_worker *mml_dev_get_config_worker(struct mml_dev *mml);
 
 struct mml_v4l2_dev *mml_get_v4l2_dev(struct mml_dev *mml);
 
